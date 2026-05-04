@@ -178,7 +178,7 @@ def aggregate(rows: list[RepResult]) -> list[ModelAgg]:
             broken_by_class_total=broken_by_class_total,
         ))
 
-    out.sort(key=lambda a: (-(a.fitness_mean or -math.inf), a.model))
+    out.sort(key=lambda a: (-(a.fitness_mean if a.fitness_mean is not None else -math.inf), a.model))
     return out
 
 
