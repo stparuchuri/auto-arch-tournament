@@ -275,7 +275,11 @@ def run_slot(
     def broken(reason: str, detail: str = '') -> dict:
         # Capture the agent's RTL diff before destroy — the scribe needs it,
         # and once the worktree is gone the diff is unrecoverable.
-        diff = _capture_slot_diff(worktree, target, target_branch)
+        diff = ""
+        try:
+            diff = _capture_slot_diff(worktree, target, target_branch)
+        except Exception:
+            pass  # diff capture failure must not prevent worktree cleanup
         destroy_worktree(worktree_id, target=target)
         return {
             **hyp, 'outcome': 'broken', 'formal_passed': False,
