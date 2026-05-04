@@ -725,6 +725,14 @@ def main():
                          if p.is_dir()
                      ) if Path("cores").exists() else []))
 
+    # Validate --target: must be a safe identifier (used in shell commands,
+    # git branch names, and filesystem paths).
+    if args.target and not re.fullmatch(r'[A-Za-z0-9_-]+', args.target):
+        parser.error(
+            f"--target must contain only letters, digits, hyphens, and "
+            f"underscores (got '{args.target}')"
+        )
+
     # Flag validation.
     if args.coremark_target is not None and args.coremark_target <= 0:
         raise SystemExit("--coremark-target must be positive.")
