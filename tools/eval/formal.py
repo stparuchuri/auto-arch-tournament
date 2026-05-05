@@ -19,6 +19,26 @@ from pathlib import Path
 EXPECTED_MIN_CHECKS = int(os.environ.get("FORMAL_MIN_CHECKS", "50"))
 
 
+# Patterns that prove SBY actually executed at least one check before the
+# post-run `*.sby` glob came up empty. Any one of these in the output
+# means `no_checks_generated` is the wrong label — checks DID generate,
+# they just got wiped or interrupted between SBY's output and the tally.
+_SBY_RAN_PATTERNS = (
+    re.compile(r'^SBY \d+:\d+:\d+ \[\S+\] DONE \((PASS|FAIL|ERROR)', re.MULTILINE),
+    re.compile(r'^SBY \d+:\d+:\d+ \[\S+\] engine_0: Status returned by engine', re.MULTILINE),
+    re.compile(r'^make\[1\]: \*\*\* \[\S+/status\] Error', re.MULTILINE),
+)
+
+
+def _reclassify_no_checks_generated(output: str) -> str:
+    """If run_all.sh said `no_checks_generated` but SBY output proves
+    checks actually ran, return `make_failed_during_execution` instead."""
+    for pat in _SBY_RAN_PATTERNS:
+        if pat.search(output):
+            return 'make_failed_during_execution'
+    return 'no_checks_generated'
+
+
 def run_formal(worktree: str, target: str | None = None) -> dict:
     """
     Args:
@@ -78,9 +98,20 @@ def run_formal(worktree: str, target: str | None = None) -> dict:
         passed, failed = int(tally.group(1)), int(tally.group(2))
         if failed > 0 or result.returncode != 0:
             fail_line = re.search(r'Failed:\s+(\S+)', output)
+            failed_check = fail_line.group(1) if fail_line else 'unknown'
+            # `no_checks_generated` is run_all.sh's fallback when the
+            # post-run `for sby_file in *.sby` glob finds zero matches.
+            # That can mean genchecks.py crashed (the intended case) OR
+            # that something between genchecks and the tally — most
+            # commonly the implementer agent's bash tool — wiped or
+            # corrupted the checks directory mid-run. Distinguish so
+            # postmortems can tell "tooling never produced checks" from
+            # "real SBY work happened then the directory was molested".
+            if failed_check == 'no_checks_generated':
+                failed_check = _reclassify_no_checks_generated(output)
             return {
                 'passed': False,
-                'failed_check': fail_line.group(1) if fail_line else 'unknown',
+                'failed_check': failed_check,
                 'checks_passed': passed,
                 'checks_failed': failed,
                 'detail': output[-4000:],

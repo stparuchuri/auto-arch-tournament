@@ -152,6 +152,27 @@ def accept_worktree(hypothesis_id: str,
         check=True
     )
 
+    # Defensive: clear stray edits from the orchestrator's main checkout
+    # before the ff-only merge. opencode's `edit` tool respects --dir, but
+    # its `bash` tool inherits the orchestrator's cwd (the clone root),
+    # NOT the agent's worktree. A heredoc redirect like
+    #   cat << EOF > cores/<target>/rtl/<file>
+    # therefore lands in the orchestrator's main tree instead of the
+    # slot's worktree. Without this reset, those stray edits make
+    # `git checkout target_branch` and `git merge --ff-only` fail
+    # with "Your local changes ... would be overwritten by merge",
+    # and a clean winning slot in the same round gets discarded.
+    # Observed live: gemini's broken slot 1 (multi-cycle div) leaked
+    # alu.sv / ex_stage.sv via heredoc-bash into the main tree, which
+    # then blocked slot 0's clean +28.5% improvement from landing.
+    # The contract is: the orchestrator's main checkout never has dirty
+    # cores/<target>/ — anything dirty there is by definition a leak.
+    scope = f"cores/{target}/" if target else "rtl/"
+    subprocess.run(
+        ["git", "checkout", "HEAD", "--", scope],
+        check=False, capture_output=True,
+    )
+
     # Merge into the active branch. Idempotent checkout — no-op if already on it.
     subprocess.run(["git", "checkout", target_branch], check=True)
     subprocess.run(
