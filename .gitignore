@@ -94,3 +94,12 @@ node_modules/
 # Top-level results.jsonl + LEADERBOARD.md ARE checked in.
 bench/*/rep*/log.jsonl
 bench/*/rep*/agent.log
+
+# Throwaway harness-verification runs (one-model YAMLs + their output
+# trees). These are reliability checks, not benchmark data — output is
+# regenerable and the YAMLs only encode "rerun this single model to
+# confirm a fix landed". Naming convention: `*-verify` for output dirs,
+# `models-*-verify.yaml` for the throwaway model YAML.
+bench/*-verify/
+bench/smoke-*/
+tools/bench/models-*-verify.yaml
