@@ -301,6 +301,18 @@ def run_slot(
     if not build_ok:
         return broken("build_failed", build_reason)
 
+    # Phase 3.5: cheap RVFI ch0 contract precheck. The most common formal
+    # failure across pilot reps is `*_ch0` PREUNSAT / `no_checks_generated`,
+    # caused by tying io_rvfi_valid_0 to constant zero (often via an index
+    # swap with the legitimate ch1 tie-off). Catching the textual pattern
+    # here costs milliseconds and saves ~30 minutes of formal SMT before
+    # surfacing the same error class with a precise file:line pointer.
+    from tools.eval.rvfi_lint import check_ch0_contract
+    rtl_dir = (Path(worktree) / "cores" / target / "rtl") if target else (Path(worktree) / "rtl")
+    ch0 = check_ch0_contract(rtl_dir)
+    if not ch0['passed']:
+        return broken("formal_failed", f"ch0_contract: {ch0['detail']}")
+
     # Phase 4: formal (gated, formal=1).
     with phase_gate('formal'):
         formal = run_formal(worktree, target=target)

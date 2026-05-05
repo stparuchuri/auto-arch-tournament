@@ -17,8 +17,15 @@ from tools.agents._runtime import (
 )
 
 def hypotheses_dir(target: str) -> Path:
-    """Return per-target hypotheses directory: cores/<target>/experiments/hypotheses."""
-    return Path("cores") / target / "experiments" / "hypotheses"
+    """Return per-target hypotheses directory as an absolute path.
+
+    Absolute via `.resolve()` so concurrent slot threads, agent
+    subprocesses, and any code path that briefly changes cwd all
+    converge on the same on-disk location. The relative form
+    surfaced as `[Errno 1] Operation not permitted: 'experiments'`
+    on bench reps where the leaf component bubbled up alone.
+    """
+    return (Path.cwd() / "cores" / target / "experiments" / "hypotheses").resolve()
 
 
 def hypothesis_log(target: str) -> Path:

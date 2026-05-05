@@ -42,18 +42,27 @@ sys.modules.setdefault('tools.orchestrator', sys.modules[__name__])
 # doesn't break the lazy import.
 import tools.accept_rule  # noqa: F401
 
-LOG_PATH       = Path("experiments/log.jsonl")   # rebound in main() per target
-PLOT_PATH      = Path("experiments/progress.png") # rebound in main() per target
+LOG_PATH: Path | None  = None  # bound by main(); see log_path_for()
+PLOT_PATH: Path | None = None  # bound by main(); see plot_path_for()
+_TARGET: str | None    = None  # bound by main() alongside LOG_PATH/PLOT_PATH
 HYP_SCHEMA     = json.loads(Path("schemas/hypothesis.schema.json").read_text())
 RESULT_SCHEMA  = json.loads(Path("schemas/eval_result.schema.json").read_text())
 
 
 def log_path_for(target: str) -> Path:
-    return Path("cores") / target / "experiments" / "log.jsonl"
+    # Absolute path: append_log/scribe/plot all run in the orchestrator
+    # process and the orchestrator never chdirs, but absolute paths
+    # eliminate an entire class of "what was cwd at this exact moment?"
+    # bugs. Bench reps surfaced this as `[Errno 1] Operation not
+    # permitted: 'experiments'` when a stray `mkdir` got the unbound
+    # default `Path("experiments/...")` whose parent is just
+    # `Path("experiments")` — a one-component relative path that
+    # macOS sandbox rejects with EPERM showing only the leaf name.
+    return (Path.cwd() / "cores" / target / "experiments" / "log.jsonl").resolve()
 
 
 def plot_path_for(target: str) -> Path:
-    return Path("cores") / target / "experiments" / "progress.png"
+    return (Path.cwd() / "cores" / target / "experiments" / "progress.png").resolve()
 
 # Serializes append_log across concurrent tournament slots. The body of
 # append_log writes log.jsonl, regenerates progress.png, then git-adds
@@ -154,11 +163,8 @@ def update_core_yaml_current(target: str, repo_root: Path | None = None, *,
 
 
 def _current_target() -> str | None:
-    """Extract target from LOG_PATH (set in main() to cores/<target>/experiments/log.jsonl)."""
-    parts = LOG_PATH.parts
-    if len(parts) >= 2 and parts[0] == "cores":
-        return parts[1]
-    return None
+    """Return the target main() bound on startup, or None if unbound."""
+    return _TARGET
 
 
 def _active_branch(repo_root: Path | str | None = None) -> str:
@@ -621,10 +627,11 @@ def main():
 
     # Per-target log/plot. Rebound as globals so read_log/append_log pick them
     # up without needing to thread the paths through every call.
-    global LOG_PATH, PLOT_PATH
+    global LOG_PATH, PLOT_PATH, _TARGET
     if args.target:
         LOG_PATH  = log_path_for(args.target)
         PLOT_PATH = plot_path_for(args.target)
+        _TARGET   = args.target
 
     if args.report:
         run_report()
