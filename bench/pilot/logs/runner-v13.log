@@ -1,0 +1,14 @@
+[bench] 6 job(s) queued (6 already done)
+        - gemini-3_1-pro-rep1  ->  opencode:openrouter/google/gemini-3.1-pro-preview
+        - gemini-3_1-pro-rep2  ->  opencode:openrouter/google/gemini-3.1-pro-preview
+        - gemini-3_1-pro-rep3  ->  opencode:openrouter/google/gemini-3.1-pro-preview
+        - kimi-k2_6-rep1  ->  opencode:opencode-go/kimi-k2.6
+        - kimi-k2_6-rep2  ->  opencode:opencode-go/kimi-k2.6
+        - kimi-k2_6-rep3  ->  opencode:opencode-go/kimi-k2.6
+[bench] config: N=15 K=3 reps=3 parallel=2
+[bench] clone base: /Users/bonetto/bonetto/auto-arch-tournament/.claude/bench-runs
+[bench] results: bench/pilot/results.jsonl
+
+[bench] === gemini-3_1-pro-rep1 starting at 2026-05-03T13:34:59+00:00 ===
+
+[bench] === gemini-3_1-pro-rep2 starting at 2026-05-03T13:34:59+00:00 ===

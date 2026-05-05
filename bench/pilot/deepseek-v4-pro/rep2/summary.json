@@ -1,0 +1,23 @@
+{
+  "model": "deepseek-v4-pro",
+  "rep": 2,
+  "started_at": "2026-05-02T18:24:34+00:00",
+  "ended_at": null,
+  "wall_clock_sec": null,
+  "iterations": 0,
+  "accepted": 0,
+  "rejected": 0,
+  "broken": 0,
+  "final_fitness": null,
+  "baseline_fitness": null,
+  "best_fitness": null,
+  "best_round": null,
+  "delta_pct": null,
+  "total_tokens_in": 0,
+  "total_tokens_out": 0,
+  "total_cost_usd": 0.0,
+  "orchestrator_exit": 2,
+  "status": "failed",
+  "notes": " make exit=2",
+  "broken_by_class": {}
+}

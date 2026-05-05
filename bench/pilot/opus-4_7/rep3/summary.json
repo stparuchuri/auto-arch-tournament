@@ -1,0 +1,26 @@
+{
+  "model": "opus-4_7",
+  "rep": 3,
+  "started_at": "2026-05-03T04:22:17+00:00",
+  "ended_at": null,
+  "wall_clock_sec": null,
+  "iterations": 46,
+  "accepted": 3,
+  "rejected": 29,
+  "broken": 14,
+  "final_fitness": 387.98,
+  "baseline_fitness": 301.04,
+  "best_fitness": 387.98,
+  "best_round": 13,
+  "delta_pct": 28.879883072017005,
+  "total_tokens_in": 17426047,
+  "total_tokens_out": 875468,
+  "total_cost_usd": 48.63710824999999,
+  "orchestrator_exit": 0,
+  "status": "done",
+  "notes": "",
+  "broken_by_class": {
+    "formal_failed": 13,
+    "hypothesis_gen_failed": 1
+  }
+}

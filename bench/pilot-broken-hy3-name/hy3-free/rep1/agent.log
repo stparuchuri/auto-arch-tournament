@@ -1,0 +1,1080 @@
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-001-r10s0.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697214318,"sessionID":"ses_218fd3198ffeZ2SnAIZ1Y7p3w1","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-001-r11s0.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697218425,"sessionID":"ses_218fd2165ffemyeUQQ7Fc7n7TP","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-001-r12s0.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697222618,"sessionID":"ses_218fd1126ffeEheG51o1WMXBOI","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-001-r13s0.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697226796,"sessionID":"ses_218fd00caffe6n26eMidR0Z5Ki","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-001-r14s0.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697231103,"sessionID":"ses_218fcf008ffehEVeEqxO0s0KWa","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-001-r15s0.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697235322,"sessionID":"ses_218fcdffbffemF63CjujTdxmM3","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-001-r1s0.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697176131,"sessionID":"ses_218fdc74bffeRormsuUZTYP6ve","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-001-r2s0.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697180140,"sessionID":"ses_218fdb714ffei4Jc4EX4BxM2gp","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-001-r3s0.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697184559,"sessionID":"ses_218fda5f8ffeVRPaoE6s0SCKN8","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-001-r4s0.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697188913,"sessionID":"ses_218fd94f8ffeCbcVyQ4DKSRGJI","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-001-r5s0.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697194385,"sessionID":"ses_218fd7f5effeodNu621tO55hP9","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-001-r6s0.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697198483,"sessionID":"ses_218fd6f4fffexP7T4BM9R1uGIT","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-001-r7s0.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697202904,"sessionID":"ses_218fd5e30ffe6Vqjf3bkqvcMMd","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-001-r8s0.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697206517,"sessionID":"ses_218fd4fc8ffeZxQF7vIpqYupjS","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-001-r9s0.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697210522,"sessionID":"ses_218fd406dffePn2NKjuU07N7QO","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-002-r10s1.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697214422,"sessionID":"ses_218fd3125ffeSnDh47aoKtQGj4","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-002-r11s1.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697218527,"sessionID":"ses_218fd210bffeBPTR1xpX4q5QLW","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-002-r12s1.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697222723,"sessionID":"ses_218fd10d0ffeFYino3oXacJlFa","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-002-r13s1.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697226899,"sessionID":"ses_218fd0068ffegbQgpZV1tu3oF8","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-002-r14s1.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697231205,"sessionID":"ses_218fcef9affeqgTzSKYcSm6qqu","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-002-r15s1.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697235225,"sessionID":"ses_218fcdffdffeMvZv9IqxqBetoY","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-002-r1s1.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697176245,"sessionID":"ses_218fdc6eaffeIa8czsiA6IbTij","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-002-r2s1.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697180242,"sessionID":"ses_218fdb6c2ffee4QCIh6pkcm0OT","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-002-r3s1.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697184336,"sessionID":"ses_218fda6bcffeJ8BLXU9OKWAJ0W","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-002-r4s1.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697188849,"sessionID":"ses_218fd9542ffeK9FJXkBsJ2PVjo","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-002-r5s1.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697194492,"sessionID":"ses_218fd7efdffejEB02cKlBn2qrS","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-002-r6s1.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697198586,"sessionID":"ses_218fd6ef2ffeOt23ZjOOOArBRb","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-002-r7s1.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697202803,"sessionID":"ses_218fd5ea2ffeeTeQ2Q7ZYH7LxP","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-002-r8s1.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697206625,"sessionID":"ses_218fd4f4cffeZv6uTfA3HpvHuV","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-002-r9s1.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697210269,"sessionID":"ses_218fd4122ffeD3R5Ot8qairW80","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-003-r10s2.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697214217,"sessionID":"ses_218fd31e0ffeS8zILmQALQAJvO","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-003-r11s2.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697218156,"sessionID":"ses_218fd2290ffesNgXLg5OaSKu1M","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-003-r12s2.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697222831,"sessionID":"ses_218fd105fffewEHhUt9w9yX44Q","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-003-r13s2.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697227006,"sessionID":"ses_218fd0011ffeoO2ZR9mv7dqKGV","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-003-r14s2.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697230999,"sessionID":"ses_218fcf06dffev2k3Kgbvmb4747","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-003-r15s2.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697235424,"sessionID":"ses_218fcdfabffeVGEVdeZiKOXICb","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-003-r1s2.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697176343,"sessionID":"ses_218fdc679ffesT5kcKwYO3DdTG","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-003-r2s2.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697180345,"sessionID":"ses_218fdb654ffeyBnf3Y9VaThzvH","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-003-r3s2.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697184442,"sessionID":"ses_218fda661ffeQnjZUIZhNRtArD","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-003-r4s2.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697188663,"sessionID":"ses_218fd95b1ffe3TqfJvJjl6EFaw","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-003-r5s2.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697194288,"sessionID":"ses_218fd7fb7ffe7Eia8OcnAcOFC0","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-003-r6s2.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697198699,"sessionID":"ses_218fd6e8cffegPI7Tv1UOyKq61","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-003-r7s2.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697202703,"sessionID":"ses_218fd5ee7ffeaAUWJ4ve1hurla","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-003-r8s2.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697206868,"sessionID":"ses_218fd4eb6ffe7bffiz6hAIbKZU","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+
+=== .claude/bench-runs-pilot/hy3-free-rep1/cores/bench/experiments/hypotheses/.agent.hyp-20260502-003-r9s2.log ===
+ProviderModelNotFoundError: ProviderModelNotFoundError
+ data: {
+  providerID: "openrouter",
+  modelID: "tencent/hy3-preview:free",
+  suggestions: [],
+},
+
+      at <anonymous> (/$bunfs/root/chunk-4ft9ts2q.js:779:47477)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:7738)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at o7 (/$bunfs/root/chunk-4sp6kc64.js:25:38715)
+      at <anonymous> (/$bunfs/root/chunk-3pee37v1.js:4:78979)
+      at ~effect/Effect/successCont (/$bunfs/root/chunk-4sp6kc64.js:25:17713)
+      at runLoop (/$bunfs/root/chunk-4sp6kc64.js:25:2045)
+      at evaluate (/$bunfs/root/chunk-4sp6kc64.js:25:1435)
+      at <anonymous> (/$bunfs/root/chunk-4sp6kc64.js:25:5589)
+      at <anonymous> (/$bunfs/root/chunk-zhwpgnbs.js:709:12988)
+      at <anonymous> (node:fs:225:13)
+
+{"type":"error","timestamp":1777697210622,"sessionID":"ses_218fd4011ffeFV4GBorIMPv2Zo","error":{"name":"UnknownError","data":{"message":"Model not found: openrouter/tencent/hy3-preview:free."}}}
+

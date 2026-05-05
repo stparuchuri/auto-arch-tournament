@@ -1,0 +1,26 @@
+{
+  "model": "gpt-5_5",
+  "rep": 2,
+  "started_at": "2026-05-02T05:17:18+00:00",
+  "ended_at": null,
+  "wall_clock_sec": null,
+  "iterations": 46,
+  "accepted": 5,
+  "rejected": 33,
+  "broken": 5,
+  "final_fitness": 454.11,
+  "baseline_fitness": 301.04,
+  "best_fitness": 454.11,
+  "best_round": 20,
+  "delta_pct": 50.84706351315439,
+  "total_tokens_in": 23089182,
+  "total_tokens_out": 356764,
+  "total_cost_usd": 0.0,
+  "orchestrator_exit": 0,
+  "status": "done",
+  "notes": "",
+  "broken_by_class": {
+    "formal_failed": 4,
+    "cosim_failed": 1
+  }
+}

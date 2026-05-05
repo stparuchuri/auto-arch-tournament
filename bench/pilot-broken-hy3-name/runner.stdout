@@ -1,0 +1,27 @@
+[bench] 12 job(s) queued (0 already done)
+        - gpt-5_5-rep1  ->  opencode:openai/gpt-5.5
+        - gpt-5_5-rep2  ->  opencode:openai/gpt-5.5
+        - gpt-5_5-rep3  ->  opencode:openai/gpt-5.5
+        - hy3-free-rep1  ->  opencode:openrouter/tencent/hy3-preview:free
+        - hy3-free-rep2  ->  opencode:openrouter/tencent/hy3-preview:free
+        - hy3-free-rep3  ->  opencode:openrouter/tencent/hy3-preview:free
+        - deepseek-v4-pro-rep1  ->  opencode:openrouter/deepseek/deepseek-v4-pro
+        - deepseek-v4-pro-rep2  ->  opencode:openrouter/deepseek/deepseek-v4-pro
+        - deepseek-v4-pro-rep3  ->  opencode:openrouter/deepseek/deepseek-v4-pro
+        - ling-2-6-1t-free-rep1  ->  opencode:openrouter/inclusionai/ling-2.6-1t:free
+        - ling-2-6-1t-free-rep2  ->  opencode:openrouter/inclusionai/ling-2.6-1t:free
+        - ling-2-6-1t-free-rep3  ->  opencode:openrouter/inclusionai/ling-2.6-1t:free
+[bench] config: N=15 K=3 reps=3 parallel=4
+[bench] clone base: .claude/bench-runs-pilot
+[bench] results: bench/pilot/results.jsonl
+
+[bench] === gpt-5_5-rep1 starting at 2026-05-02T04:36:01+00:00 ===
+
+[bench] === gpt-5_5-rep2 starting at 2026-05-02T04:36:01+00:00 ===
+
+[bench] === gpt-5_5-rep3 starting at 2026-05-02T04:36:01+00:00 ===
+
+[bench] === hy3-free-rep1 starting at 2026-05-02T04:36:01+00:00 ===
+[bench] === hy3-free-rep1 done in 677s, fitness=301.04, cost=$0.00 ===
+
+[bench] === hy3-free-rep2 starting at 2026-05-02T04:47:19+00:00 ===

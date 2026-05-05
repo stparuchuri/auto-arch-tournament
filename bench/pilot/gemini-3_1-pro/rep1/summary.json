@@ -1,0 +1,23 @@
+{
+  "model": "gemini-3_1-pro",
+  "rep": 1,
+  "started_at": "2026-05-03T13:05:29+00:00",
+  "ended_at": null,
+  "wall_clock_sec": null,
+  "iterations": 1,
+  "accepted": 1,
+  "rejected": 0,
+  "broken": 0,
+  "final_fitness": 301.04,
+  "baseline_fitness": 301.04,
+  "best_fitness": 301.04,
+  "best_round": 1,
+  "delta_pct": 0.0,
+  "total_tokens_in": 2457582,
+  "total_tokens_out": 115469,
+  "total_cost_usd": 2.884770000000001,
+  "orchestrator_exit": -15,
+  "status": "failed",
+  "notes": " make exit=-15",
+  "broken_by_class": {}
+}
