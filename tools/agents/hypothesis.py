@@ -179,16 +179,9 @@ def _build_prompt(log_tail: list, current_fitness: float, baseline_fitness: floa
     claude_md = Path("CLAUDE.md").read_text() if Path("CLAUDE.md").exists() else ""
     rtl_dir = Path("cores") / target / "rtl" if target else Path("rtl")
     src_files = sorted(rtl_dir.rglob("*.sv"))
-    # Don't inline every RTL file — hypothesis-phase agents only need a
-    # map of what exists; they'll `read` the files relevant to their
-    # proposed change. Inlining the full ~56 KB src_dump cost ~15-20 K
-    # input tokens per hyp call AND was duplicated in the implementation
-    # prompt anyway. Listing files (with sizes so the agent can budget)
-    # gets the same coverage at ~0.4 KB.
-    src_listing = "\n".join(
-        f"  - {f}   ({f.stat().st_size:>6,} bytes)"
-        for f in src_files
-    ) or "  (no .sv files yet)"
+    src_dump  = "\n\n".join(
+        f"=== {f} ===\n{f.read_text()}" for f in src_files
+    )
     recent_outcomes_str = _recent_outcomes(log_tail, n=5)
 
     id_clause = (
@@ -258,10 +251,7 @@ Baseline fitness: {baseline_fitness:.2f}
 {claude_md}
 
 ## Current SystemVerilog Source ({rtl_dir}/)
-{src_listing}
-
-Use the `read` tool on the specific files your proposed change would touch.
-Don't read every file — only the modules relevant to your hypothesis.
+{src_dump}
 
 ## Recent outcomes (last 5)
 {recent_outcomes_str}
