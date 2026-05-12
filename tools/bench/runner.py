@@ -707,8 +707,44 @@ def summarize_run(log_jsonl: Path, agent_log: Path,
                   provider: str = "codex") -> dict:
     """Compute the per-rep summary from an experiments/log.jsonl.
 
-    Schema mirrors the spec's `bench/results.jsonl` row.
+    Schema mirrors the spec's `bench/results.jsonl` row. When the
+    orchestrator has emitted a run_summary.json alongside log.jsonl
+    (since the Phase 2 contract refactor), use it directly — that file
+    is the typed contract the orchestrator owns. Otherwise fall back to
+    re-parsing log.jsonl ourselves, which is what every orchestrator
+    version prior to write_run_summary needed and we preserve for
+    backward compat with old results dirs.
     """
+    # Token counts always come from agent.log (provider-specific cost
+    # parsing); not in scope of run_summary.json.
+    toks_in, toks_out, cost = parse_cost_from_log(agent_log, provider=provider)
+
+    summary_path = log_jsonl.parent / "run_summary.json"
+    if summary_path.is_file():
+        try:
+            s = json.loads(summary_path.read_text())
+        except (json.JSONDecodeError, OSError):
+            s = None
+        if isinstance(s, dict):
+            return {
+                "iterations":      int(s.get("iterations", 0) or 0),
+                "accepted":        int(s.get("accepted", 0) or 0),
+                "rejected":        int(s.get("rejected", 0) or 0),
+                "broken":          int(s.get("broken", 0) or 0),
+                "broken_by_class": dict(s.get("broken_by_class") or {}),
+                "final_fitness":   s.get("final_fitness"),
+                "baseline_fitness":s.get("baseline_fitness"),
+                "best_fitness":    s.get("best_fitness"),
+                "best_round":      s.get("best_round"),
+                "delta_pct":       s.get("delta_pct"),
+                "total_tokens_in": toks_in,
+                "total_tokens_out":toks_out,
+                "total_cost_usd":  cost,
+            }
+
+    # Fallback: pre-Phase-2 orchestrator versions don't emit run_summary.json,
+    # so we re-derive everything from log.jsonl here. Same schema as the
+    # orchestrator-side write_run_summary, kept as the legacy path.
     iterations = 0
     accepted = 0
     rejected = 0
@@ -717,12 +753,6 @@ def summarize_run(log_jsonl: Path, agent_log: Path,
     baseline_fitness = None
     best_round = None
     best_fitness = None
-    # Track per-error-class broken counts for the NeurIPS-style report.
-    # Keys are the leading error class (formal_failed / cosim_failed /
-    # hypothesis_gen_failed / build_failed / sandbox_violation /
-    # implementation_compile_failed / placement_failed / ...). The bare
-    # error string after the colon is dropped — class is what matters
-    # for cross-run aggregation.
     broken_by_class: dict[str, int] = {}
 
     if log_jsonl.is_file():
@@ -793,7 +823,7 @@ def summarize_run(log_jsonl: Path, agent_log: Path,
     if final_fitness is not None and baseline_fitness:
         delta_pct = (final_fitness - baseline_fitness) / baseline_fitness * 100.0
 
-    toks_in, toks_out, cost = parse_cost_from_log(agent_log, provider=provider)
+    # toks_in / toks_out / cost computed at top of function via parse_cost_from_log.
     return {
         "iterations": iterations,
         "accepted": accepted,
@@ -979,6 +1009,13 @@ def run_one_job(
         (out_dir / "log.jsonl").write_text("\n".join(git_lines) + "\n")
     elif log_jsonl_path.is_file():
         shutil.copy2(log_jsonl_path, out_dir / "log.jsonl")
+
+    # Copy orchestrator-emitted run_summary.json if present. summarize_run
+    # below prefers this file over re-parsing log.jsonl; copying keeps the
+    # rep's results directory self-contained for offline forensics.
+    run_summary_src = clone / "cores" / "bench" / "experiments" / "run_summary.json"
+    if run_summary_src.is_file():
+        shutil.copy2(run_summary_src, out_dir / "run_summary.json")
 
     agent_concat = collect_agent_logs(clone)
     if agent_concat.is_file():

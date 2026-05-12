@@ -195,6 +195,110 @@ def read_log() -> list:
     if not LOG_PATH.exists(): return []
     return [json.loads(l) for l in LOG_PATH.read_text().splitlines() if l.strip()]
 
+
+def write_run_summary(log_path: Path, out_path: Path) -> dict:
+    """Emit the canonical per-rep summary derived from a target's log.jsonl.
+
+    The bench runner (tools/bench/runner.py) reads this file at end of rep
+    instead of re-parsing log.jsonl with its own classification logic. The
+    orchestrator owns the schema here so that future contract changes
+    (new outcome strings, new error classes, new fitness fields) propagate
+    without a runner.py edit.
+
+    log_path may be absent or empty — both produce a zero-counts summary
+    (a fresh experiment's results.jsonl row should still be written so
+    `--reps J` retries can move on; an absent summary would force the
+    runner into a more fragile fallback path).
+    """
+    entries: list[dict] = []
+    if log_path.is_file():
+        for raw in log_path.read_text().splitlines():
+            s = raw.strip()
+            if not s:
+                continue
+            try:
+                entries.append(json.loads(s))
+            except json.JSONDecodeError:
+                continue
+
+    iterations = 0
+    accepted = 0
+    rejected = 0
+    broken = 0
+    final_fitness: float | None = None
+    baseline: float | None = None
+    best_fitness: float | None = None
+    best_round: int | None = None
+    broken_by_class: dict[str, int] = {}
+
+    for e in entries:
+        iterations += 1
+        outcome = e.get("outcome", "")
+        # The orchestrator emits 'improvement' / 'regression' / 'broken'.
+        # Legacy 'accepted' / 'rejected' synonyms are still accepted in
+        # case any third-party log surfaces them.
+        if outcome in ("improvement", "accepted"):
+            accepted += 1
+        elif outcome in ("regression", "rejected"):
+            rejected += 1
+        elif outcome == "broken":
+            broken += 1
+            err = (e.get("error") or "").strip()
+            cls = err.split(":", 1)[0] if err else "unknown"
+            broken_by_class[cls] = broken_by_class.get(cls, 0) + 1
+
+        fit = e.get("fitness") or e.get("coremark") or e.get("coremark_iter_s")
+        if isinstance(fit, (int, float)):
+            if best_fitness is None or fit > best_fitness:
+                best_fitness = float(fit)
+                best_round = iterations
+            if outcome in ("improvement", "accepted"):
+                final_fitness = float(fit)
+
+        if baseline is None:
+            # Resolution paths, in priority order:
+            #   1. Explicit baseline_fitness/baseline field (legacy schema).
+            #   2. The baseline retest entry — round_id=0,
+            #      outcome='improvement', delta_pct=0 — its fitness IS the
+            #      run's baseline.
+            #   3. Derive from any row with both fitness and non-zero delta_pct:
+            #      baseline = fit / (1 + d/100).
+            bf = e.get("baseline_fitness") or e.get("baseline")
+            if isinstance(bf, (int, float)):
+                baseline = float(bf)
+            elif (e.get("round_id") == 0
+                  and outcome in ("improvement", "accepted")
+                  and isinstance(fit, (int, float))):
+                baseline = float(fit)
+
+    if baseline is None:
+        for e in entries:
+            d = e.get("delta_pct")
+            fit = e.get("fitness")
+            if isinstance(d, (int, float)) and isinstance(fit, (int, float)) and d != 0:
+                baseline = float(fit) / (1.0 + d / 100.0)
+                break
+
+    delta_pct: float | None = None
+    if baseline is not None and final_fitness is not None and baseline > 0:
+        delta_pct = (final_fitness - baseline) / baseline * 100.0
+
+    summary = {
+        "iterations": iterations,
+        "accepted": accepted,
+        "rejected": rejected,
+        "broken": broken,
+        "broken_by_class": broken_by_class,
+        "baseline_fitness": baseline,
+        "final_fitness": final_fitness,
+        "best_fitness": best_fitness,
+        "best_round": best_round,
+        "delta_pct": delta_pct,
+    }
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(json.dumps(summary, indent=2) + "\n")
+    return summary
+
 def _last_improvement(log: list) -> dict | None:
     """The most recent accepted-improvement entry, or None.
 
@@ -694,6 +798,15 @@ def main():
             target_branch=target_branch,
             target=args.target,
         )
+
+    # Emit run_summary.json — the typed contract the bench runner consumes.
+    # Owning the summary schema here kills the contract-drift surface where
+    # runner.summarize_run used to re-parse log.jsonl with its own
+    # classification logic (rejected vs regression, broken_by_class
+    # derivation, baseline anchor resolution). Written every run so a
+    # subsequent --report or bench-runner invocation gets a fresh tally.
+    summary_path = LOG_PATH.parent / "run_summary.json"
+    write_run_summary(log_path=LOG_PATH, out_path=summary_path)
 
 if __name__ == '__main__':
     main()
