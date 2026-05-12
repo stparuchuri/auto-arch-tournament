@@ -2,6 +2,30 @@
 import asyncio, os, re, json, subprocess, statistics
 from pathlib import Path
 
+from tools.eval.formal import read_nret
+
+
+def _build_synth_env(worktree, target: str | None,
+                     base_env: dict | None = None) -> dict:
+    """Build the env for `yosys -c fpga/scripts/synth.tcl`.
+
+    Reads cores/<target>/core.yaml's `nret` field (defaults to 2). When
+    nret=1, injects BENCH=fpga/core_bench_si.sv so synth.tcl reads the
+    single-issue FPGA wrapper (only `_0` RVFI ports) instead of the
+    default dual-channel core_bench.sv. nret=2 leaves BENCH unset and
+    synth.tcl falls back to fpga/core_bench.sv.
+    """
+    worktree_path = Path(worktree).resolve()
+    env = dict(base_env) if base_env is not None else os.environ.copy()
+    if target is None:
+        return env
+    env["RTL_DIR"] = f"cores/{target}/rtl"
+    env["GEN_DIR"] = f"cores/{target}/generated"
+    nret = read_nret(worktree_path / "cores" / target / "core.yaml")
+    if nret == 1:
+        env["BENCH"] = "fpga/core_bench_si.sv"
+    return env
+
 SEEDS = [1, 2, 3]
 NEXTPNR_SCRIPT = "fpga/scripts/nextpnr_run.sh"
 PORTME_H = "bench/programs/coremark/baremetal/core_portme.h"

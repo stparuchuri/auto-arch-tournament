@@ -12,6 +12,27 @@ return success. EXPECTED_MIN_CHECKS prevents that.
 import os, subprocess, json, re
 from pathlib import Path
 
+import yaml
+
+
+def read_nret(core_yaml_path: Path) -> int:
+    """Read the `nret` field from a core.yaml. Defaults to 2 when the file
+    or field is missing — preserves backward compat with cores authored
+    before the nret-aware fixture (every existing core today).
+
+    Only 1 and 2 are supported. NRET=1 selects the single-issue formal
+    wrapper (wrapper_si.sv + checks_si.cfg); NRET=2 uses the dual-channel
+    default (wrapper.sv + checks.cfg).
+    """
+    p = Path(core_yaml_path)
+    if not p.exists():
+        return 2
+    y = yaml.safe_load(p.read_text()) or {}
+    n = y.get("nret", 2)
+    if n not in (1, 2):
+        raise ValueError(f"core.yaml nret must be 1 or 2, got {n!r}")
+    return n
+
 # Floor on how many .sby tasks must pass for a "formal: green" result.
 # V0 baseline produces 53. Allow some slack (≥50) so a future checks.cfg
 # tweak that legitimately drops 1-2 checks doesn't trigger a false alarm,
@@ -39,6 +60,29 @@ def _reclassify_no_checks_generated(output: str) -> str:
     return 'no_checks_generated'
 
 
+def _build_formal_env(worktree: Path, target: str | None,
+                      base_env: dict | None = None) -> dict:
+    """Build the subprocess env for invoking formal/run_all.sh.
+
+    Reads cores/<target>/core.yaml's `nret` field (defaulting to 2) and,
+    when nret=1, points run_all.sh at the single-issue wrapper + checks
+    config so the agent's RTL exposes only the channel-0 RVFI ports.
+    nret=2 leaves WRAPPER/CHECKS_CFG unset; run_all.sh defaults to
+    formal/wrapper.sv + formal/checks.cfg.
+    """
+    worktree_path = Path(worktree).resolve()
+    env = dict(base_env) if base_env is not None else os.environ.copy()
+    if target is None:
+        return env
+    env["RTL_DIR"] = f"cores/{target}/rtl"
+    env["CORE_NAME"] = target
+    nret = read_nret(worktree_path / "cores" / target / "core.yaml")
+    if nret == 1:
+        env["WRAPPER"] = str(worktree_path / "formal" / "wrapper_si.sv")
+        env["CHECKS_CFG"] = str(worktree_path / "formal" / "checks_si.cfg")
+    return env
+
+
 def run_formal(worktree: str, target: str | None = None) -> dict:
     """
     Args:
@@ -46,7 +90,11 @@ def run_formal(worktree: str, target: str | None = None) -> dict:
       target:   optional core name (e.g. 'v1').  When set, injects
                 RTL_DIR=cores/<target>/rtl and CORE_NAME=<target> into
                 the subprocess environment so run_all.sh picks up that
-                core's RTL instead of the default rtl/ directory.
+                core's RTL instead of the default rtl/ directory. When
+                that core's core.yaml declares nret=1, also injects
+                WRAPPER=formal/wrapper_si.sv and CHECKS_CFG=formal/checks_si.cfg
+                so the single-issue formal flow runs instead of the
+                default dual-channel one.
 
     Returns:
       {'passed': True, 'checks_passed': N}
@@ -58,10 +106,7 @@ def run_formal(worktree: str, target: str | None = None) -> dict:
         return {'passed': False, 'failed_check': 'setup',
                 'detail': f'formal/run_all.sh missing in {worktree}'}
 
-    env = os.environ.copy()
-    if target is not None:
-        env["RTL_DIR"] = f"cores/{target}/rtl"
-        env["CORE_NAME"] = target
+    env = _build_formal_env(worktree_path, target)
 
     try:
         result = subprocess.run(

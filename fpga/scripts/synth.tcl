@@ -28,7 +28,16 @@ foreach f [lsort [glob -nocomplain "$rtl_dir/*.sv"]] {
     read_verilog -sv "$f"
 }
 
-read_verilog -sv fpga/core_bench.sv
+# BENCH selects which fpga/core_bench*.sv to read. Defaults to
+# fpga/core_bench.sv (NRET=2 dual-channel). tools/eval/fpga.py overrides
+# to fpga/core_bench_si.sv when cores/<target>/core.yaml declares nret: 1.
+# Both files define a module named core_bench; only one is read per run.
+if {[info exists ::env(BENCH)]} {
+    set bench_sv $::env(BENCH)
+} else {
+    set bench_sv "fpga/core_bench.sv"
+}
+read_verilog -sv $bench_sv
 
 synth_gowin -top core_bench -json $gen_dir/synth.json
 

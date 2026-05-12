@@ -391,7 +391,10 @@ def emit_verilog(worktree: str, target: str | None = None) -> tuple[bool, str]:
     # 2. Yosys synth (writes generated/synth.json for nextpnr).
     gen_dir = Path(worktree) / "cores" / target / "generated" if target else Path(worktree) / "generated"
     gen_dir.mkdir(parents=True, exist_ok=True)
-    synth_env = {**os.environ, "RTL_DIR": f"cores/{target}/rtl", "GEN_DIR": f"cores/{target}/generated"} if target else None
+    # _build_synth_env reads cores/<target>/core.yaml's nret to pick BENCH
+    # (fpga/core_bench.sv for nret=2, fpga/core_bench_si.sv for nret=1).
+    from tools.eval.fpga import _build_synth_env
+    synth_env = _build_synth_env(worktree, target=target) if target else None
     synth = subprocess.run(
         ["yosys", "-c", "fpga/scripts/synth.tcl"],
         cwd=worktree, capture_output=True,
@@ -410,12 +413,11 @@ def emit_verilog(worktree: str, target: str | None = None) -> tuple[bool, str]:
         return _fail("bench make", bench)
 
     # 4. Rebuild Verilator cosim binary against the worktree's RTL.
-    build_env = (
-        {**os.environ,
-         "RTL_DIR": f"cores/{target}/rtl",
-         "OBJ_DIR": f"cores/{target}/obj_dir"}
-        if target else None
-    )
+    # _build_cosim_env reads cores/<target>/core.yaml's nret to pick the
+    # NRET preprocessor value (1 or 2). main.cpp's ch1 drain is gated by
+    # `#if NRET >= 2`, so an nret=1 core (no `_1` ports) compiles cleanly.
+    from tools.eval.cosim import _build_cosim_env
+    build_env = _build_cosim_env(worktree, target=target) if target else None
     build = subprocess.run(
         ["bash", "test/cosim/build.sh"],
         cwd=worktree, capture_output=True,

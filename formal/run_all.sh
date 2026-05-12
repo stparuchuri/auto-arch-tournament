@@ -10,6 +10,12 @@
 # Usage: bash formal/run_all.sh [checks-cfg-path]
 #   default: formal/checks.cfg       (fast, ALTOPS, used by orchestrator)
 #   deep   : formal/checks-deep.cfg  (no ALTOPS, proves M-ext arithmetic)
+#
+# Env vars (orchestrator-driven, override $1 and defaults):
+#   WRAPPER     — path to wrapper SV (default formal/wrapper.sv)
+#   CHECKS_CFG  — path to checks config (default formal/checks.cfg)
+# tools/eval/formal.py picks WRAPPER=wrapper_si.sv + CHECKS_CFG=checks_si.cfg
+# for cores whose core.yaml declares nret: 1.
 set -e
 
 if [ -z "${RTL_DIR:-}" ] || [ -z "${CORE_NAME:-}" ]; then
@@ -27,9 +33,14 @@ CORE_DIR="$RISCV_FORMAL/cores/$CORE_NAME"
 # stdout grep filter is still recoverable post-mortem.
 LOG="$SCRIPT_DIR/last_run.log"
 
-CHECKS_CFG="${1:-$SCRIPT_DIR/checks.cfg}"
+CHECKS_CFG="${CHECKS_CFG:-${1:-$SCRIPT_DIR/checks.cfg}}"
+WRAPPER="${WRAPPER:-$SCRIPT_DIR/wrapper.sv}"
 if [ ! -f "$CHECKS_CFG" ]; then
     echo "ERROR: checks.cfg not found at $CHECKS_CFG"
+    exit 1
+fi
+if [ ! -f "$WRAPPER" ]; then
+    echo "ERROR: wrapper not found at $WRAPPER"
     exit 1
 fi
 
@@ -60,7 +71,7 @@ mkdir -p "$CORE_DIR"
 # right to rename/delete files in rtl/, so this cleanup is required.
 rm -f "$CORE_DIR"/*.sv
 cp "$PROJECT_ROOT/$RTL_DIR"/*.sv "$CORE_DIR/"
-cp "$SCRIPT_DIR/wrapper.sv"     "$CORE_DIR/wrapper.sv"
+cp "$WRAPPER"                   "$CORE_DIR/wrapper.sv"
 
 # Stage checks.cfg with [verilog-files] auto-derived from actual rtl/
 # contents instead of the cfg's hardcoded list. The shipped checks.cfg
