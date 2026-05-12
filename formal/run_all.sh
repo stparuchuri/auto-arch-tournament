@@ -30,11 +30,18 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 RISCV_FORMAL="$SCRIPT_DIR/riscv-formal"
-CORE_DIR="$RISCV_FORMAL/cores/$CORE_NAME"
-# Full output capture. Everything genchecks + make print lands here, so a
-# silent crash inside genchecks or a yosys error that doesn't match the
-# stdout grep filter is still recoverable post-mortem.
-LOG="$SCRIPT_DIR/last_run.log"
+# PID-suffixed work dir + log so two concurrent invocations (e.g., the
+# agent self-checking mid-implementation while the orchestrator runs
+# its end-of-iteration eval) don't race on `rm -rf checks/` or
+# truncate each other's last_run.log. Was observed live in the
+# nret=1 verify run: two slots got broken: make_failed_during_execution
+# because the agent invoked `bash formal/run_all.sh` 6+ times in quick
+# succession, each invocation wiping the previous one's checks/ dir
+# mid-SBY (yosys-smtbmc crashed with `FileNotFoundError: 'engine_0/trace0.vcd'`).
+# genchecks.py derives @core@ from cwd's basename (genchecks.py:39), so
+# the PID-suffixed dir maps cleanly to @core@="$CORE_NAME-$$".
+CORE_DIR="$RISCV_FORMAL/cores/$CORE_NAME-$$"
+LOG="$SCRIPT_DIR/last_run-$$.log"
 
 # Auto-detect single-issue cores from core.yaml when WRAPPER + CHECKS_CFG
 # are both unset and $1 (checks-cfg-path) wasn't given either. Explicit
@@ -85,6 +92,28 @@ if [ -d "$PROJECT_ROOT/.toolchain/oss-cad-suite/bin" ]; then
     export PATH="$PROJECT_ROOT/.toolchain/oss-cad-suite/bin:$PATH"
 fi
 
+# Reap stale per-PID work dirs + logs whose owning process has exited.
+# Bounds disk growth from long runs (an agent that invokes run_all.sh
+# dozens of times leaves dozens of $CORE_NAME-<pid>/ dirs otherwise).
+# kill -0 returns 0 iff <pid> exists; non-existent / non-numeric names
+# fall through to cleanup. Concurrent live runs are protected because
+# their PIDs are still alive.
+shopt -s nullglob
+for stale in "$RISCV_FORMAL/cores/$CORE_NAME-"*; do
+    pid="${stale##*-}"
+    if [[ "$pid" =~ ^[0-9]+$ ]] && ! kill -0 "$pid" 2>/dev/null; then
+        rm -rf "$stale"
+    fi
+done
+for stale_log in "$SCRIPT_DIR"/last_run-*.log; do
+    pid="${stale_log##*-}"
+    pid="${pid%.log}"
+    if [[ "$pid" =~ ^[0-9]+$ ]] && ! kill -0 "$pid" 2>/dev/null; then
+        rm -f "$stale_log"
+    fi
+done
+shopt -u nullglob
+
 # Truncate the run log; genchecks + make are tee'd here in full.
 : > "$LOG"
 
@@ -123,7 +152,10 @@ awk '/^\[verilog-files\]/{exit} {print}' "$CHECKS_CFG" > "$STAGED_CFG"
     echo "@basedir@/cores/@core@/wrapper.sv"
 } >> "$STAGED_CFG"
 
-# genchecks.py expects @basedir@ = $RISCV_FORMAL, @core@ = $CORE_NAME.
+# genchecks.py derives @core@ from the cwd's basename (genchecks.py:39),
+# so cd-ing into $CORE_DIR (= $RISCV_FORMAL/cores/$CORE_NAME-$$) yields
+# @core@="$CORE_NAME-$$". The [verilog-files] lines we just wrote
+# reference that @core@, so all paths resolve into this PID-private dir.
 cd "$CORE_DIR"
 rm -rf checks/
 echo "=== genchecks ===" | tee -a "$LOG"
