@@ -17,6 +17,12 @@ if [ -z "${RTL_DIR:-}" ] || [ -z "${OBJ_DIR:-}" ]; then
   exit 2
 fi
 
+# NRET picks which RVFI port set main.cpp expects on `core`.
+# 1 = single-issue (only `_0` ports); 2 = dual-channel (both `_0` and `_1`).
+# Default 2 preserves existing behavior; orchestrator sets to 1 for cores
+# whose core.yaml declares nret: 1.
+NRET="${NRET:-2}"
+
 # Ensure OSS CAD Suite tools are on PATH for non-interactive shells.
 TOOLCHAIN="$REPO_ROOT/.toolchain"
 if [ -d "$TOOLCHAIN/oss-cad-suite/bin" ]; then
@@ -46,6 +52,7 @@ verilator --cc --exe --build \
   "+incdir+$RTL_DIR" \
   --top-module core \
   -Wall -Wno-fatal -Wno-style \
+  -CFLAGS "-DNRET=$NRET" \
   "${RTL_FILES[@]}" \
   "$COSIM_DIR/main.cpp" \
   -o cosim_sim

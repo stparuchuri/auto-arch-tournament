@@ -232,6 +232,11 @@ int main(int argc, char** argv) {
                  top->io_rvfi_mem_wmask_0, top->io_rvfi_mem_wdata_0,
                  top->io_rvfi_trap_0, top->io_rvfi_halt_0, top->io_rvfi_intr_0,
                  top->io_rvfi_mode_0, top->io_rvfi_ixl_0)) break;
+#if NRET >= 2
+        // Channel 1 — only present when the core is built with nret: 2.
+        // Cores declared nret: 1 expose no `_1` ports, so verilator's
+        // generated Vcore.h omits these fields and the build is keyed
+        // off the NRET macro injected by test/cosim/build.sh.
         if (emit(top->io_rvfi_valid_1, top->io_rvfi_order_1, top->io_rvfi_insn_1,
                  top->io_rvfi_pc_rdata_1, top->io_rvfi_pc_wdata_1,
                  top->io_rvfi_rd_addr_1, top->io_rvfi_rd_wdata_1,
@@ -242,6 +247,7 @@ int main(int argc, char** argv) {
                  top->io_rvfi_mem_wmask_1, top->io_rvfi_mem_wdata_1,
                  top->io_rvfi_trap_1, top->io_rvfi_halt_1, top->io_rvfi_intr_1,
                  top->io_rvfi_mode_1, top->io_rvfi_ixl_1)) break;
+#endif
     }
     if (bench_mode) {
         // Emit final record, plus an explicit completion marker. Consumers MUST

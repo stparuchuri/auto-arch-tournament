@@ -42,18 +42,27 @@ sys.modules.setdefault('tools.orchestrator', sys.modules[__name__])
 # doesn't break the lazy import.
 import tools.accept_rule  # noqa: F401
 
-LOG_PATH       = Path("experiments/log.jsonl")   # rebound in main() per target
-PLOT_PATH      = Path("experiments/progress.png") # rebound in main() per target
+LOG_PATH: Path | None  = None  # bound by main(); see log_path_for()
+PLOT_PATH: Path | None = None  # bound by main(); see plot_path_for()
+_TARGET: str | None    = None  # bound by main() alongside LOG_PATH/PLOT_PATH
 HYP_SCHEMA     = json.loads(Path("schemas/hypothesis.schema.json").read_text())
 RESULT_SCHEMA  = json.loads(Path("schemas/eval_result.schema.json").read_text())
 
 
 def log_path_for(target: str) -> Path:
-    return Path("cores") / target / "experiments" / "log.jsonl"
+    # Absolute path: append_log/scribe/plot all run in the orchestrator
+    # process and the orchestrator never chdirs, but absolute paths
+    # eliminate an entire class of "what was cwd at this exact moment?"
+    # bugs. Bench reps surfaced this as `[Errno 1] Operation not
+    # permitted: 'experiments'` when a stray `mkdir` got the unbound
+    # default `Path("experiments/...")` whose parent is just
+    # `Path("experiments")` — a one-component relative path that
+    # macOS sandbox rejects with EPERM showing only the leaf name.
+    return (Path.cwd() / "cores" / target / "experiments" / "log.jsonl").resolve()
 
 
 def plot_path_for(target: str) -> Path:
-    return Path("cores") / target / "experiments" / "progress.png"
+    return (Path.cwd() / "cores" / target / "experiments" / "progress.png").resolve()
 
 # Serializes append_log across concurrent tournament slots. The body of
 # append_log writes log.jsonl, regenerates progress.png, then git-adds
@@ -154,11 +163,8 @@ def update_core_yaml_current(target: str, repo_root: Path | None = None, *,
 
 
 def _current_target() -> str | None:
-    """Extract target from LOG_PATH (set in main() to cores/<target>/experiments/log.jsonl)."""
-    parts = LOG_PATH.parts
-    if len(parts) >= 2 and parts[0] == "cores":
-        return parts[1]
-    return None
+    """Return the target main() bound on startup, or None if unbound."""
+    return _TARGET
 
 
 def _active_branch(repo_root: Path | str | None = None) -> str:
@@ -188,6 +194,110 @@ def _active_branch(repo_root: Path | str | None = None) -> str:
 def read_log() -> list:
     if not LOG_PATH.exists(): return []
     return [json.loads(l) for l in LOG_PATH.read_text().splitlines() if l.strip()]
+
+
+def write_run_summary(log_path: Path, out_path: Path) -> dict:
+    """Emit the canonical per-rep summary derived from a target's log.jsonl.
+
+    The bench runner (tools/bench/runner.py) reads this file at end of rep
+    instead of re-parsing log.jsonl with its own classification logic. The
+    orchestrator owns the schema here so that future contract changes
+    (new outcome strings, new error classes, new fitness fields) propagate
+    without a runner.py edit.
+
+    log_path may be absent or empty — both produce a zero-counts summary
+    (a fresh experiment's results.jsonl row should still be written so
+    `--reps J` retries can move on; an absent summary would force the
+    runner into a more fragile fallback path).
+    """
+    entries: list[dict] = []
+    if log_path.is_file():
+        for raw in log_path.read_text().splitlines():
+            s = raw.strip()
+            if not s:
+                continue
+            try:
+                entries.append(json.loads(s))
+            except json.JSONDecodeError:
+                continue
+
+    iterations = 0
+    accepted = 0
+    rejected = 0
+    broken = 0
+    final_fitness: float | None = None
+    baseline: float | None = None
+    best_fitness: float | None = None
+    best_round: int | None = None
+    broken_by_class: dict[str, int] = {}
+
+    for e in entries:
+        iterations += 1
+        outcome = e.get("outcome", "")
+        # The orchestrator emits 'improvement' / 'regression' / 'broken'.
+        # Legacy 'accepted' / 'rejected' synonyms are still accepted in
+        # case any third-party log surfaces them.
+        if outcome in ("improvement", "accepted"):
+            accepted += 1
+        elif outcome in ("regression", "rejected"):
+            rejected += 1
+        elif outcome == "broken":
+            broken += 1
+            err = (e.get("error") or "").strip()
+            cls = err.split(":", 1)[0] if err else "unknown"
+            broken_by_class[cls] = broken_by_class.get(cls, 0) + 1
+
+        fit = e.get("fitness") or e.get("coremark") or e.get("coremark_iter_s")
+        if isinstance(fit, (int, float)):
+            if best_fitness is None or fit > best_fitness:
+                best_fitness = float(fit)
+                best_round = iterations
+            if outcome in ("improvement", "accepted"):
+                final_fitness = float(fit)
+
+        if baseline is None:
+            # Resolution paths, in priority order:
+            #   1. Explicit baseline_fitness/baseline field (legacy schema).
+            #   2. The baseline retest entry — round_id=0,
+            #      outcome='improvement', delta_pct=0 — its fitness IS the
+            #      run's baseline.
+            #   3. Derive from any row with both fitness and non-zero delta_pct:
+            #      baseline = fit / (1 + d/100).
+            bf = e.get("baseline_fitness") or e.get("baseline")
+            if isinstance(bf, (int, float)):
+                baseline = float(bf)
+            elif (e.get("round_id") == 0
+                  and outcome in ("improvement", "accepted")
+                  and isinstance(fit, (int, float))):
+                baseline = float(fit)
+
+    if baseline is None:
+        for e in entries:
+            d = e.get("delta_pct")
+            fit = e.get("fitness")
+            if isinstance(d, (int, float)) and isinstance(fit, (int, float)) and d != 0:
+                baseline = float(fit) / (1.0 + d / 100.0)
+                break
+
+    delta_pct: float | None = None
+    if baseline is not None and final_fitness is not None and baseline > 0:
+        delta_pct = (final_fitness - baseline) / baseline * 100.0
+
+    summary = {
+        "iterations": iterations,
+        "accepted": accepted,
+        "rejected": rejected,
+        "broken": broken,
+        "broken_by_class": broken_by_class,
+        "baseline_fitness": baseline,
+        "final_fitness": final_fitness,
+        "best_fitness": best_fitness,
+        "best_round": best_round,
+        "delta_pct": delta_pct,
+    }
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(json.dumps(summary, indent=2) + "\n")
+    return summary
 
 def _last_improvement(log: list) -> dict | None:
     """The most recent accepted-improvement entry, or None.
@@ -385,7 +495,10 @@ def emit_verilog(worktree: str, target: str | None = None) -> tuple[bool, str]:
     # 2. Yosys synth (writes generated/synth.json for nextpnr).
     gen_dir = Path(worktree) / "cores" / target / "generated" if target else Path(worktree) / "generated"
     gen_dir.mkdir(parents=True, exist_ok=True)
-    synth_env = {**os.environ, "RTL_DIR": f"cores/{target}/rtl", "GEN_DIR": f"cores/{target}/generated"} if target else None
+    # _build_synth_env reads cores/<target>/core.yaml's nret to pick BENCH
+    # (fpga/core_bench.sv for nret=2, fpga/core_bench_si.sv for nret=1).
+    from tools.eval.fpga import _build_synth_env
+    synth_env = _build_synth_env(worktree, target=target) if target else None
     synth = subprocess.run(
         ["yosys", "-c", "fpga/scripts/synth.tcl"],
         cwd=worktree, capture_output=True,
@@ -404,12 +517,11 @@ def emit_verilog(worktree: str, target: str | None = None) -> tuple[bool, str]:
         return _fail("bench make", bench)
 
     # 4. Rebuild Verilator cosim binary against the worktree's RTL.
-    build_env = (
-        {**os.environ,
-         "RTL_DIR": f"cores/{target}/rtl",
-         "OBJ_DIR": f"cores/{target}/obj_dir"}
-        if target else None
-    )
+    # _build_cosim_env reads cores/<target>/core.yaml's nret to pick the
+    # NRET preprocessor value (1 or 2). main.cpp's ch1 drain is gated by
+    # `#if NRET >= 2`, so an nret=1 core (no `_1` ports) compiles cleanly.
+    from tools.eval.cosim import _build_cosim_env
+    build_env = _build_cosim_env(worktree, target=target) if target else None
     build = subprocess.run(
         ["bash", "test/cosim/build.sh"],
         cwd=worktree, capture_output=True,
@@ -613,14 +725,6 @@ def main():
                          if p.is_dir()
                      ) if Path("cores").exists() else []))
 
-    # Validate --target: must be a safe identifier (used in shell commands,
-    # git branch names, and filesystem paths).
-    if args.target and not re.fullmatch(r'[A-Za-z0-9_-]+', args.target):
-        parser.error(
-            f"--target must contain only letters, digits, hyphens, and "
-            f"underscores (got '{args.target}')"
-        )
-
     # Flag validation.
     if args.coremark_target is not None and args.coremark_target <= 0:
         raise SystemExit("--coremark-target must be positive.")
@@ -629,10 +733,11 @@ def main():
 
     # Per-target log/plot. Rebound as globals so read_log/append_log pick them
     # up without needing to thread the paths through every call.
-    global LOG_PATH, PLOT_PATH
+    global LOG_PATH, PLOT_PATH, _TARGET
     if args.target:
         LOG_PATH  = log_path_for(args.target)
         PLOT_PATH = plot_path_for(args.target)
+        _TARGET   = args.target
 
     if args.report:
         run_report()
@@ -683,6 +788,12 @@ def main():
     # and the target's RTL only exists on that branch.
     target_branch = _active_branch()
 
+    # run_summary.json is the typed contract the bench runner consumes.
+    # Emit it AFTER EACH ROUND (not only at end-of-main) so that a
+    # crash mid-loop still leaves a usable partial summary on disk —
+    # the runner now relies on the file existing rather than re-parsing
+    # log.jsonl as a fallback (Phase 2 cleanup).
+    summary_path = LOG_PATH.parent / "run_summary.json"
     for r in range(args.iterations):
         round_id = next_round + r
         log = read_log()
@@ -693,6 +804,11 @@ def main():
             target_branch=target_branch,
             target=args.target,
         )
+        write_run_summary(log_path=LOG_PATH, out_path=summary_path)
+
+    # Final emit even if --iterations 0 (the loop didn't run) so the runner
+    # never finds an empty experiments/ dir without a summary file.
+    write_run_summary(log_path=LOG_PATH, out_path=summary_path)
 
 if __name__ == '__main__':
     main()

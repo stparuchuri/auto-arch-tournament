@@ -85,6 +85,16 @@ Advisory file changes (you may deviate, add, rename, or restructure freely):
 2. The top module MUST stay named `core` and expose the io_* RVFI port set.
    Do NOT modify anything in tools/, schemas/, formal/, fpga/, test/cosim/,
    bench/, ARCHITECTURE.md, CLAUDE.md, README.md, setup.sh, or Makefile.
+
+   Do NOT write helper scripts at the workspace root or anywhere outside
+   cores/{target}/. Files like `patch.py`, `patch_core.py`, `update_files.py`,
+   or `apply.sh` are ALWAYS off-limits — even if they only edit allowed
+   paths, the orchestrator's sandbox will flag them as `sandbox_violation`
+   and discard your entire iteration. If your change spans many files,
+   sequence multiple `edit` tool calls. Do not try to `cat <<EOF >` or
+   `python3 patch.py` your way around the edit tool — `bash` redirects
+   land in the wrong working directory anyway, so even if the sandbox
+   permitted them they would write to the wrong tree.
 3. After implementing, verify the build:
      verilator --lint-only -Wall -Wno-MULTITOP -sv +incdir+{rtl_rel} {rtl_rel}/*.sv
    Fix any errors / warnings before finishing.

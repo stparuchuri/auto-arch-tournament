@@ -10,6 +10,15 @@
 # Usage: bash formal/run_all.sh [checks-cfg-path]
 #   default: formal/checks.cfg       (fast, ALTOPS, used by orchestrator)
 #   deep   : formal/checks-deep.cfg  (no ALTOPS, proves M-ext arithmetic)
+#
+# Env vars (orchestrator-driven, override $1 and defaults):
+#   WRAPPER     — path to wrapper SV (default formal/wrapper.sv)
+#   CHECKS_CFG  — path to checks config (default formal/checks.cfg)
+# When BOTH are unset, the script auto-detects nret from
+# cores/$CORE_NAME/core.yaml: nret=1 routes to wrapper_si.sv +
+# checks_si.cfg; nret=2 (or absent) uses the defaults. Agents
+# invoking `bash formal/run_all.sh` directly therefore get the
+# right wrapper without needing to know the env-var plumbing.
 set -e
 
 if [ -z "${RTL_DIR:-}" ] || [ -z "${CORE_NAME:-}" ]; then
@@ -21,15 +30,52 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 RISCV_FORMAL="$SCRIPT_DIR/riscv-formal"
-CORE_DIR="$RISCV_FORMAL/cores/$CORE_NAME"
-# Full output capture. Everything genchecks + make print lands here, so a
-# silent crash inside genchecks or a yosys error that doesn't match the
-# stdout grep filter is still recoverable post-mortem.
-LOG="$SCRIPT_DIR/last_run.log"
+# PID-suffixed work dir + log so two concurrent invocations (e.g., the
+# agent self-checking mid-implementation while the orchestrator runs
+# its end-of-iteration eval) don't race on `rm -rf checks/` or
+# truncate each other's last_run.log. Was observed live in the
+# nret=1 verify run: two slots got broken: make_failed_during_execution
+# because the agent invoked `bash formal/run_all.sh` 6+ times in quick
+# succession, each invocation wiping the previous one's checks/ dir
+# mid-SBY (yosys-smtbmc crashed with `FileNotFoundError: 'engine_0/trace0.vcd'`).
+# genchecks.py derives @core@ from cwd's basename (genchecks.py:39), so
+# the PID-suffixed dir maps cleanly to @core@="$CORE_NAME-$$".
+CORE_DIR="$RISCV_FORMAL/cores/$CORE_NAME-$$"
+LOG="$SCRIPT_DIR/last_run-$$.log"
 
-CHECKS_CFG="${1:-$SCRIPT_DIR/checks.cfg}"
+# Auto-detect single-issue cores from core.yaml when WRAPPER + CHECKS_CFG
+# are both unset and $1 (checks-cfg-path) wasn't given either. Explicit
+# env vars or $1 still win. Uses python3 to parse YAML robustly — bash
+# grep would mis-handle quoted/indented variants and break on the next
+# yaml schema bump.
+CORE_YAML="$PROJECT_ROOT/cores/$CORE_NAME/core.yaml"
+if [ -z "${WRAPPER:-}" ] && [ -z "${CHECKS_CFG:-}" ] && [ -z "${1:-}" ] \
+   && [ -f "$CORE_YAML" ]; then
+    # Pass the path via env var so the python literal stays free of any
+    # bash-substituted strings that could break on quoting / spaces.
+    NRET=$(CORE_YAML="$CORE_YAML" python3 -c '
+import os, yaml
+try:
+    d = yaml.safe_load(open(os.environ["CORE_YAML"]).read()) or {}
+    print(int(d.get("nret", 2)))
+except Exception:
+    print(2)
+' 2>/dev/null)
+    if [ "$NRET" = "1" ]; then
+        WRAPPER="$SCRIPT_DIR/wrapper_si.sv"
+        CHECKS_CFG="$SCRIPT_DIR/checks_si.cfg"
+        echo "[run_all.sh] auto-detected nret=1 from $CORE_YAML; using wrapper_si.sv + checks_si.cfg"
+    fi
+fi
+
+CHECKS_CFG="${CHECKS_CFG:-${1:-$SCRIPT_DIR/checks.cfg}}"
+WRAPPER="${WRAPPER:-$SCRIPT_DIR/wrapper.sv}"
 if [ ! -f "$CHECKS_CFG" ]; then
     echo "ERROR: checks.cfg not found at $CHECKS_CFG"
+    exit 1
+fi
+if [ ! -f "$WRAPPER" ]; then
+    echo "ERROR: wrapper not found at $WRAPPER"
     exit 1
 fi
 
@@ -46,6 +92,28 @@ if [ -d "$PROJECT_ROOT/.toolchain/oss-cad-suite/bin" ]; then
     export PATH="$PROJECT_ROOT/.toolchain/oss-cad-suite/bin:$PATH"
 fi
 
+# Reap stale per-PID work dirs + logs whose owning process has exited.
+# Bounds disk growth from long runs (an agent that invokes run_all.sh
+# dozens of times leaves dozens of $CORE_NAME-<pid>/ dirs otherwise).
+# kill -0 returns 0 iff <pid> exists; non-existent / non-numeric names
+# fall through to cleanup. Concurrent live runs are protected because
+# their PIDs are still alive.
+shopt -s nullglob
+for stale in "$RISCV_FORMAL/cores/$CORE_NAME-"*; do
+    pid="${stale##*-}"
+    if [[ "$pid" =~ ^[0-9]+$ ]] && ! kill -0 "$pid" 2>/dev/null; then
+        rm -rf "$stale"
+    fi
+done
+for stale_log in "$SCRIPT_DIR"/last_run-*.log; do
+    pid="${stale_log##*-}"
+    pid="${pid%.log}"
+    if [[ "$pid" =~ ^[0-9]+$ ]] && ! kill -0 "$pid" 2>/dev/null; then
+        rm -f "$stale_log"
+    fi
+done
+shopt -u nullglob
+
 # Truncate the run log; genchecks + make are tee'd here in full.
 : > "$LOG"
 
@@ -60,7 +128,7 @@ mkdir -p "$CORE_DIR"
 # right to rename/delete files in rtl/, so this cleanup is required.
 rm -f "$CORE_DIR"/*.sv
 cp "$PROJECT_ROOT/$RTL_DIR"/*.sv "$CORE_DIR/"
-cp "$SCRIPT_DIR/wrapper.sv"     "$CORE_DIR/wrapper.sv"
+cp "$WRAPPER"                   "$CORE_DIR/wrapper.sv"
 
 # Stage checks.cfg with [verilog-files] auto-derived from actual rtl/
 # contents instead of the cfg's hardcoded list. The shipped checks.cfg
@@ -84,7 +152,10 @@ awk '/^\[verilog-files\]/{exit} {print}' "$CHECKS_CFG" > "$STAGED_CFG"
     echo "@basedir@/cores/@core@/wrapper.sv"
 } >> "$STAGED_CFG"
 
-# genchecks.py expects @basedir@ = $RISCV_FORMAL, @core@ = $CORE_NAME.
+# genchecks.py derives @core@ from the cwd's basename (genchecks.py:39),
+# so cd-ing into $CORE_DIR (= $RISCV_FORMAL/cores/$CORE_NAME-$$) yields
+# @core@="$CORE_NAME-$$". The [verilog-files] lines we just wrote
+# reference that @core@, so all paths resolve into this PID-private dir.
 cd "$CORE_DIR"
 rm -rf checks/
 echo "=== genchecks ===" | tee -a "$LOG"

@@ -36,6 +36,7 @@ class RepResult:
     final_fitness: Optional[float]
     best_fitness: Optional[float]
     best_round: Optional[int]
+    baseline_fitness: Optional[float]
     iterations: int
     accepted: int
     rejected: int
@@ -45,6 +46,7 @@ class RepResult:
     total_cost_usd: float
     total_tokens_in: int
     total_tokens_out: int
+    broken_by_class: dict[str, int]
 
 
 def load_results(path: Path) -> list[RepResult]:
@@ -66,6 +68,7 @@ def load_results(path: Path) -> list[RepResult]:
             final_fitness=row.get("final_fitness"),
             best_fitness=row.get("best_fitness"),
             best_round=row.get("best_round"),
+            baseline_fitness=row.get("baseline_fitness"),
             iterations=int(row.get("iterations") or 0),
             accepted=int(row.get("accepted") or 0),
             rejected=int(row.get("rejected") or 0),
@@ -75,6 +78,7 @@ def load_results(path: Path) -> list[RepResult]:
             total_cost_usd=float(row.get("total_cost_usd") or 0.0),
             total_tokens_in=int(row.get("total_tokens_in") or 0),
             total_tokens_out=int(row.get("total_tokens_out") or 0),
+            broken_by_class=dict(row.get("broken_by_class") or {}),
         ))
     return out
 
@@ -93,6 +97,19 @@ class ModelAgg:
     mean_wall_clock_per_iter_sec: Optional[float]
     total_tokens_in: int
     total_tokens_out: int
+    # Per-rep counts of each outcome class — averaged across the reps for
+    # this model. Reflect what fraction of a rep's iterations landed in
+    # each bucket (improvement / regression / broken) so the leaderboard
+    # surfaces "this model's hypotheses fail a lot" beyond just pass-rate.
+    accepted_mean: Optional[float]
+    rejected_mean: Optional[float]
+    broken_mean: Optional[float]
+    # Aggregate of the broken_by_class dicts across all reps of this model.
+    # Keys are broken-class names (formal_failed, hypothesis_gen_failed,
+    # placement_failed, implementation_compile_failed, ...); values are
+    # the total occurrences. Used by render_failure_modes_section to
+    # explain *why* a model's broken count is what it is.
+    broken_by_class_total: dict[str, int]
 
 
 def _safe_mean(xs: list[float]) -> Optional[float]:
@@ -130,6 +147,17 @@ def aggregate(rows: list[RepResult]) -> list[ModelAgg]:
             if r.iterations:
                 wall_per_iter.append(r.wall_clock_sec / r.iterations)
 
+        # Per-rep outcome counts, averaged across this model's reps. Use
+        # all reps (incl. status!=done) so a model that crashed mid-rep
+        # still gets credit for whatever outcomes it produced.
+        accepted_counts = [float(r.accepted) for r in reps if r.iterations]
+        rejected_counts = [float(r.rejected) for r in reps if r.iterations]
+        broken_counts   = [float(r.broken)   for r in reps if r.iterations]
+        broken_by_class_total: dict[str, int] = {}
+        for r in reps:
+            for cls, n in (r.broken_by_class or {}).items():
+                broken_by_class_total[cls] = broken_by_class_total.get(cls, 0) + int(n)
+
         out.append(ModelAgg(
             model=model,
             n_reps_done=len(done),
@@ -144,9 +172,13 @@ def aggregate(rows: list[RepResult]) -> list[ModelAgg]:
             mean_wall_clock_per_iter_sec=_safe_mean(wall_per_iter) if wall_per_iter else None,
             total_tokens_in=sum(r.total_tokens_in for r in reps),
             total_tokens_out=sum(r.total_tokens_out for r in reps),
+            accepted_mean=_safe_mean(accepted_counts) if accepted_counts else None,
+            rejected_mean=_safe_mean(rejected_counts) if rejected_counts else None,
+            broken_mean=_safe_mean(broken_counts) if broken_counts else None,
+            broken_by_class_total=broken_by_class_total,
         ))
 
-    out.sort(key=lambda a: (-(a.fitness_mean if a.fitness_mean is not None else -math.inf), a.model))
+    out.sort(key=lambda a: (-(a.fitness_mean or -math.inf), a.model))
     return out
 
 
@@ -301,12 +333,18 @@ def render_markdown(aggs: list[ModelAgg]) -> str:
     lines = [
         "# LLM hardware-development benchmark — leaderboard",
         "",
-        "Sorted by mean final CoreMark fitness (iter/s) across reps.",
-        "Each rep is one full `make N=10 K=3 TARGET=bench` tournament run "
-        "starting from the frozen `bench-fixture-v1` core.",
+        "Sorted by mean final CoreMark fitness (iter/s) across reps. Each rep "
+        "is one full tournament run (`make N=… K=… TARGET=bench`) starting "
+        "from the bench-fixture core.",
         "",
-        "| Model | Reps | Fitness mean ± std | Best | Iters→best | Pass-rate | $ cost | s/iter |",
-        "|---|---|---|---|---|---|---|---|",
+        "**Outcome columns** are per-rep means: how many of a rep's "
+        "iterations landed as `acc`epted improvements / `rej`ected "
+        "regressions / `brk`oken (didn't compile, didn't pass formal, "
+        "couldn't place on FPGA, ...). See *Failure modes* below for the "
+        "broken-class breakdown.",
+        "",
+        "| Model | Reps | Fitness mean ± std | Best | acc | rej | brk | Iters→best | Pass-rate | $ cost | s/iter |",
+        "|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for a in aggs:
         reps_str = f"{a.n_reps_done}/{a.n_reps_done + a.n_reps_failed}"
@@ -314,15 +352,148 @@ def render_markdown(aggs: list[ModelAgg]) -> str:
             f"| `{a.model}` | {reps_str} | "
             f"{fmt_fitness(a.fitness_mean, a.fitness_std)} | "
             f"{fmt_num(a.fitness_best)} | "
+            f"{fmt_num(a.accepted_mean, '.1f')} | "
+            f"{fmt_num(a.rejected_mean, '.1f')} | "
+            f"{fmt_num(a.broken_mean, '.1f')} | "
             f"{fmt_num(a.iters_to_best_mean, '.1f')} | "
             f"{fmt_pct(a.pass_rate)} | "
             f"${a.total_cost_usd:.2f} | "
             f"{fmt_num(a.mean_wall_clock_per_iter_sec, '.0f')} |"
         )
     lines.append("")
-    lines.append("Generated by `python -m tools.bench.report`. "
-                 "Source data: `bench/results.jsonl`.")
     return "\n".join(lines) + "\n"
+
+
+def render_failure_modes_section(aggs: list[ModelAgg]) -> str:
+    """Aggregate broken_by_class across all of each model's reps.
+
+    Pivots into a per-model section listing each broken-class with its
+    total occurrence count. Empty for models with zero broken iterations.
+    """
+    lines = ["## Failure modes", ""]
+    lines.append(
+        "Counts each model's broken iterations grouped by the orchestrator's "
+        "broken-class label. `formal_failed` = RTL compiled but didn't pass "
+        "riscv-formal (the suffix is the first failing check). "
+        "`implementation_compile_failed` = RTL didn't pass Verilator lint. "
+        "`hypothesis_gen_failed` = agent didn't write the expected YAML at "
+        "the slot's pre-allocated path. `placement_failed` = nextpnr "
+        "couldn't place the design on the target FPGA. "
+        "`make_failed_during_execution` = formal/run_all.sh's `*.sby` glob "
+        "found zero tasks at tally time (usually an agent wiped the checks "
+        "dir mid-run; the PID-suffix fix in `formal/run_all.sh` removes the "
+        "race but the class is still emitted if anything else corrupts the "
+        "checks dir)."
+    )
+    lines.append("")
+    any_broken = False
+    for a in aggs:
+        if not a.broken_by_class_total:
+            continue
+        any_broken = True
+        lines.append(f"### `{a.model}`")
+        lines.append("")
+        lines.append("| Class | Count |")
+        lines.append("|---|---|")
+        for cls, n in sorted(a.broken_by_class_total.items(),
+                              key=lambda kv: (-kv[1], kv[0])):
+            lines.append(f"| `{cls}` | {n} |")
+        lines.append("")
+    if not any_broken:
+        lines.append("_No broken iterations across any model — perfect run._")
+        lines.append("")
+    return "\n".join(lines)
+
+
+def render_per_rep_details(rows: list[RepResult]) -> str:
+    """One row per (model, rep) — the un-aggregated view.
+
+    For reps=1 runs the aggregated leaderboard collapses to the same
+    numbers anyway; this section keeps the per-rep detail visible so a
+    single bad rep in a 3-rep run doesn't average into invisibility.
+    """
+    lines = ["## Per-rep details", ""]
+    lines.append(
+        "Every `(model, rep)` row from `bench/results.jsonl`, "
+        "before per-model aggregation."
+    )
+    lines.append("")
+    lines.append(
+        "| Model | Rep | Status | Iters | acc | rej | brk | Baseline → Final | Δ% | Best | Wall (m) |"
+    )
+    lines.append("|---|---|---|---|---|---|---|---|---|---|---|")
+    rows_sorted = sorted(rows, key=lambda r: (r.model, r.rep))
+    for r in rows_sorted:
+        baseline = fmt_num(r.baseline_fitness)
+        final    = fmt_num(r.final_fitness)
+        delta    = fmt_pct(None if r.delta_pct is None else r.delta_pct / 100.0)
+        best     = fmt_num(r.best_fitness)
+        wall_min = (r.wall_clock_sec / 60.0) if r.wall_clock_sec else 0.0
+        lines.append(
+            f"| `{r.model}` | {r.rep} | {r.status} | {r.iterations} | "
+            f"{r.accepted} | {r.rejected} | {r.broken} | "
+            f"{baseline} → {final} | {delta} | {best} | "
+            f"{wall_min:.1f} |"
+        )
+    lines.append("")
+    return "\n".join(lines)
+
+
+def render_winning_hypotheses(rows: list[RepResult], results_dir: Path) -> str:
+    """For each (model, rep), list every accepted-improvement entry's
+    title from its preserved log.jsonl. The runner copies log.jsonl into
+    bench/<model>/rep<N>/log.jsonl after the rep finalizes.
+
+    This is the publishable narrative: what each model actually *did* to
+    achieve its fitness gain. The baseline retest entry (round_id=0) is
+    elided since its title is always the boring "Baseline retest for ...".
+    """
+    lines = ["## Winning hypotheses", ""]
+    lines.append(
+        "Each model's accepted-improvement entries (the hypotheses that "
+        "actually moved the fitness needle), in order. Pulled from the "
+        "preserved `bench/<model>/rep<N>/log.jsonl`."
+    )
+    lines.append("")
+    rows_sorted = sorted(rows, key=lambda r: (r.model, r.rep))
+    any_wins = False
+    for r in rows_sorted:
+        log_path = results_dir / r.model / f"rep{r.rep}" / "log.jsonl"
+        if not log_path.is_file():
+            continue
+        entries: list[dict] = []
+        for raw in log_path.read_text().splitlines():
+            s = raw.strip()
+            if not s:
+                continue
+            try:
+                entries.append(json.loads(s))
+            except json.JSONDecodeError:
+                continue
+        wins = [e for e in entries
+                if e.get("outcome") in ("improvement", "accepted")
+                and e.get("round_id") != 0]
+        if not wins:
+            continue
+        any_wins = True
+        lines.append(f"### `{r.model}` rep {r.rep}")
+        lines.append("")
+        for w in wins:
+            title    = w.get("title") or w.get("id") or "<untitled>"
+            fit      = w.get("fitness")
+            delta    = w.get("delta_pct")
+            cat      = w.get("category") or ""
+            round_id = w.get("round_id")
+            fit_str   = fmt_num(fit) if fit is not None else "?"
+            delta_str = f"{delta:+.1f}%" if isinstance(delta, (int, float)) else ""
+            cat_str   = f" _{cat}_" if cat else ""
+            rid_str   = f" R{round_id}" if round_id is not None else ""
+            lines.append(f"- **{title}** — fitness {fit_str} ({delta_str}){cat_str}{rid_str}")
+        lines.append("")
+    if not any_wins:
+        lines.append("_No accepted improvements recorded across any rep._")
+        lines.append("")
+    return "\n".join(lines)
 
 
 def render_csv(aggs: list[ModelAgg], out: Path) -> None:
@@ -365,8 +536,16 @@ def main() -> int:
     args.out.mkdir(parents=True, exist_ok=True)
     md_path = args.out / "LEADERBOARD.md"
     csv_path = args.out / "leaderboard.csv"
-    md = render_markdown(aggs) + render_comparison_section(rows)
-    md_path.write_text(md)
+    md_parts = [
+        render_markdown(aggs),
+        render_comparison_section(rows),
+        render_failure_modes_section(aggs),
+        render_per_rep_details(rows),
+        render_winning_hypotheses(rows, args.out),
+        "Generated by `python -m tools.bench.report`. "
+        "Source data: `bench/results.jsonl` + per-rep `bench/<model>/rep<N>/log.jsonl`.\n",
+    ]
+    md_path.write_text("\n".join(md_parts))
     render_csv(aggs, csv_path)
 
     print(f"wrote {md_path}")

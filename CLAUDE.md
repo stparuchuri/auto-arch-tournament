@@ -8,7 +8,7 @@ checks** to make a hypothesis pass.
 
 | # | Invariant                                                                                                  | Enforced by                                  |
 |---|------------------------------------------------------------------------------------------------------------|----------------------------------------------|
-| 1 | Top module `core` exposes a 2-channel RVFI port set: every `io_rvfi_<field>` has `_0` and `_1` variants of the same width as its scalar predecessor. Channel 0 carries the older of two simultaneous retirements; channel 1 the younger. Single-retire cycles MUST place the retirement on channel 0 with `io_rvfi_valid_1 = 0`. All channel-1 ports MUST be driven (no X/Z); tie unused fields to `'0`. | cocotb smoke test, `riscv-formal` wrapper at NRET=2 |
+| 1 | Top module `core` exposes an RVFI port set selected by `cores/<target>/core.yaml`'s `nret` field (default 2). **nret=1**: only `io_rvfi_*_0` ports exist; the single retirement always lands on channel 0. **nret=2**: both `io_rvfi_*_0` and `io_rvfi_*_1` exist; channel 0 carries the older of two simultaneous retirements, channel 1 the younger; single-retire cycles MUST place the retirement on channel 0 with `io_rvfi_valid_1 = 0`; all channel-1 ports MUST be driven (no X/Z, tie unused fields to `'0`). | cocotb smoke test, `riscv-formal` wrapper (`wrapper.sv` for nret=2, `wrapper_si.sv` for nret=1) |
 | 2 | `rvfi_trap = 1` iff the retiring instruction is illegal per RV32IM (decoder default = illegal)             | `riscv-formal ill` check                     |
 | 3 | EBREAK is the *only* SYSTEM (opcode `0x73`) instruction the core treats as valid; ECALL / CSR / MRET trap  | dedicated decoder unit tests                 |
 | 4 | `rvfi_order` strictly monotonic +1 per retirement across both channels combined (no gaps, no duplicates). When both channels retire in the same cycle, channel-0 order = N and channel-1 order = N+1.                                       | `riscv-formal unique` check                  |
@@ -28,12 +28,14 @@ improve fitness", not "what eval relaxations would let this RTL pass".
 
 - `tools/` — orchestrator, worktree manager, eval gates.
 - `schemas/` — hypothesis and eval-result JSON schemas.
-- `formal/wrapper.sv`, `formal/checks.cfg`, `formal/run_all.sh` — they
-  define the correctness contract.
+- `formal/wrapper.sv`, `formal/wrapper_si.sv`, `formal/checks.cfg`,
+  `formal/checks_si.cfg`, `formal/run_all.sh` — they define the
+  correctness contract (dual-channel + single-issue variants).
 - `formal/riscv-formal/` — vendored upstream submodule.
 - `bench/programs/` — selftest, crt0, link.ld, CoreMark sources, portme.
-- `fpga/CoreBench.sv`, `fpga/scripts/*`, `fpga/constraints/*` — they define
-  the FPGA fitness contract.
+- `fpga/core_bench.sv`, `fpga/core_bench_si.sv`, `fpga/scripts/*`,
+  `fpga/constraints/*` — they define the FPGA fitness contract
+  (dual-channel + single-issue variants).
 - `test/cosim/main.cpp`, `test/cosim/reference.py`, `test/cosim/run_cosim.py`
   — Verilator harness + Python ISS = the cosim contract.
 - This file (`CLAUDE.md`), `ARCHITECTURE.md`, `README.md`, `setup.sh`,
@@ -48,10 +50,13 @@ orchestrator may also update `cores/<TARGET>/core.yaml` (current:
 section only).
 
 The only top-level invariant on `rtl/core.sv` is that it exposes a port
-named `core` whose IO matches the RVFI wrapper's expectations
-(`io_imemAddr`, `io_imemData`, `io_imemReady`, `io_dmemAddr`, `io_dmemRData`,
-`io_dmemWData`, `io_dmemWEn`, `io_dmemREn`, `io_dmemReady`, all
-`io_rvfi_*_0` and `io_rvfi_*_1` fields, `clock`, `reset`).
+named `core` whose IO matches the RVFI wrapper's expectations: the
+imem/dmem port set (`io_imemAddr`, `io_imemData`, `io_imemReady`,
+`io_dmemAddr`, `io_dmemRData`, `io_dmemWData`, `io_dmemWEn`,
+`io_dmemREn`, `io_dmemReady`), `clock`, `reset`, and the RVFI port
+set determined by `core.yaml`'s `nret` field — only `io_rvfi_*_0`
+fields for `nret: 1`; both `io_rvfi_*_0` and `io_rvfi_*_1` for
+`nret: 2` (default).
 
 A hypothesis may:
 - Merge stages into a single file or split a module across many.
@@ -62,7 +67,8 @@ A hypothesis may:
 - Rewrite any `rtl/` module from scratch.
 
 It must not:
-- Change `core`'s top-level IO shape — specifically: the imem/dmem port set, and the **2-channel** RVFI port set with field naming `io_rvfi_<field>_<n>` for n ∈ {0,1}, channel-0-older convention, and the single-retire-on-channel-0 rule.
+- Change `core`'s top-level IO shape relative to the `nret` value declared in `core.yaml` — specifically: the imem/dmem port set, and the RVFI port set (only `_0` fields for `nret: 1`; both `_0` and `_1` for `nret: 2` with channel-0-older convention and the single-retire-on-channel-0 rule).
+- Change `core.yaml`'s `nret` value mid-hypothesis. nret picks the formal/FPGA wrappers used by eval; flipping it is a contract-level change, not a per-hypothesis decision.
 - Weaken any invariant in the table above.
 - Modify any path in the don't-touch list.
 - Edit any other core's directory (cores/<other>/...). Each loop is
@@ -73,34 +79,54 @@ It must not:
 This file is the contract. `docs/bootstrap-prompt.md` is the long-form
 plan that produced it.
 
-### Superscalar / NRET=2 contract
+### RVFI contract: nret=1 vs nret=2
 
-The RVFI port set is fixed at NRET=2 to permit dual-issue hypotheses
-without contract churn. Single-issue cores tie channel 1 off
-(`io_rvfi_valid_1 = 0` plus the rest of channel 1's fields driven to
-`'0`) — about 21 lines of `assign io_rvfi_*_1 = '0;`. Triple-issue or
-wider would be a future contract bump (NRET=K), not a per-hypothesis
-decision.
+Cores declare their retirement width in `cores/<TARGET>/core.yaml`
+under the top-level `nret` field. Two values are supported; the
+default is 2 for backward compat with cores authored before this
+field existed.
 
-The contract-side files that this widening touches: `rtl/core.sv`
-(port set), `formal/wrapper.sv` (macro packing), `formal/checks.cfg`
-(`nret 2`), `formal/run_all.sh` (vacuous-pass tally — see below),
-`fpga/core_bench.sv` (bench wiring), `test/cosim/main.cpp`
-(per-channel drain), and `test/test_pipeline.py` (cocotb probes use
-`_0` suffix).
+- `nret: 1` — single-issue. Top module exposes only `io_rvfi_*_0`
+  ports (no `_1`). Orchestrator wires `formal/wrapper_si.sv` +
+  `formal/checks_si.cfg` for formal and `fpga/core_bench_si.sv` for
+  FPGA Fmax. No `_1` tie-offs to write; no vacuous-pass machinery
+  involved. This is the recommended shape for any in-order or
+  single-retire pipeline.
+- `nret: 2` — dual-issue (or single-issue cores that opt into the
+  wider contract). Top module exposes both `io_rvfi_*_0` and
+  `io_rvfi_*_1` with the channel-0-older convention.
+  `formal/wrapper.sv` + `formal/checks.cfg` and `fpga/core_bench.sv`
+  apply. Single-issue cores declared as `nret: 2` must still tie off
+  channel 1 (`io_rvfi_valid_1 = 0` plus all other `_1` fields driven
+  to `'0`) — about 21 `assign io_rvfi_*_1 = '0;` lines.
 
-Vacuous-pass on channel 1: `riscv-formal`'s per-channel BMC checks
-assume `rvfi_valid_<ch>=1` to test their property. When a single-issue
-hypothesis hardwires `io_rvfi_valid_1 = 0`, that assumption becomes
-unsatisfiable and SBY exits `Status: PREUNSAT` (rc=16) — technically a
-vacuous pass over the empty set of ch1-valid traces. `formal/run_all.sh`
-counts `*_ch1` PREUNSAT as pass, so single-issue hypotheses pass formal
-naturally and dual-issue hypotheses (where ch1 is sometimes valid) get
-the regular `DONE (PASS` outcome on the same checks. Caveat: a
-hypothesis that *claims* dual-issue but whose channel 1 silently never
-retires would also vacuous-pass these checks; the FPGA-fitness IPC and
-the existing cover statement (which fires on either channel retiring)
-catch the fully-stuck case.
+Triple-issue or wider would be a future contract bump (NRET=K), not a
+per-hypothesis decision.
+
+Contract-side files keyed off `nret`:
+- nret=1: `formal/wrapper_si.sv`, `formal/checks_si.cfg`,
+  `fpga/core_bench_si.sv`.
+- nret=2: `formal/wrapper.sv`, `formal/checks.cfg`,
+  `fpga/core_bench.sv`.
+- shared: `formal/run_all.sh`, `fpga/scripts/synth.tcl`,
+  `test/cosim/main.cpp` (per-channel drain that gracefully no-ops
+  on unused channels).
+
+Vacuous-pass on channel 1 (`nret: 2` only): `riscv-formal`'s
+per-channel BMC checks assume `rvfi_valid_<ch>=1` to test their
+property. When a single-issue hypothesis declared as `nret: 2`
+hardwires `io_rvfi_valid_1 = 0`, that assumption becomes
+unsatisfiable and SBY exits `Status: PREUNSAT` (rc=16) — technically
+a vacuous pass over the empty set of ch1-valid traces.
+`formal/run_all.sh` counts `*_ch1` PREUNSAT as pass, so such
+hypotheses pass formal naturally and true dual-issue hypotheses
+(where ch1 is sometimes valid) get the regular `DONE (PASS` outcome
+on the same checks. Caveat: a hypothesis that *claims* dual-issue
+but whose channel 1 silently never retires would also vacuous-pass
+these checks; the FPGA-fitness IPC and the cover statement (which
+fires on either channel retiring) catch the fully-stuck case.
+Cores declared `nret: 1` sidestep this machinery entirely —
+checks_si.cfg generates no `_ch1` tasks at all.
 
 ## Caveat: `make formal` runs ALTOPS-mode by default
 

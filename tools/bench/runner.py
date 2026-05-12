@@ -705,109 +705,60 @@ def parse_cost_from_log(log_path: Path, provider: str = "codex") -> tuple[int, i
 
 def summarize_run(log_jsonl: Path, agent_log: Path,
                   provider: str = "codex") -> dict:
-    """Compute the per-rep summary from an experiments/log.jsonl.
+    """Per-rep summary, derived from orchestrator-emitted run_summary.json.
 
-    Schema mirrors the spec's `bench/results.jsonl` row.
+    The orchestrator writes cores/<target>/experiments/run_summary.json
+    after every round and at end of main(), so a finalized rep dir always
+    has it. summarize_run loads that file and folds in provider-specific
+    token/cost counts from agent.log.
+
+    If run_summary.json is absent or unreadable (orchestrator crashed
+    before writing the first one, or pre-Phase-2 orchestrator), the row
+    notes the missing summary so the leaderboard can flag the rep as
+    not-summarizable rather than silently scoring 0/0/0.
     """
-    iterations = 0
-    accepted = 0
-    rejected = 0
-    broken = 0
-    final_fitness = None
-    baseline_fitness = None
-    best_round = None
-    best_fitness = None
-    # Track per-error-class broken counts for the NeurIPS-style report.
-    # Keys are the leading error class (formal_failed / cosim_failed /
-    # hypothesis_gen_failed / build_failed / sandbox_violation /
-    # implementation_compile_failed / placement_failed / ...). The bare
-    # error string after the colon is dropped — class is what matters
-    # for cross-run aggregation.
-    broken_by_class: dict[str, int] = {}
-
-    if log_jsonl.is_file():
-        for raw in log_jsonl.read_text().splitlines():
-            s = raw.strip()
-            if not s:
-                continue
-            try:
-                row = json.loads(s)
-            except json.JSONDecodeError:
-                continue
-            iterations += 1
-            outcome = row.get("outcome", "")
-            # Orchestrator emits 'improvement' / 'regression' / 'broken'.
-            # Older code paths emit 'accepted' / 'rejected' / 'broken'.
-            # Map both to a uniform success/failure split so the leaderboard
-            # reports correctly.
-            if outcome in ("accepted", "improvement"):
-                accepted += 1
-            elif outcome in ("rejected", "regression"):
-                rejected += 1
-            elif outcome == "broken":
-                broken += 1
-                err = (row.get("error") or "").strip()
-                cls = err.split(":", 1)[0] if err else "unknown"
-                broken_by_class[cls] = broken_by_class.get(cls, 0) + 1
-            fit = row.get("fitness") or row.get("coremark") or row.get("coremark_iter_s")
-            if isinstance(fit, (int, float)):
-                if best_fitness is None or fit > best_fitness:
-                    best_fitness = float(fit)
-                    best_round = iterations
-                if outcome in ("accepted", "improvement"):
-                    final_fitness = float(fit)
-            if baseline_fitness is None:
-                # Three resolution paths, in priority order:
-                #   1. Explicit baseline_fitness/baseline field (legacy schema).
-                #   2. The orchestrator-emitted baseline retest entry, which
-                #      lives at round_id=0 with outcome='improvement' and
-                #      delta_pct=0 — its `fitness` IS the run's baseline.
-                #   3. Derive from any row that has both fitness and a
-                #      non-zero delta_pct: baseline = fit / (1 + d/100).
-                bf = row.get("baseline_fitness") or row.get("baseline")
-                if isinstance(bf, (int, float)):
-                    baseline_fitness = float(bf)
-                elif (row.get("round_id") == 0
-                      and outcome == "improvement"
-                      and isinstance(fit, (int, float))):
-                    baseline_fitness = float(fit)
-
-    # Last-resort delta-pct derivation, only if (1) and (2) didn't catch.
-    if baseline_fitness is None and log_jsonl.is_file():
-        for raw in log_jsonl.read_text().splitlines():
-            s = raw.strip()
-            if not s:
-                continue
-            try:
-                row = json.loads(s)
-            except json.JSONDecodeError:
-                continue
-            d = row.get("delta_pct")
-            f = row.get("fitness")
-            if (isinstance(d, (int, float)) and d != 0
-                    and isinstance(f, (int, float)) and f > 0):
-                baseline_fitness = float(f) / (1.0 + float(d) / 100.0)
-                break
-
-    delta_pct = None
-    if final_fitness is not None and baseline_fitness:
-        delta_pct = (final_fitness - baseline_fitness) / baseline_fitness * 100.0
-
     toks_in, toks_out, cost = parse_cost_from_log(agent_log, provider=provider)
+    summary_path = log_jsonl.parent / "run_summary.json"
+
+    s: dict | None = None
+    if summary_path.is_file():
+        try:
+            s = json.loads(summary_path.read_text())
+        except (json.JSONDecodeError, OSError):
+            s = None
+
+    if not isinstance(s, dict):
+        return {
+            "iterations": 0,
+            "accepted": 0,
+            "rejected": 0,
+            "broken": 0,
+            "broken_by_class": {},
+            "final_fitness": None,
+            "baseline_fitness": None,
+            "best_fitness": None,
+            "best_round": None,
+            "delta_pct": None,
+            "total_tokens_in": toks_in,
+            "total_tokens_out": toks_out,
+            "total_cost_usd": cost,
+            "summary_missing": True,
+        }
+
     return {
-        "iterations": iterations,
-        "accepted": accepted,
-        "rejected": rejected,
-        "broken": broken,
-        "broken_by_class": broken_by_class,
-        "final_fitness": final_fitness,
-        "baseline_fitness": baseline_fitness,
-        "best_fitness": best_fitness,
-        "best_round": best_round,
-        "delta_pct": delta_pct,
+        "iterations":      int(s.get("iterations", 0) or 0),
+        "accepted":        int(s.get("accepted", 0) or 0),
+        "rejected":        int(s.get("rejected", 0) or 0),
+        "broken":          int(s.get("broken", 0) or 0),
+        "broken_by_class": dict(s.get("broken_by_class") or {}),
+        "final_fitness":   s.get("final_fitness"),
+        "baseline_fitness":s.get("baseline_fitness"),
+        "best_fitness":    s.get("best_fitness"),
+        "best_round":      s.get("best_round"),
+        "delta_pct":       s.get("delta_pct"),
         "total_tokens_in": toks_in,
-        "total_tokens_out": toks_out,
-        "total_cost_usd": cost,
+        "total_tokens_out":toks_out,
+        "total_cost_usd":  cost,
     }
 
 
@@ -872,14 +823,36 @@ def run_one_job(
         _finalize(row, started, results_jsonl)
         return row
 
-    # 3. Build env, kick `make`, watchdog the wall-clock + cost.
+    # 3. Build env, kick the orchestrator, watchdog the wall-clock + cost.
     env = make_env_for_job(job, clone, keys)
     if not job.model.oauth and job.model.key_env and not env.get(job.model.key_env):
         row["notes"] = f"missing API key env var {job.model.key_env}"
         _finalize(row, started, results_jsonl)
         return row
 
-    cmd = ["make", f"N={n}", f"K={k}", "TARGET=bench", "loop", "WORKTREE="]
+    # Invoke tools.orchestrator directly instead of routing through the
+    # Makefile `loop:` rule. The Makefile rule used to assemble exactly
+    # this command — N/K/TARGET → --iterations/--tournament-size/--target
+    # plus AGENT_PROVIDER from env — so going direct kills a layer of
+    # contract drift (every new orchestrator flag would otherwise need a
+    # mirror in the Makefile rule too). AGENT_PROVIDER is already set by
+    # make_env_for_job in `env`; the orchestrator reads it directly.
+    #
+    # PWD env var must be updated to the new cwd. subprocess.Popen with
+    # cwd= sets the child's actual cwd, but the inherited env's `PWD`
+    # still points at the runner's cwd (the main repo). make implicitly
+    # exported PWD=<rule cwd> when it ran the orchestrator command, so
+    # the bug was invisible through the make middleman. Downstream tools
+    # that read $PWD instead of getcwd() — opencode is one — would land
+    # in the main repo and write hypothesis YAMLs there instead of into
+    # the clone. Caught live during the N=1 K=3 validation: all 3 slots
+    # broke as hypothesis_gen_failed because the agent's YAMLs ended up
+    # at /Users/.../main-repo/cores/bench/experiments/hypotheses/ instead
+    # of the clone's matching path.
+    env["PWD"] = str(clone.resolve())
+    cmd = [sys.executable, "-m", "tools.orchestrator",
+           "--iterations", str(n), "--tournament-size", str(k),
+           "--target", "bench"]
     # Stream subprocess stdout+stderr to a per-job log file. Using
     # `stdout=subprocess.PIPE` without a draining thread deadlocks the
     # orchestrator once it fills the OS pipe buffer (~64 KB on macOS),
@@ -970,6 +943,13 @@ def run_one_job(
         (out_dir / "log.jsonl").write_text("\n".join(git_lines) + "\n")
     elif log_jsonl_path.is_file():
         shutil.copy2(log_jsonl_path, out_dir / "log.jsonl")
+
+    # Copy orchestrator-emitted run_summary.json if present. summarize_run
+    # below prefers this file over re-parsing log.jsonl; copying keeps the
+    # rep's results directory self-contained for offline forensics.
+    run_summary_src = clone / "cores" / "bench" / "experiments" / "run_summary.json"
+    if run_summary_src.is_file():
+        shutil.copy2(run_summary_src, out_dir / "run_summary.json")
 
     agent_concat = collect_agent_logs(clone)
     if agent_concat.is_file():

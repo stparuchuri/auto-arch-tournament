@@ -30,11 +30,11 @@ DIFF_MAX_CHARS = 8000
 
 
 def lessons_path(target: str) -> Path:
-    return Path("cores") / target / "LESSONS.md"
+    return (Path.cwd() / "cores" / target / "LESSONS.md").resolve()
 
 
 def scribe_log_path(target: str) -> Path:
-    return Path("cores") / target / "experiments" / ".scribe.log"
+    return (Path.cwd() / "cores" / target / "experiments" / ".scribe.log").resolve()
 
 
 def _allowed_re(target: str) -> 're.Pattern':

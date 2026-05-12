@@ -15,7 +15,28 @@ import os, subprocess, json, sys
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+from tools.eval.formal import read_nret
+
 BENCH_DIR = Path("bench/programs")
+
+
+def _build_cosim_env(worktree, target: str | None,
+                     base_env: dict | None = None) -> dict:
+    """Build the env for `bash test/cosim/build.sh`.
+
+    Reads cores/<target>/core.yaml's `nret` (defaults to 2) and injects
+    NRET=<n> so build.sh can pass `-DNRET=<n>` to verilator. main.cpp's
+    channel-1 drain is compiled out under `#if NRET < 2`, so a single-
+    issue core (no `_1` ports) builds cleanly.
+    """
+    worktree_path = Path(worktree).resolve()
+    env = dict(base_env) if base_env is not None else os.environ.copy()
+    if target is None:
+        return env
+    env["RTL_DIR"] = f"cores/{target}/rtl"
+    env["OBJ_DIR"] = f"cores/{target}/obj_dir"
+    env["NRET"] = str(read_nret(worktree_path / "cores" / target / "core.yaml"))
+    return env
 
 def run_one(elf: Path, sim_bin: str, worktree: str, env: dict | None = None) -> dict:
     """Run cosim for a single ELF using the run_cosim script."""
