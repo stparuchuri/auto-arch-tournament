@@ -14,8 +14,11 @@
 # Env vars (orchestrator-driven, override $1 and defaults):
 #   WRAPPER     — path to wrapper SV (default formal/wrapper.sv)
 #   CHECKS_CFG  — path to checks config (default formal/checks.cfg)
-# tools/eval/formal.py picks WRAPPER=wrapper_si.sv + CHECKS_CFG=checks_si.cfg
-# for cores whose core.yaml declares nret: 1.
+# When BOTH are unset, the script auto-detects nret from
+# cores/$CORE_NAME/core.yaml: nret=1 routes to wrapper_si.sv +
+# checks_si.cfg; nret=2 (or absent) uses the defaults. Agents
+# invoking `bash formal/run_all.sh` directly therefore get the
+# right wrapper without needing to know the env-var plumbing.
 set -e
 
 if [ -z "${RTL_DIR:-}" ] || [ -z "${CORE_NAME:-}" ]; then
@@ -32,6 +35,31 @@ CORE_DIR="$RISCV_FORMAL/cores/$CORE_NAME"
 # silent crash inside genchecks or a yosys error that doesn't match the
 # stdout grep filter is still recoverable post-mortem.
 LOG="$SCRIPT_DIR/last_run.log"
+
+# Auto-detect single-issue cores from core.yaml when WRAPPER + CHECKS_CFG
+# are both unset and $1 (checks-cfg-path) wasn't given either. Explicit
+# env vars or $1 still win. Uses python3 to parse YAML robustly — bash
+# grep would mis-handle quoted/indented variants and break on the next
+# yaml schema bump.
+CORE_YAML="$PROJECT_ROOT/cores/$CORE_NAME/core.yaml"
+if [ -z "${WRAPPER:-}" ] && [ -z "${CHECKS_CFG:-}" ] && [ -z "${1:-}" ] \
+   && [ -f "$CORE_YAML" ]; then
+    # Pass the path via env var so the python literal stays free of any
+    # bash-substituted strings that could break on quoting / spaces.
+    NRET=$(CORE_YAML="$CORE_YAML" python3 -c '
+import os, yaml
+try:
+    d = yaml.safe_load(open(os.environ["CORE_YAML"]).read()) or {}
+    print(int(d.get("nret", 2)))
+except Exception:
+    print(2)
+' 2>/dev/null)
+    if [ "$NRET" = "1" ]; then
+        WRAPPER="$SCRIPT_DIR/wrapper_si.sv"
+        CHECKS_CFG="$SCRIPT_DIR/checks_si.cfg"
+        echo "[run_all.sh] auto-detected nret=1 from $CORE_YAML; using wrapper_si.sv + checks_si.cfg"
+    fi
+fi
 
 CHECKS_CFG="${CHECKS_CFG:-${1:-$SCRIPT_DIR/checks.cfg}}"
 WRAPPER="${WRAPPER:-$SCRIPT_DIR/wrapper.sv}"
