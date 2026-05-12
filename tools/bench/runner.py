@@ -705,139 +705,60 @@ def parse_cost_from_log(log_path: Path, provider: str = "codex") -> tuple[int, i
 
 def summarize_run(log_jsonl: Path, agent_log: Path,
                   provider: str = "codex") -> dict:
-    """Compute the per-rep summary from an experiments/log.jsonl.
+    """Per-rep summary, derived from orchestrator-emitted run_summary.json.
 
-    Schema mirrors the spec's `bench/results.jsonl` row. When the
-    orchestrator has emitted a run_summary.json alongside log.jsonl
-    (since the Phase 2 contract refactor), use it directly — that file
-    is the typed contract the orchestrator owns. Otherwise fall back to
-    re-parsing log.jsonl ourselves, which is what every orchestrator
-    version prior to write_run_summary needed and we preserve for
-    backward compat with old results dirs.
+    The orchestrator writes cores/<target>/experiments/run_summary.json
+    after every round and at end of main(), so a finalized rep dir always
+    has it. summarize_run loads that file and folds in provider-specific
+    token/cost counts from agent.log.
+
+    If run_summary.json is absent or unreadable (orchestrator crashed
+    before writing the first one, or pre-Phase-2 orchestrator), the row
+    notes the missing summary so the leaderboard can flag the rep as
+    not-summarizable rather than silently scoring 0/0/0.
     """
-    # Token counts always come from agent.log (provider-specific cost
-    # parsing); not in scope of run_summary.json.
     toks_in, toks_out, cost = parse_cost_from_log(agent_log, provider=provider)
-
     summary_path = log_jsonl.parent / "run_summary.json"
+
+    s: dict | None = None
     if summary_path.is_file():
         try:
             s = json.loads(summary_path.read_text())
         except (json.JSONDecodeError, OSError):
             s = None
-        if isinstance(s, dict):
-            return {
-                "iterations":      int(s.get("iterations", 0) or 0),
-                "accepted":        int(s.get("accepted", 0) or 0),
-                "rejected":        int(s.get("rejected", 0) or 0),
-                "broken":          int(s.get("broken", 0) or 0),
-                "broken_by_class": dict(s.get("broken_by_class") or {}),
-                "final_fitness":   s.get("final_fitness"),
-                "baseline_fitness":s.get("baseline_fitness"),
-                "best_fitness":    s.get("best_fitness"),
-                "best_round":      s.get("best_round"),
-                "delta_pct":       s.get("delta_pct"),
-                "total_tokens_in": toks_in,
-                "total_tokens_out":toks_out,
-                "total_cost_usd":  cost,
-            }
 
-    # Fallback: pre-Phase-2 orchestrator versions don't emit run_summary.json,
-    # so we re-derive everything from log.jsonl here. Same schema as the
-    # orchestrator-side write_run_summary, kept as the legacy path.
-    iterations = 0
-    accepted = 0
-    rejected = 0
-    broken = 0
-    final_fitness = None
-    baseline_fitness = None
-    best_round = None
-    best_fitness = None
-    broken_by_class: dict[str, int] = {}
+    if not isinstance(s, dict):
+        return {
+            "iterations": 0,
+            "accepted": 0,
+            "rejected": 0,
+            "broken": 0,
+            "broken_by_class": {},
+            "final_fitness": None,
+            "baseline_fitness": None,
+            "best_fitness": None,
+            "best_round": None,
+            "delta_pct": None,
+            "total_tokens_in": toks_in,
+            "total_tokens_out": toks_out,
+            "total_cost_usd": cost,
+            "summary_missing": True,
+        }
 
-    if log_jsonl.is_file():
-        for raw in log_jsonl.read_text().splitlines():
-            s = raw.strip()
-            if not s:
-                continue
-            try:
-                row = json.loads(s)
-            except json.JSONDecodeError:
-                continue
-            iterations += 1
-            outcome = row.get("outcome", "")
-            # Orchestrator emits 'improvement' / 'regression' / 'broken'.
-            # Older code paths emit 'accepted' / 'rejected' / 'broken'.
-            # Map both to a uniform success/failure split so the leaderboard
-            # reports correctly.
-            if outcome in ("accepted", "improvement"):
-                accepted += 1
-            elif outcome in ("rejected", "regression"):
-                rejected += 1
-            elif outcome == "broken":
-                broken += 1
-                err = (row.get("error") or "").strip()
-                cls = err.split(":", 1)[0] if err else "unknown"
-                broken_by_class[cls] = broken_by_class.get(cls, 0) + 1
-            fit = row.get("fitness") or row.get("coremark") or row.get("coremark_iter_s")
-            if isinstance(fit, (int, float)):
-                if best_fitness is None or fit > best_fitness:
-                    best_fitness = float(fit)
-                    best_round = iterations
-                if outcome in ("accepted", "improvement"):
-                    final_fitness = float(fit)
-            if baseline_fitness is None:
-                # Three resolution paths, in priority order:
-                #   1. Explicit baseline_fitness/baseline field (legacy schema).
-                #   2. The orchestrator-emitted baseline retest entry, which
-                #      lives at round_id=0 with outcome='improvement' and
-                #      delta_pct=0 — its `fitness` IS the run's baseline.
-                #   3. Derive from any row that has both fitness and a
-                #      non-zero delta_pct: baseline = fit / (1 + d/100).
-                bf = row.get("baseline_fitness") or row.get("baseline")
-                if isinstance(bf, (int, float)):
-                    baseline_fitness = float(bf)
-                elif (row.get("round_id") == 0
-                      and outcome == "improvement"
-                      and isinstance(fit, (int, float))):
-                    baseline_fitness = float(fit)
-
-    # Last-resort delta-pct derivation, only if (1) and (2) didn't catch.
-    if baseline_fitness is None and log_jsonl.is_file():
-        for raw in log_jsonl.read_text().splitlines():
-            s = raw.strip()
-            if not s:
-                continue
-            try:
-                row = json.loads(s)
-            except json.JSONDecodeError:
-                continue
-            d = row.get("delta_pct")
-            f = row.get("fitness")
-            if (isinstance(d, (int, float)) and d != 0
-                    and isinstance(f, (int, float)) and f > 0):
-                baseline_fitness = float(f) / (1.0 + float(d) / 100.0)
-                break
-
-    delta_pct = None
-    if final_fitness is not None and baseline_fitness:
-        delta_pct = (final_fitness - baseline_fitness) / baseline_fitness * 100.0
-
-    # toks_in / toks_out / cost computed at top of function via parse_cost_from_log.
     return {
-        "iterations": iterations,
-        "accepted": accepted,
-        "rejected": rejected,
-        "broken": broken,
-        "broken_by_class": broken_by_class,
-        "final_fitness": final_fitness,
-        "baseline_fitness": baseline_fitness,
-        "best_fitness": best_fitness,
-        "best_round": best_round,
-        "delta_pct": delta_pct,
+        "iterations":      int(s.get("iterations", 0) or 0),
+        "accepted":        int(s.get("accepted", 0) or 0),
+        "rejected":        int(s.get("rejected", 0) or 0),
+        "broken":          int(s.get("broken", 0) or 0),
+        "broken_by_class": dict(s.get("broken_by_class") or {}),
+        "final_fitness":   s.get("final_fitness"),
+        "baseline_fitness":s.get("baseline_fitness"),
+        "best_fitness":    s.get("best_fitness"),
+        "best_round":      s.get("best_round"),
+        "delta_pct":       s.get("delta_pct"),
         "total_tokens_in": toks_in,
-        "total_tokens_out": toks_out,
-        "total_cost_usd": cost,
+        "total_tokens_out":toks_out,
+        "total_cost_usd":  cost,
     }
 
 

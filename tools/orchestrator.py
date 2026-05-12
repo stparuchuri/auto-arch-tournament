@@ -788,6 +788,12 @@ def main():
     # and the target's RTL only exists on that branch.
     target_branch = _active_branch()
 
+    # run_summary.json is the typed contract the bench runner consumes.
+    # Emit it AFTER EACH ROUND (not only at end-of-main) so that a
+    # crash mid-loop still leaves a usable partial summary on disk —
+    # the runner now relies on the file existing rather than re-parsing
+    # log.jsonl as a fallback (Phase 2 cleanup).
+    summary_path = LOG_PATH.parent / "run_summary.json"
     for r in range(args.iterations):
         round_id = next_round + r
         log = read_log()
@@ -798,14 +804,10 @@ def main():
             target_branch=target_branch,
             target=args.target,
         )
+        write_run_summary(log_path=LOG_PATH, out_path=summary_path)
 
-    # Emit run_summary.json — the typed contract the bench runner consumes.
-    # Owning the summary schema here kills the contract-drift surface where
-    # runner.summarize_run used to re-parse log.jsonl with its own
-    # classification logic (rejected vs regression, broken_by_class
-    # derivation, baseline anchor resolution). Written every run so a
-    # subsequent --report or bench-runner invocation gets a fresh tally.
-    summary_path = LOG_PATH.parent / "run_summary.json"
+    # Final emit even if --iterations 0 (the loop didn't run) so the runner
+    # never finds an empty experiments/ dir without a summary file.
     write_run_summary(log_path=LOG_PATH, out_path=summary_path)
 
 if __name__ == '__main__':

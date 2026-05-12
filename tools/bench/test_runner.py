@@ -218,17 +218,23 @@ def test_parse_opencode_cost_handles_missing_file(tmp_path: Path):
 # ---- summarize_run -----------------------------------------------------
 
 
-def test_summarize_run_basic(tmp_path: Path):
+def test_summarize_run_reads_run_summary_json(tmp_path: Path):
+    """summarize_run loads the orchestrator-emitted run_summary.json
+    verbatim and folds in token counts from agent.log."""
     log = tmp_path / "log.jsonl"
-    log.write_text(
-        json.dumps({"outcome": "rejected", "fitness": 290.0,
-                    "baseline_fitness": 300.0}) + "\n"
-        + json.dumps({"outcome": "accepted", "fitness": 305.0,
-                    "baseline_fitness": 300.0}) + "\n"
-        + json.dumps({"outcome": "broken"}) + "\n"
-        + json.dumps({"outcome": "accepted", "fitness": 320.0,
-                    "baseline_fitness": 300.0}) + "\n"
-    )
+    log.write_text("")  # not consulted under the new contract
+    (tmp_path / "run_summary.json").write_text(json.dumps({
+        "iterations":      4,
+        "accepted":        2,
+        "rejected":        1,
+        "broken":          1,
+        "broken_by_class": {"formal_failed": 1},
+        "baseline_fitness": 300.0,
+        "final_fitness":    320.0,
+        "best_fitness":     320.0,
+        "best_round":       4,
+        "delta_pct":        (20.0 / 300.0 * 100),
+    }))
     agent = tmp_path / "agent.log"
     agent.write_text(
         json.dumps({"type": "turn.completed",
@@ -240,83 +246,39 @@ def test_summarize_run_basic(tmp_path: Path):
     assert summary["accepted"] == 2
     assert summary["rejected"] == 1
     assert summary["broken"] == 1
+    assert summary["broken_by_class"] == {"formal_failed": 1}
     assert summary["final_fitness"] == 320.0
     assert summary["best_fitness"] == 320.0
     assert summary["best_round"] == 4
     assert summary["baseline_fitness"] == 300.0
     assert summary["delta_pct"] is not None
     assert abs(summary["delta_pct"] - (20.0 / 300.0 * 100)) < 1e-6
-    # codex via OAuth has no cost telemetry; just confirm it parsed.
+    # Token counts always come from agent.log (provider-specific cost
+    # parsing); not in scope of run_summary.json.
     assert summary["total_tokens_in"] == 1000
     assert summary["total_tokens_out"] == 200
 
 
-def test_summarize_run_no_log(tmp_path: Path):
+def test_summarize_run_missing_summary_flags_row(tmp_path: Path):
+    """If run_summary.json is absent (orchestrator crashed before its
+    first emit, or pre-Phase-2 orchestrator), the row carries
+    summary_missing=True instead of silently scoring 0/0/0 from a
+    log.jsonl fallback we used to have."""
     summary = summarize_run(tmp_path / "absent.jsonl", tmp_path / "absent.log")
     assert summary["iterations"] == 0
     assert summary["accepted"] == 0
     assert summary["final_fitness"] is None
     assert summary["best_fitness"] is None
+    assert summary.get("summary_missing") is True
 
 
-def test_summarize_run_prefers_run_summary_json(tmp_path: Path):
-    """When run_summary.json is present, summarize_run uses it instead of
-    re-parsing log.jsonl. The orchestrator owns the schema; the runner
-    just folds in token counts from agent.log."""
+def test_summarize_run_malformed_json_flags_row(tmp_path: Path):
+    """Mid-write or corrupt run_summary.json behaves like an absent file."""
     log = tmp_path / "log.jsonl"
-    log.write_text("garbage that would parse wrong\n")  # would crash old path
-    (tmp_path / "run_summary.json").write_text(json.dumps({
-        "iterations":      5,
-        "accepted":        2,
-        "rejected":        1,
-        "broken":          2,
-        "broken_by_class": {"formal_failed": 1, "implementation_compile_failed": 1},
-        "baseline_fitness": 100.0,
-        "final_fitness":    120.5,
-        "best_fitness":     120.5,
-        "best_round":       4,
-        "delta_pct":        20.5,
-    }))
-    agent = tmp_path / "agent.log"
-    agent.write_text(
-        json.dumps({"type": "turn.completed",
-                    "usage": {"input_tokens": 500, "output_tokens": 100,
-                              "reasoning_output_tokens": 0}}) + "\n"
-    )
-
-    summary = summarize_run(log, agent, provider="codex")
-    # Outcome stats come from run_summary.json (the JSON wouldn't be wrong
-    # if we'd accidentally parsed the garbage in log.jsonl).
-    assert summary["iterations"] == 5
-    assert summary["accepted"] == 2
-    assert summary["rejected"] == 1
-    assert summary["broken"] == 2
-    assert summary["broken_by_class"] == {
-        "formal_failed": 1, "implementation_compile_failed": 1
-    }
-    assert summary["baseline_fitness"] == 100.0
-    assert summary["final_fitness"] == 120.5
-    assert summary["best_fitness"] == 120.5
-    assert summary["best_round"] == 4
-    assert summary["delta_pct"] == 20.5
-    # Token/cost still come from agent.log, unchanged.
-    assert summary["total_tokens_in"] == 500
-    assert summary["total_tokens_out"] == 100
-
-
-def test_summarize_run_falls_back_when_summary_absent(tmp_path: Path):
-    """Old orchestrator versions don't emit run_summary.json. Runner must
-    still parse log.jsonl in that case (backward compat)."""
-    log = tmp_path / "log.jsonl"
-    log.write_text(
-        json.dumps({"outcome": "improvement", "fitness": 300.0,
-                    "baseline_fitness": 300.0, "round_id": 0}) + "\n"
-        + json.dumps({"outcome": "improvement", "fitness": 350.0}) + "\n"
-    )
+    log.write_text("")
+    (tmp_path / "run_summary.json").write_text("not json {")
     agent = tmp_path / "agent.log"
     agent.write_text("")
     summary = summarize_run(log, agent, provider="codex")
-    assert summary["iterations"] == 2
-    assert summary["accepted"] == 2
-    assert summary["baseline_fitness"] == 300.0
-    assert summary["best_fitness"] == 350.0
+    assert summary.get("summary_missing") is True
+    assert summary["iterations"] == 0
