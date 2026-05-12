@@ -1,10 +1,15 @@
 """Bench matrix runner.
 
 Drives the LLM benchmark: enumerates (model, rep) jobs from
-tools/bench/models.yaml, clones the bench-fixture-v1 ref into an
-isolated per-job directory, kicks `make N=<N> K=<K> TARGET=bench`
+tools/bench/models.yaml, clones the configured ref (default: main)
+into an isolated per-job directory, drives tools.orchestrator
 with the model's runtime AGENT_PROVIDER (codex / opencode / claude),
 then summarizes the result and appends a row to bench/results.jsonl.
+
+The default ref was previously `bench-fixture-v1` (the orphan fixture
+branch); after the nret-adapter + reliability work merged to main,
+main is the canonical source and the orphan is no longer needed.
+Override with --ref for reproducing a specific historical snapshot.
 
 Resumable: re-running skips (model, rep) pairs already in results.jsonl.
 
@@ -37,7 +42,7 @@ import yaml
 HERE = Path(__file__).parent
 REPO_ROOT = HERE.parent.parent
 DEFAULT_MODELS_YAML = HERE / "models.yaml"
-DEFAULT_REF = "bench-fixture-v1"
+DEFAULT_REF = "main"
 DEFAULT_RESULTS_JSONL = REPO_ROOT / "bench" / "results.jsonl"
 DEFAULT_CLONE_BASE = REPO_ROOT / ".claude" / "bench-runs"
 DEFAULT_RESULTS_DIR = REPO_ROOT / "bench"
