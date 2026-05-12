@@ -14,8 +14,13 @@ __pycache__/
 # status flags the symlink as untracked and sandbox check trips).
 formal/riscv-formal
 
-# Formal run output (regenerated per run; surfaced via stdout to the orchestrator)
-formal/last_run.log
+# Formal run output (regenerated per run; surfaced via stdout to the orchestrator).
+# Glob covers both the legacy single-file path and the PID-suffixed variants
+# emitted by run_all.sh after the concurrent-rm-race fix (formal/run_all.sh
+# writes last_run-<pid>.log so simultaneous invocations don't truncate each
+# other). Without the glob, `git status` lists the per-PID logs as untracked
+# and the scribe-phase sandbox check rolls back the scribe's commit.
+formal/last_run*.log
 
 # Agent stdout capture, written per-worktree by tools/agents/implement.py
 # and per-hypothesis by tools/agents/hypothesis.py for `tail -f` visibility
