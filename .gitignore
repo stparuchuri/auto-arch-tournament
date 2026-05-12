@@ -22,6 +22,17 @@ formal/riscv-formal
 # and the scribe-phase sandbox check rolls back the scribe's commit.
 formal/last_run*.log
 
+# Orchestrator-emitted per-rep summary. Phase-2 contract output written
+# by tools/orchestrator.py:write_run_summary after every round and at
+# end of main(). Derivable from log.jsonl; not worth tracking in git.
+# Without this entry, `git status` between rounds shows it as untracked
+# (since the orchestrator never `git add`s it), and the hypothesis-phase
+# sandbox check in tools/agents/hypothesis.py rolls back the next slot's
+# turn with "modified off-limits paths: ['.../run_summary.json']".
+# Caught live during the gpt-5.5 effort sweep — slot 2 in round 2 of
+# every rep was hypothesis_gen_failed for this reason.
+cores/*/experiments/run_summary.json
+
 # Agent stdout capture, written per-worktree by tools/agents/implement.py
 # and per-hypothesis by tools/agents/hypothesis.py for `tail -f` visibility
 # into Phase 1 and Phase 2. Untracked so the orchestrator's sandbox check
