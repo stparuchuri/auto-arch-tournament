@@ -1,6 +1,7 @@
 name: bench
 description: "Frozen LLM-benchmark fixture core. Identical RTL to baseline at the bench-fixture-v1 freeze point. The benchmark matrix clones from the bench-fixture-v1 orphan branch and operates only on this directory."
 isa: rv32im
+nret: 1
 target_fpga: tang-nano-20k
 targets:
   fmax_mhz: 135

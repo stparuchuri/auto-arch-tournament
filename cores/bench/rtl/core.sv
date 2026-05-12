@@ -9,10 +9,11 @@
 //   +- stall <- hazard_unit (load-use)
 //
 // IO port names use the `io_*` Chisel-emit prefix so the existing
-// formal/wrapper.sv and chisel/test/cosim/main.cpp bindings carry
-// through byte-for-byte. RVFI port set is the 2-channel set described
-// in CLAUDE.md invariant 1 (NRET=2 contract); V0 single-issue ties
-// channel 1 off.
+// formal/wrapper_si.sv and test/cosim/main.cpp bindings carry through
+// byte-for-byte. RVFI port set is the single-channel set described in
+// CLAUDE.md invariant 1 under `nret: 1` (declared in core.yaml). The
+// orchestrator routes formal to wrapper_si.sv + checks_si.cfg and FPGA
+// synth to fpga/core_bench_si.sv for this core. There is no channel 1.
 //
 // Latency:        full pipeline; instruction n retires at MEM/WB on
 //                 cycle n+4 (no hazards) or later (load-use stall,
@@ -43,10 +44,9 @@ module core (
   // freezes back to MEM; MEM/WB captures a bubble; the LOAD/STORE waits
   // until the bus delivers.
   input  logic        io_dmemReady,
-  // RVFI — 2-channel retirement port set (NRET=2 contract).
-  // Channel 0: older / sole retirement; channel 1: younger.
-  // Single-issue cores tie channel 1 off (rvfi_valid_1=0, others='0).
-  // See CLAUDE.md invariant 1 for the full contract.
+  // RVFI — single-channel retirement port set (NRET=1 contract,
+  // declared via `nret: 1` in core.yaml). Channel 0 is the sole
+  // retirement channel. See CLAUDE.md invariant 1 for the full contract.
   output logic        io_rvfi_valid_0,
   output logic [63:0] io_rvfi_order_0,
   output logic [31:0] io_rvfi_insn_0,
@@ -67,28 +67,7 @@ module core (
   output logic [3:0]  io_rvfi_mem_rmask_0,
   output logic [3:0]  io_rvfi_mem_wmask_0,
   output logic [31:0] io_rvfi_mem_rdata_0,
-  output logic [31:0] io_rvfi_mem_wdata_0,
-  output logic        io_rvfi_valid_1,
-  output logic [63:0] io_rvfi_order_1,
-  output logic [31:0] io_rvfi_insn_1,
-  output logic        io_rvfi_trap_1,
-  output logic        io_rvfi_halt_1,
-  output logic        io_rvfi_intr_1,
-  output logic [1:0]  io_rvfi_mode_1,
-  output logic [1:0]  io_rvfi_ixl_1,
-  output logic [4:0]  io_rvfi_rs1_addr_1,
-  output logic [31:0] io_rvfi_rs1_rdata_1,
-  output logic [4:0]  io_rvfi_rs2_addr_1,
-  output logic [31:0] io_rvfi_rs2_rdata_1,
-  output logic [4:0]  io_rvfi_rd_addr_1,
-  output logic [31:0] io_rvfi_rd_wdata_1,
-  output logic [31:0] io_rvfi_pc_rdata_1,
-  output logic [31:0] io_rvfi_pc_wdata_1,
-  output logic [31:0] io_rvfi_mem_addr_1,
-  output logic [3:0]  io_rvfi_mem_rmask_1,
-  output logic [3:0]  io_rvfi_mem_wmask_1,
-  output logic [31:0] io_rvfi_mem_rdata_1,
-  output logic [31:0] io_rvfi_mem_wdata_1
+  output logic [31:0] io_rvfi_mem_wdata_0
 );
 
   // ── Inter-stage wires ──────────────────────────────────────────────────
@@ -257,31 +236,6 @@ module core (
     io_rvfi_mem_wmask_0 = mem_wb_w.mem_wmask;
     io_rvfi_mem_rdata_0 = mem_wb_w.mem_rdata;
     io_rvfi_mem_wdata_0 = mem_wb_w.mem_wdata;
-
-    // Channel 1: tied off — V0 is single-issue. valid=0 is the canonical
-    // "this channel is unused" signature; other fields driven to '0 to
-    // avoid X/Z propagation through the formal harness.
-    io_rvfi_valid_1     = 1'b0;
-    io_rvfi_order_1     = 64'b0;
-    io_rvfi_insn_1      = 32'b0;
-    io_rvfi_trap_1      = 1'b0;
-    io_rvfi_halt_1      = 1'b0;
-    io_rvfi_intr_1      = 1'b0;
-    io_rvfi_mode_1      = 2'b0;
-    io_rvfi_ixl_1       = 2'b0;
-    io_rvfi_rs1_addr_1  = 5'b0;
-    io_rvfi_rs1_rdata_1 = 32'b0;
-    io_rvfi_rs2_addr_1  = 5'b0;
-    io_rvfi_rs2_rdata_1 = 32'b0;
-    io_rvfi_rd_addr_1   = 5'b0;
-    io_rvfi_rd_wdata_1  = 32'b0;
-    io_rvfi_pc_rdata_1  = 32'b0;
-    io_rvfi_pc_wdata_1  = 32'b0;
-    io_rvfi_mem_addr_1  = 32'b0;
-    io_rvfi_mem_rmask_1 = 4'b0;
-    io_rvfi_mem_wmask_1 = 4'b0;
-    io_rvfi_mem_rdata_1 = 32'b0;
-    io_rvfi_mem_wdata_1 = 32'b0;
   end
 
 endmodule
