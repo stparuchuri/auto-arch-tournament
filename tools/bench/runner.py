@@ -837,6 +837,19 @@ def run_one_job(
     # contract drift (every new orchestrator flag would otherwise need a
     # mirror in the Makefile rule too). AGENT_PROVIDER is already set by
     # make_env_for_job in `env`; the orchestrator reads it directly.
+    #
+    # PWD env var must be updated to the new cwd. subprocess.Popen with
+    # cwd= sets the child's actual cwd, but the inherited env's `PWD`
+    # still points at the runner's cwd (the main repo). make implicitly
+    # exported PWD=<rule cwd> when it ran the orchestrator command, so
+    # the bug was invisible through the make middleman. Downstream tools
+    # that read $PWD instead of getcwd() — opencode is one — would land
+    # in the main repo and write hypothesis YAMLs there instead of into
+    # the clone. Caught live during the N=1 K=3 validation: all 3 slots
+    # broke as hypothesis_gen_failed because the agent's YAMLs ended up
+    # at /Users/.../main-repo/cores/bench/experiments/hypotheses/ instead
+    # of the clone's matching path.
+    env["PWD"] = str(clone.resolve())
     cmd = [sys.executable, "-m", "tools.orchestrator",
            "--iterations", str(n), "--tournament-size", str(k),
            "--target", "bench"]
