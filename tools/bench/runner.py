@@ -872,14 +872,23 @@ def run_one_job(
         _finalize(row, started, results_jsonl)
         return row
 
-    # 3. Build env, kick `make`, watchdog the wall-clock + cost.
+    # 3. Build env, kick the orchestrator, watchdog the wall-clock + cost.
     env = make_env_for_job(job, clone, keys)
     if not job.model.oauth and job.model.key_env and not env.get(job.model.key_env):
         row["notes"] = f"missing API key env var {job.model.key_env}"
         _finalize(row, started, results_jsonl)
         return row
 
-    cmd = ["make", f"N={n}", f"K={k}", "TARGET=bench", "loop", "WORKTREE="]
+    # Invoke tools.orchestrator directly instead of routing through the
+    # Makefile `loop:` rule. The Makefile rule used to assemble exactly
+    # this command — N/K/TARGET → --iterations/--tournament-size/--target
+    # plus AGENT_PROVIDER from env — so going direct kills a layer of
+    # contract drift (every new orchestrator flag would otherwise need a
+    # mirror in the Makefile rule too). AGENT_PROVIDER is already set by
+    # make_env_for_job in `env`; the orchestrator reads it directly.
+    cmd = [sys.executable, "-m", "tools.orchestrator",
+           "--iterations", str(n), "--tournament-size", str(k),
+           "--target", "bench"]
     # Stream subprocess stdout+stderr to a per-job log file. Using
     # `stdout=subprocess.PIPE` without a draining thread deadlocks the
     # orchestrator once it fills the OS pipe buffer (~64 KB on macOS),
