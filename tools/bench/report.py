@@ -47,6 +47,14 @@ class RepResult:
     total_tokens_in: int
     total_tokens_out: int
     broken_by_class: dict[str, int]
+    # FPGA-side detail of the best-fitness entry in this rep. None when
+    # no fitness was achieved (every iteration broken/regressed).
+    best_lut4: Optional[int]
+    best_ff: Optional[int]
+    best_fmax_mhz: Optional[float]
+    best_iterations: Optional[int]
+    best_cycles: Optional[int]
+    best_ipc_coremark: Optional[float]
 
 
 def load_results(path: Path) -> list[RepResult]:
@@ -79,6 +87,12 @@ def load_results(path: Path) -> list[RepResult]:
             total_tokens_in=int(row.get("total_tokens_in") or 0),
             total_tokens_out=int(row.get("total_tokens_out") or 0),
             broken_by_class=dict(row.get("broken_by_class") or {}),
+            best_lut4=row.get("best_lut4"),
+            best_ff=row.get("best_ff"),
+            best_fmax_mhz=row.get("best_fmax_mhz"),
+            best_iterations=row.get("best_iterations"),
+            best_cycles=row.get("best_cycles"),
+            best_ipc_coremark=row.get("best_ipc_coremark"),
         ))
     return out
 
@@ -110,6 +124,16 @@ class ModelAgg:
     # the total occurrences. Used by render_failure_modes_section to
     # explain *why* a model's broken count is what it is.
     broken_by_class_total: dict[str, int]
+    # FPGA-side detail of this model's best rep (the one whose best_fitness
+    # = fitness_best). LUT4 and Fmax are the headline microarch numbers
+    # — fitness is computed from Fmax × IPC, but the area-vs-frequency
+    # tradeoff a model picks is invisible at the fitness-only level.
+    best_rep_lut4: Optional[int]
+    best_rep_ff: Optional[int]
+    best_rep_fmax_mhz: Optional[float]
+    best_rep_iterations: Optional[int]
+    best_rep_cycles: Optional[int]
+    best_rep_ipc_coremark: Optional[float]
 
 
 def _safe_mean(xs: list[float]) -> Optional[float]:
@@ -158,6 +182,11 @@ def aggregate(rows: list[RepResult]) -> list[ModelAgg]:
             for cls, n in (r.broken_by_class or {}).items():
                 broken_by_class_total[cls] = broken_by_class_total.get(cls, 0) + int(n)
 
+        # Identify the rep that achieved this model's fitness_best —
+        # its LUT4/Fmax/IPC are what we surface as the model's "best
+        # design" microarch numbers.
+        best_rep = max(done, key=lambda r: r.best_fitness or -math.inf) if done else None
+
         out.append(ModelAgg(
             model=model,
             n_reps_done=len(done),
@@ -176,6 +205,12 @@ def aggregate(rows: list[RepResult]) -> list[ModelAgg]:
             rejected_mean=_safe_mean(rejected_counts) if rejected_counts else None,
             broken_mean=_safe_mean(broken_counts) if broken_counts else None,
             broken_by_class_total=broken_by_class_total,
+            best_rep_lut4=best_rep.best_lut4 if best_rep else None,
+            best_rep_ff=best_rep.best_ff if best_rep else None,
+            best_rep_fmax_mhz=best_rep.best_fmax_mhz if best_rep else None,
+            best_rep_iterations=best_rep.best_iterations if best_rep else None,
+            best_rep_cycles=best_rep.best_cycles if best_rep else None,
+            best_rep_ipc_coremark=best_rep.best_ipc_coremark if best_rep else None,
         ))
 
     out.sort(key=lambda a: (-(a.fitness_mean if a.fitness_mean is not None else -math.inf), a.model))
@@ -343,8 +378,13 @@ def render_markdown(aggs: list[ModelAgg]) -> str:
         "couldn't place on FPGA, ...). See *Failure modes* below for the "
         "broken-class breakdown.",
         "",
-        "| Model | Reps | Fitness mean ± std | Best | acc | rej | brk | Iters→best | Pass-rate | $ cost | s/iter |",
-        "|---|---|---|---|---|---|---|---|---|---|---|",
+        "Best LUT4 / Fmax / IPC are the FPGA-side detail of the **best "
+        "rep's best entry** (the one whose fitness equals `Best`). They "
+        "surface the area-vs-frequency tradeoff each model picked. "
+        "Baseline for reference: LUT4 = 9563, Fmax = 127 MHz, IPC ≈ 0.79.",
+        "",
+        "| Model | Reps | Fitness mean ± std | Best | LUT4 | Fmax MHz | IPC | acc | rej | brk | Iters→best | Pass-rate | $ cost | s/iter |",
+        "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for a in aggs:
         reps_str = f"{a.n_reps_done}/{a.n_reps_done + a.n_reps_failed}"
@@ -352,6 +392,9 @@ def render_markdown(aggs: list[ModelAgg]) -> str:
             f"| `{a.model}` | {reps_str} | "
             f"{fmt_fitness(a.fitness_mean, a.fitness_std)} | "
             f"{fmt_num(a.fitness_best)} | "
+            f"{fmt_num(a.best_rep_lut4, '.0f')} | "
+            f"{fmt_num(a.best_rep_fmax_mhz, '.1f')} | "
+            f"{_fmt_ipc(a.best_rep_iterations, a.best_rep_cycles)} | "
             f"{fmt_num(a.accepted_mean, '.1f')} | "
             f"{fmt_num(a.rejected_mean, '.1f')} | "
             f"{fmt_num(a.broken_mean, '.1f')} | "
@@ -362,6 +405,14 @@ def render_markdown(aggs: list[ModelAgg]) -> str:
         )
     lines.append("")
     return "\n".join(lines) + "\n"
+
+
+def _fmt_ipc(iterations: Optional[int], cycles: Optional[int]) -> str:
+    """Display IPC as iterations × 1e6 / cycles (the canonical CoreMark
+    iter/s/MHz number readers expect)."""
+    if not iterations or not cycles:
+        return "—"
+    return f"{(iterations * 1_000_000 / cycles):.2f}"
 
 
 def render_failure_modes_section(aggs: list[ModelAgg]) -> str:
@@ -419,20 +470,24 @@ def render_per_rep_details(rows: list[RepResult]) -> str:
     )
     lines.append("")
     lines.append(
-        "| Model | Rep | Status | Iters | acc | rej | brk | Baseline → Final | Δ% | Best | Wall (m) |"
+        "| Model | Rep | Status | Iters | acc | rej | brk | Baseline → Final | Δ% | Best | LUT4 | Fmax MHz | IPC | Wall (m) |"
     )
-    lines.append("|---|---|---|---|---|---|---|---|---|---|---|")
+    lines.append("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     rows_sorted = sorted(rows, key=lambda r: (r.model, r.rep))
     for r in rows_sorted:
         baseline = fmt_num(r.baseline_fitness)
         final    = fmt_num(r.final_fitness)
         delta    = fmt_pct(None if r.delta_pct is None else r.delta_pct / 100.0)
         best     = fmt_num(r.best_fitness)
+        lut4     = fmt_num(r.best_lut4, '.0f') if r.best_lut4 is not None else "—"
+        fmax     = fmt_num(r.best_fmax_mhz, '.1f')
+        ipc      = _fmt_ipc(r.best_iterations, r.best_cycles)
         wall_min = (r.wall_clock_sec / 60.0) if r.wall_clock_sec else 0.0
         lines.append(
             f"| `{r.model}` | {r.rep} | {r.status} | {r.iterations} | "
             f"{r.accepted} | {r.rejected} | {r.broken} | "
             f"{baseline} → {final} | {delta} | {best} | "
+            f"{lut4} | {fmax} | {ipc} | "
             f"{wall_min:.1f} |"
         )
     lines.append("")
@@ -484,11 +539,18 @@ def render_winning_hypotheses(rows: list[RepResult], results_dir: Path) -> str:
             delta    = w.get("delta_pct")
             cat      = w.get("category") or ""
             round_id = w.get("round_id")
+            lut4     = w.get("lut4")
+            fmax     = w.get("fmax_mhz")
             fit_str   = fmt_num(fit) if fit is not None else "?"
             delta_str = f"{delta:+.1f}%" if isinstance(delta, (int, float)) else ""
             cat_str   = f" _{cat}_" if cat else ""
             rid_str   = f" R{round_id}" if round_id is not None else ""
-            lines.append(f"- **{title}** — fitness {fit_str} ({delta_str}){cat_str}{rid_str}")
+            hw_str    = ""
+            if isinstance(lut4, (int, float)) or isinstance(fmax, (int, float)):
+                lut_s = f"LUT4 {int(lut4)}" if isinstance(lut4, (int, float)) else ""
+                fmax_s = f"{fmax:.1f} MHz" if isinstance(fmax, (int, float)) else ""
+                hw_str = " — " + ", ".join(s for s in (lut_s, fmax_s) if s)
+            lines.append(f"- **{title}** — fitness {fit_str} ({delta_str}){cat_str}{rid_str}{hw_str}")
         lines.append("")
     if not any_wins:
         lines.append("_No accepted improvements recorded across any rep._")
@@ -502,6 +564,8 @@ def render_csv(aggs: list[ModelAgg], out: Path) -> None:
         w.writerow([
             "model", "n_reps_done", "n_reps_failed",
             "fitness_mean", "fitness_std", "fitness_best",
+            "best_rep_lut4", "best_rep_ff", "best_rep_fmax_mhz",
+            "best_rep_iterations", "best_rep_cycles", "best_rep_ipc_coremark",
             "iters_to_best_mean", "pass_rate", "total_cost_usd",
             "mean_wall_clock_per_iter_sec",
             "total_tokens_in", "total_tokens_out",
@@ -512,6 +576,12 @@ def render_csv(aggs: list[ModelAgg], out: Path) -> None:
                 a.fitness_mean if a.fitness_mean is not None else "",
                 a.fitness_std if a.fitness_std is not None else "",
                 a.fitness_best if a.fitness_best is not None else "",
+                a.best_rep_lut4 if a.best_rep_lut4 is not None else "",
+                a.best_rep_ff if a.best_rep_ff is not None else "",
+                a.best_rep_fmax_mhz if a.best_rep_fmax_mhz is not None else "",
+                a.best_rep_iterations if a.best_rep_iterations is not None else "",
+                a.best_rep_cycles if a.best_rep_cycles is not None else "",
+                a.best_rep_ipc_coremark if a.best_rep_ipc_coremark is not None else "",
                 a.iters_to_best_mean if a.iters_to_best_mean is not None else "",
                 a.pass_rate if a.pass_rate is not None else "",
                 a.total_cost_usd,
