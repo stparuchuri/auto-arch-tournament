@@ -16,6 +16,7 @@ from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from tools.eval.formal import read_nret
+from tools.eval._subprocess import run_pgroup
 
 BENCH_DIR = Path("bench/programs")
 
@@ -42,7 +43,7 @@ def run_one(elf: Path, sim_bin: str, worktree: str, env: dict | None = None) -> 
     """Run cosim for a single ELF using the run_cosim script."""
     try:
         worktree_path = Path(worktree).resolve()
-        result = subprocess.run(
+        result = run_pgroup(
             [sys.executable, str(worktree_path / "test/cosim/run_cosim.py"),
              sim_bin, str(elf)],
             capture_output=True, text=True, timeout=120, cwd=worktree_path, env=env
@@ -73,7 +74,7 @@ def run_coremark_crc(coremark_elf: Path, sim_bin: str, worktree: str, env: dict 
     # gate exercises the same workload that fpga.py scores. See
     # tools/eval/fpga.py:COREMARK_SIM_FLAGS for the rationale.
     try:
-        result = subprocess.run(
+        result = run_pgroup(
             [sim_bin, str(coremark_elf), "50000000",
              "--bench", "--istall", "--dstall"],
             capture_output=True, text=True, timeout=600,

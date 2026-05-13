@@ -3,6 +3,7 @@ import asyncio, os, re, json, subprocess, statistics
 from pathlib import Path
 
 from tools.eval.formal import read_nret
+from tools.eval._subprocess import run_pgroup
 
 
 def _build_synth_env(worktree, target: str | None,
@@ -113,7 +114,7 @@ def run_coremark_ipc(worktree: str, sim_bin: str | None = None, env: dict | None
     # 50M cycle ceiling: 2K CoreMark with ITERATIONS=10 + iStall+dStall
     # needs ~5M cycles. 50M gives 10x headroom for slower candidates.
     try:
-        result = subprocess.run(
+        result = run_pgroup(
             [sim_bin, elf, "50000000"] + COREMARK_SIM_FLAGS,
             capture_output=True, text=True, timeout=600, env=env
         )

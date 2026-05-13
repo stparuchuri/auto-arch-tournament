@@ -14,6 +14,8 @@ from pathlib import Path
 
 import yaml
 
+from tools.eval._subprocess import run_pgroup
+
 
 def read_nret(core_yaml_path: Path) -> int:
     """Read the `nret` field from a core.yaml. Defaults to 2 when the file
@@ -109,7 +111,7 @@ def run_formal(worktree: str, target: str | None = None) -> dict:
     env = _build_formal_env(worktree_path, target)
 
     try:
-        result = subprocess.run(
+        result = run_pgroup(
             ["bash", str(run_script)],
             cwd=worktree_path, capture_output=True, text=True,
             timeout=1800,  # 30 min ceiling for all ~45 checks running in parallel via make -j
