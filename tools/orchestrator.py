@@ -229,6 +229,7 @@ def write_run_summary(log_path: Path, out_path: Path) -> dict:
     baseline: float | None = None
     best_fitness: float | None = None
     best_round: int | None = None
+    best_entry: dict | None = None
     broken_by_class: dict[str, int] = {}
 
     for e in entries:
@@ -252,6 +253,7 @@ def write_run_summary(log_path: Path, out_path: Path) -> dict:
             if best_fitness is None or fit > best_fitness:
                 best_fitness = float(fit)
                 best_round = iterations
+                best_entry = e
             if outcome in ("improvement", "accepted"):
                 final_fitness = float(fit)
 
@@ -294,6 +296,15 @@ def write_run_summary(log_path: Path, out_path: Path) -> dict:
         "best_fitness": best_fitness,
         "best_round": best_round,
         "delta_pct": delta_pct,
+        # FPGA / sim detail of the best-fitness entry — surfaces LUT4,
+        # Fmax, IPC, etc. without forcing downstream consumers to re-parse
+        # log.jsonl. None when no entry produced a fitness number.
+        "best_lut4":         best_entry.get("lut4")         if best_entry else None,
+        "best_ff":           best_entry.get("ff")           if best_entry else None,
+        "best_fmax_mhz":     best_entry.get("fmax_mhz")     if best_entry else None,
+        "best_iterations":   best_entry.get("iterations")   if best_entry else None,
+        "best_cycles":       best_entry.get("cycles")       if best_entry else None,
+        "best_ipc_coremark": best_entry.get("ipc_coremark") if best_entry else None,
     }
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(summary, indent=2) + "\n")

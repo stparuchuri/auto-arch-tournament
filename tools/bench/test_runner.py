@@ -282,3 +282,41 @@ def test_summarize_run_malformed_json_flags_row(tmp_path: Path):
     summary = summarize_run(log, agent, provider="codex")
     assert summary.get("summary_missing") is True
     assert summary["iterations"] == 0
+
+
+def test_summarize_run_carries_best_fpga_fields(tmp_path: Path):
+    """LUT4/FF/Fmax/IPC of the best-fitness entry propagate from
+    run_summary.json into the per-rep results.jsonl row, so downstream
+    consumers (LEADERBOARD, plots, postmortems) don't have to join from
+    log.jsonl."""
+    log = tmp_path / "log.jsonl"
+    log.write_text("")
+    (tmp_path / "run_summary.json").write_text(json.dumps({
+        "iterations": 16, "accepted": 5, "rejected": 10, "broken": 1,
+        "broken_by_class": {"cosim_failed": 1},
+        "baseline_fitness": 282.82, "final_fitness": 525.04,
+        "best_fitness": 525.04, "best_round": 10, "delta_pct": 85.6,
+        "best_lut4": 5453, "best_ff": 2138, "best_fmax_mhz": 220.22,
+        "best_iterations": 10, "best_cycles": 4194377,
+        "best_ipc_coremark": 2e-06,
+    }))
+    agent = tmp_path / "agent.log"
+    agent.write_text("")
+    summary = summarize_run(log, agent, provider="codex")
+    assert summary["best_lut4"] == 5453
+    assert summary["best_ff"] == 2138
+    assert summary["best_fmax_mhz"] == 220.22
+    assert summary["best_iterations"] == 10
+    assert summary["best_cycles"] == 4194377
+    assert summary["best_ipc_coremark"] == 2e-06
+
+
+def test_summarize_run_missing_summary_includes_best_fpga_fields_none(tmp_path: Path):
+    """The summary_missing row must still carry the FPGA-field keys (as None)
+    so the results.jsonl schema is uniform across done/broken/missing rows."""
+    summary = summarize_run(tmp_path / "absent.jsonl", tmp_path / "absent.log")
+    assert summary.get("summary_missing") is True
+    for k in ("best_lut4", "best_ff", "best_fmax_mhz",
+              "best_iterations", "best_cycles", "best_ipc_coremark"):
+        assert k in summary, f"missing key {k!r} in summary_missing row"
+        assert summary[k] is None

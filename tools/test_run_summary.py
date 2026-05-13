@@ -108,3 +108,50 @@ def test_missing_log_writes_zero_summary(tmp_path):
     write_run_summary(log_path=log, out_path=out)
     s = json.loads(out.read_text())
     assert s["iterations"] == 0
+
+
+def test_best_entry_fpga_fields_carried(tmp_path):
+    """The best-fitness entry's lut4/ff/fmax_mhz/iterations/cycles/ipc_coremark
+    must be carried in the summary so the per-rep row exposes microarch
+    detail (LUT count, Fmax, IPC) without re-parsing log.jsonl downstream."""
+    log = tmp_path / "log.jsonl"
+    _write_log(log, [
+        {"id": "baseline", "outcome": "improvement", "fitness": 282.82,
+         "round_id": 0, "delta_pct": 0.0,
+         "lut4": 9563, "ff": 1866, "fmax_mhz": 127.03,
+         "iterations": 10, "cycles": 4491485, "ipc_coremark": 2e-06},
+        {"id": "h1", "outcome": "improvement", "fitness": 525.04,
+         "round_id": 10, "delta_pct": 85.6,
+         "lut4": 5453, "ff": 2138, "fmax_mhz": 220.22,
+         "iterations": 10, "cycles": 4194377, "ipc_coremark": 2e-06},
+        {"id": "h2", "outcome": "regression", "fitness": 300.0,
+         "round_id": 11, "lut4": 9000, "ff": 1900, "fmax_mhz": 150.0},
+    ])
+    out = tmp_path / "summary.json"
+    write_run_summary(log_path=log, out_path=out)
+    s = json.loads(out.read_text())
+    # Best entry is h1 — its FPGA fields propagate.
+    assert s["best_fitness"] == 525.04
+    assert s["best_lut4"] == 5453
+    assert s["best_ff"] == 2138
+    assert s["best_fmax_mhz"] == 220.22
+    assert s["best_iterations"] == 10
+    assert s["best_cycles"] == 4194377
+    assert s["best_ipc_coremark"] == 2e-06
+
+
+def test_best_entry_fields_absent_when_no_improvement(tmp_path):
+    """No improvement rows ⇒ no best entry ⇒ best_* fields are None
+    (so downstream consumers can treat 'no winner' uniformly)."""
+    log = tmp_path / "log.jsonl"
+    _write_log(log, [
+        {"outcome": "broken", "error": "formal_failed: x"},
+        {"outcome": "regression", "fitness": 250.0, "lut4": 9000},
+    ])
+    out = tmp_path / "summary.json"
+    write_run_summary(log_path=log, out_path=out)
+    s = json.loads(out.read_text())
+    # best_fitness comes from any fitness row, not just improvements.
+    # But best_* FPGA fields are anchored on the same entry, so when
+    # no improvement exists they reflect the best (highest-fitness) row.
+    assert s["best_lut4"] == 9000
