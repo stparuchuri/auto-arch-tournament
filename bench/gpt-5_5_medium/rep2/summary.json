@@ -2,8 +2,8 @@
   "model": "gpt-5_5_medium",
   "rep": 2,
   "started_at": "2026-05-13T13:04:02+00:00",
-  "ended_at": null,
-  "wall_clock_sec": null,
+  "ended_at": "2026-05-13T19:42:00+00:00",
+  "wall_clock_sec": 23878,
   "iterations": 46,
   "accepted": 5,
   "rejected": 32,
@@ -22,5 +22,11 @@
   "broken_by_class": {
     "formal_failed": 4,
     "cosim_failed": 5
-  }
+  },
+  "best_lut4": 7358,
+  "best_ff": 1152,
+  "best_fmax_mhz": 186.88,
+  "best_iterations": 10,
+  "best_cycles": 4585465,
+  "best_ipc_coremark": 2e-06
 }

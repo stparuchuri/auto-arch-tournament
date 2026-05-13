@@ -2,8 +2,8 @@
   "model": "kimi-k2_6",
   "rep": 1,
   "started_at": "2026-05-12T06:03:39+00:00",
-  "ended_at": null,
-  "wall_clock_sec": null,
+  "ended_at": "2026-05-12T06:54:16+00:00",
+  "wall_clock_sec": 3036,
   "iterations": 4,
   "accepted": 1,
   "rejected": 0,
@@ -22,5 +22,11 @@
   "broken_by_class": {
     "sandbox_violation": 1,
     "formal_failed": 2
-  }
+  },
+  "best_lut4": 9563,
+  "best_ff": 1866,
+  "best_fmax_mhz": 127.03,
+  "best_iterations": 10,
+  "best_cycles": 4491485,
+  "best_ipc_coremark": 2e-06
 }

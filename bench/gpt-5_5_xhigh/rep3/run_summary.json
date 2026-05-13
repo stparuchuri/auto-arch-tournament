@@ -10,5 +10,11 @@
   "final_fitness": 482.03,
   "best_fitness": 482.03,
   "best_round": 30,
-  "delta_pct": 70.43702708436462
+  "delta_pct": 70.43702708436462,
+  "best_lut4": 3164,
+  "best_ff": 1339,
+  "best_fmax_mhz": 216.5,
+  "best_iterations": 10,
+  "best_cycles": 4491402,
+  "best_ipc_coremark": 2e-06
 }
