@@ -1,4 +1,4 @@
-"""subprocess.run replacement that kills the whole process group on timeout.
+"""subprocess.run replacement that kills the full descendant tree on timeout.
 
 The gpt-5.5 effort sweep produced visible orphan trees: formal/run_all.sh
 times out after 30 minutes, subprocess.TimeoutExpired fires, Python kills
@@ -6,15 +6,32 @@ the bash, and `make -j10 → sby → yosys-smtbmc → bitwuzla` reparent to
 launchd and keep running with nobody waiting on them. Across a multi-hour
 bench, the orphans pile up and starve the live evaluators of CPU.
 
-run_pgroup() places the child in its own session (start_new_session=True)
-so the whole tree shares one process-group id, then kills the group on
-timeout. Existing TimeoutExpired handlers keep working — they see the
-same exception with the same partial output, just a fully reaped tree.
+A killpg-only fix is insufficient here: `sby_core.py` calls `os.setpgrp()`
+per task, so each leaf bash/yosys-smtbmc/bitwuzla becomes its own
+process-group leader and escapes the outer killpg. The PPID chain stays
+intact though, so we walk descendants via psutil and SIGKILL each.
 """
-import os
-import signal
 import subprocess
-from typing import Any
+
+import psutil
+
+
+def _kill_descendant_tree(root_pid: int) -> None:
+    """SIGKILL the descendant tree of root_pid (root itself NOT included).
+
+    Snapshots descendants BEFORE killing — once we start sending signals,
+    children die and get reaped, which would shrink the tree mid-walk."""
+    try:
+        root = psutil.Process(root_pid)
+    except psutil.NoSuchProcess:
+        return
+    descendants = root.children(recursive=True)
+    for child in descendants:
+        try:
+            child.kill()
+        except psutil.NoSuchProcess:
+            pass
+    psutil.wait_procs(descendants, timeout=2)
 
 
 def run_pgroup(args, *, timeout=None, capture_output=False, text=False,
@@ -28,14 +45,11 @@ def run_pgroup(args, *, timeout=None, capture_output=False, text=False,
     try:
         out, err = proc.communicate(timeout=timeout)
     except subprocess.TimeoutExpired:
-        try:
-            os.killpg(proc.pid, signal.SIGKILL)
-        except ProcessLookupError:
-            pass
+        _kill_descendant_tree(proc.pid)
+        proc.kill()
         try:
             out, err = proc.communicate(timeout=5)
         except subprocess.TimeoutExpired:
-            proc.kill()
             out, err = (b"", b"") if not text else ("", "")
         raise subprocess.TimeoutExpired(
             cmd=args, timeout=timeout, output=out, stderr=err,
