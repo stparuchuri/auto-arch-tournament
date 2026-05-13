@@ -11,5 +11,5 @@
 models:
   - name: gemini-3_1-pro
     provider: opencode
-    model: gemini-3.1-pro-preview
+    model: google/gemini-3.1-pro-preview
     variant: high
