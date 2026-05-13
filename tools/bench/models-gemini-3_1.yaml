@@ -1,0 +1,13 @@
+# gemini-3.1-pro single-model bench config (3 reps × N=15 × K=3).
+#
+# Routed via opencode through OpenRouter (auth: OPENROUTER_API_KEY env var,
+# not OAuth — google/gemini-3.1-pro-preview is not in the codex
+# subscription). Variant xhigh per the verify YAML's note that high dies
+# at the 964s Bun cap on gemini's response stream.
+
+models:
+  - name: gemini-3_1-pro
+    provider: opencode
+    model: openrouter/google/gemini-3.1-pro-preview
+    variant: xhigh
+    key_env: OPENROUTER_API_KEY
