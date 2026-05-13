@@ -119,3 +119,15 @@ bench/*/rep*/agent.log
 bench/*-verify/
 bench/smoke-*/
 tools/bench/models-*-verify.yaml
+
+# Aborted/partial bench output preserved locally with a debug-tag suffix
+# (e.g. `gpt-5_5.failed-pwd-bug/`, `gpt-5_5.validate-v3/`, sibling
+# `results.jsonl.<tag>`). They document a known-broken state for the
+# author's own postmortem; the canonical results live in the un-suffixed
+# per-model dirs.
+bench/*.failed-*
+bench/*.validate-*
+bench/*.prev-*
+bench/*.stale-*
+bench/*.partial-*
+bench/results.jsonl.*

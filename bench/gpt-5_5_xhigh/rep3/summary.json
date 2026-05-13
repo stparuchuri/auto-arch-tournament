@@ -1,0 +1,25 @@
+{
+  "model": "gpt-5_5_xhigh",
+  "rep": 3,
+  "started_at": "2026-05-12T20:24:14+00:00",
+  "ended_at": null,
+  "wall_clock_sec": null,
+  "iterations": 46,
+  "accepted": 7,
+  "rejected": 36,
+  "broken": 1,
+  "final_fitness": 482.03,
+  "baseline_fitness": 282.82,
+  "best_fitness": 482.03,
+  "best_round": 30,
+  "delta_pct": 70.43702708436462,
+  "total_tokens_in": 17585942,
+  "total_tokens_out": 338504,
+  "total_cost_usd": 0.0,
+  "orchestrator_exit": 0,
+  "status": "done",
+  "notes": "",
+  "broken_by_class": {
+    "cosim_failed": 1
+  }
+}

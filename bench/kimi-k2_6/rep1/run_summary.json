@@ -1,0 +1,15 @@
+{
+  "iterations": 4,
+  "accepted": 1,
+  "rejected": 0,
+  "broken": 3,
+  "broken_by_class": {
+    "sandbox_violation": 1,
+    "formal_failed": 2
+  },
+  "baseline_fitness": 282.82,
+  "final_fitness": 282.82,
+  "best_fitness": 282.82,
+  "best_round": 1,
+  "delta_pct": 0.0
+}

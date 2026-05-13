@@ -1,0 +1,15 @@
+{
+  "iterations": 46,
+  "accepted": 4,
+  "rejected": 40,
+  "broken": 2,
+  "broken_by_class": {
+    "cosim_failed": 1,
+    "implementation_compile_failed": 1
+  },
+  "baseline_fitness": 282.82,
+  "final_fitness": 408.01,
+  "best_fitness": 408.01,
+  "best_round": 19,
+  "delta_pct": 44.26490347217311
+}
