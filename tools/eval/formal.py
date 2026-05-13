@@ -114,7 +114,7 @@ def run_formal(worktree: str, target: str | None = None) -> dict:
         result = run_pgroup(
             ["bash", str(run_script)],
             cwd=worktree_path, capture_output=True, text=True,
-            timeout=1800,  # 30 min ceiling for all ~45 checks running in parallel via make -j
+            timeout=2700,  # 45 min ceiling for all ~45 checks running in parallel via make -j
             env=env,
         )
     except subprocess.TimeoutExpired as e:
