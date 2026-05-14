@@ -128,8 +128,13 @@ def run_formal(worktree: str, target: str | None = None) -> dict:
         # problems that bitwuzla couldn't close in 30 minutes.
         # Return a slot-broken outcome with a recognizable error class
         # so the report's broken_by_class table surfaces it cleanly.
-        partial = ((e.stdout or b"").decode("utf-8", errors="replace")
-                   + (e.stderr or b"").decode("utf-8", errors="replace"))
+        # run_pgroup preserves text=True, so e.stdout/e.stderr arrive as
+        # str. (subprocess.run with text=True would behave the same way —
+        # the prior .decode() call was always latent, but TimeoutExpired
+        # never fired in practice under the 30-min ceiling so it stayed
+        # hidden until kimi-rep3 hit the bumped 45-min ceiling and an
+        # AttributeError crashed the orchestrator. See commit bfe9f84.)
+        partial = (e.stdout or "") + (e.stderr or "")
         return {
             'passed': False,
             'failed_check': 'timeout',
