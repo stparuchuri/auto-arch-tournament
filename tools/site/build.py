@@ -845,7 +845,6 @@ def render_models(aggs: list[ModelAgg], stars: Optional[int] = None) -> str:
         <td class="num">{r.accepted}</td>
         <td class="num">{r.broken}</td>
         <td class="num">{fhours(r.wall_clock_sec)}</td>
-        <td class="num">{fmoney(r.total_cost_usd)}</td>
       </tr>""")
         rep_rows_html = "".join(rep_rows)
 
@@ -890,7 +889,6 @@ def render_models(aggs: list[ModelAgg], stars: Optional[int] = None) -> str:
     <div class="stat"><div class="label">Best</div><div class="value">{fnum(a.fitness_best)}</div><div class="sub">{fpct(a.delta_best)} vs baseline</div></div>
     <div class="stat"><div class="label">Mean</div><div class="value">{fnum(a.fitness_mean, '.1f')}</div><div class="sub">{fpct(a.delta_mean)} mean Δ</div></div>
     <div class="stat"><div class="label">Reps</div><div class="value">{a.n_done}/{a.n_total}</div><div class="sub">completed / total</div></div>
-    <div class="stat"><div class="label">Cost</div><div class="value">{fmoney(a.total_cost_usd)}</div><div class="sub">{fmoney(a.total_cost_usd/a.n_total) if a.n_total else '—'} per rep</div></div>
   </div>
 
   <div class="wide">
@@ -902,7 +900,7 @@ def render_models(aggs: list[ModelAgg], stars: Optional[int] = None) -> str:
         <th class="num">Best</th><th class="num">Δ%</th>
         <th class="num">LUT4</th><th class="num">Fmax</th>
         <th class="num">acc</th><th class="num">brk</th>
-        <th class="num">Wall</th><th class="num">Cost</th>
+        <th class="num">Wall</th>
       </tr>
     </thead>
     <tbody>{rep_rows_html}
