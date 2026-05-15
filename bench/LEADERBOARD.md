@@ -8,6 +8,7 @@ Best LUT4 / Fmax / IPC are the FPGA-side detail of the **best rep's best entry**
 
 | Model | Reps | Fitness mean ± std | Best | LUT4 | Fmax MHz | IPC | acc | rej | brk | Iters→best | Pass-rate | $ cost | s/iter |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `gpt-5_4_xhigh` | 2/2 | 505.0 ± 8.9 | 513.8 | 10108 | 203.3 | 2.53 | 6.0 | 28.0 | 9.0 | 26.5 | 13% | $0.00 | 600 |
 | `gpt-5_5_xhigh` | 3/3 | 468.3 ± 52.8 | 525.0 | 5453 | 220.2 | 2.38 | 5.7 | 37.7 | 2.0 | 28.3 | 12% | $0.00 | 478 |
 | `gpt-5_5_high` | 3/3 | 430.2 ± 23.0 | 461.9 | 9807 | 187.3 | 2.47 | 6.3 | 36.7 | 3.0 | 31.3 | 14% | $0.00 | 578 |
 | `gpt-5_5_medium` | 3/3 | 423.5 ± 11.2 | 431.6 | 7803 | 200.6 | 2.15 | 5.3 | 32.3 | 7.7 | 36.0 | 12% | $0.00 | 513 |
@@ -19,6 +20,13 @@ Best LUT4 / Fmax / IPC are the FPGA-side detail of the **best rep's best entry**
 ## Failure modes
 
 Counts each model's broken iterations grouped by the orchestrator's broken-class label. `formal_failed` = RTL compiled but didn't pass riscv-formal (the suffix is the first failing check). `implementation_compile_failed` = RTL didn't pass Verilator lint. `hypothesis_gen_failed` = agent didn't write the expected YAML at the slot's pre-allocated path. `placement_failed` = nextpnr couldn't place the design on the target FPGA. `make_failed_during_execution` = formal/run_all.sh's `*.sby` glob found zero tasks at tally time (usually an agent wiped the checks dir mid-run; the PID-suffix fix in `formal/run_all.sh` removes the race but the class is still emitted if anything else corrupts the checks dir).
+
+### `gpt-5_4_xhigh`
+
+| Class | Count |
+|---|---|
+| `cosim_failed` | 11 |
+| `formal_failed` | 7 |
 
 ### `gpt-5_5_xhigh`
 
@@ -71,6 +79,8 @@ Every `(model, rep)` row from `bench/results.jsonl`, before per-model aggregatio
 | `gemini-3_1-pro` | 1 | done | 46 | 2 | 13 | 31 | 282.8 → 354.7 | 25% | 354.7 | 10242 | 149.7 | 2.37 | 335.4 |
 | `gemini-3_1-pro` | 2 | done | 46 | 3 | 14 | 29 | 282.8 → 339.6 | 20% | 339.6 | 11068 | 142.4 | 2.39 | 438.8 |
 | `gemini-3_1-pro` | 3 | done | 46 | 4 | 11 | 31 | 282.8 → 323.9 | 15% | 323.9 | 11836 | 135.8 | 2.39 | 357.2 |
+| `gpt-5_4_xhigh` | 1 | done | 46 | 5 | 30 | 7 | 282.8 → 496.1 | 75% | 496.1 | 3164 | 221.0 | 2.24 | 434.1 |
+| `gpt-5_4_xhigh` | 2 | done | 46 | 7 | 26 | 11 | 282.8 → 513.8 | 82% | 513.8 | 10108 | 203.3 | 2.53 | 486.5 |
 | `gpt-5_5_high` | 1 | done | 46 | 7 | 36 | 3 | 282.8 → 461.9 | 63% | 461.9 | 9807 | 187.3 | 2.47 | 279.8 |
 | `gpt-5_5_high` | 2 | done | 46 | 8 | 34 | 4 | 282.8 → 420.6 | 49% | 420.6 | 11953 | 178.1 | 2.36 | 713.2 |
 | `gpt-5_5_high` | 3 | done | 46 | 4 | 40 | 2 | 282.8 → 408.0 | 44% | 408.0 | 5637 | 175.8 | 2.32 | 336.4 |
@@ -102,6 +112,22 @@ Each model's accepted-improvement entries (the hypotheses that actually moved th
 - **IF-stage Static BTFN and JAL Predictor** — fitness 282.9 (+0.0%) _structural_ R5 — LUT4 9995, 120.5 MHz
 - **BHT and RAS for frontend branch prediction** — fitness 321.7 (+13.7%) _structural_ R9 — LUT4 10964, 134.8 MHz
 - **GShare Predictor with 256-entry BHT and 8-bit GHR** — fitness 323.9 (+0.7%) _predictor_ R10 — LUT4 11836, 135.8 MHz
+
+### `gpt-5_4_xhigh` rep 1
+
+- **Move DIV/REM Off The ALU Critical Path** — fitness 343.5 (+21.5%) _micro_opt_ R1 — LUT4 5628, 154.3 MHz
+- **One-Deep Stalled-Store Retirement Slot** — fitness 385.0 (+12.1%) _structural_ R2 — LUT4 5612, 171.6 MHz
+- **Non-Aliasing Load Bypass Around Store Slot** — fitness 439.3 (+14.1%) _structural_ R6 — LUT4 5608, 195.7 MHz
+- **Reset-Light Write-First Register File** — fitness 496.1 (+12.9%) _micro_opt_ R10 — LUT4 3164, 221.0 MHz
+
+### `gpt-5_4_xhigh` rep 2
+
+- **Registered I-Fetch Replay Predictor** — fitness 316.1 (+11.8%) _predictor_ R2 — LUT4 10098, 134.1 MHz
+- **MEM-to-EX load bypass** — fitness 332.3 (+5.1%) _micro_opt_ R3 — LUT4 9855, 134.2 MHz
+- **Shared signedness-selectable multiplier** — fitness 334.9 (+0.8%) _micro_opt_ R4 — LUT4 10386, 135.3 MHz
+- **One-entry posted store buffer** — fitness 377.6 (+12.8%) _structural_ R5 — LUT4 10064, 151.3 MHz
+- **EX fast-path add/address bypass** — fitness 391.3 (+3.6%) _micro_opt_ R6 — LUT4 10031, 156.8 MHz
+- **Resolve direct JAL in ID** — fitness 513.8 (+31.3%) _structural_ R8 — LUT4 10108, 203.3 MHz
 
 ### `gpt-5_5_high` rep 1
 

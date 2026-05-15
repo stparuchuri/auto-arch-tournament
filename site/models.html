@@ -127,6 +127,81 @@
 </section>
 
 
+<section class="section" id="gpt-5_4_xhigh">
+  <div class="eyebrow">gpt-5_4_xhigh</div>
+  <h2>gpt 5 4 xhigh</h2>
+
+  <div class="stats">
+    <div class="stat"><div class="label">Best</div><div class="value">513.84</div><div class="sub">+81.7% vs baseline</div></div>
+    <div class="stat"><div class="label">Mean</div><div class="value">505.0</div><div class="sub">+78.5% mean Δ</div></div>
+    <div class="stat"><div class="label">Reps</div><div class="value">2/2</div><div class="sub">completed / total</div></div>
+    <div class="stat"><div class="label">Cost</div><div class="value">$0.00</div><div class="sub">$0.00 per rep</div></div>
+  </div>
+
+  <div class="wide">
+  <table class="bench">
+    <caption>per-rep detail</caption>
+    <thead>
+      <tr>
+        <th>Rep</th><th>Status</th>
+        <th class="num">Best</th><th class="num">Δ%</th>
+        <th class="num">LUT4</th><th class="num">Fmax</th>
+        <th class="num">acc</th><th class="num">brk</th>
+        <th class="num">Wall</th><th class="num">Cost</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>rep1</td>
+        <td>done</td>
+        <td class="num">496.11</td>
+        <td class="num">+75.4%</td>
+        <td class="num">3.2k</td>
+        <td class="num">221</td>
+        <td class="num">5</td>
+        <td class="num">7</td>
+        <td class="num">7.2h</td>
+        <td class="num">$0.00</td>
+      </tr>
+      <tr>
+        <td>rep2</td>
+        <td>done</td>
+        <td class="num">513.84</td>
+        <td class="num">+81.7%</td>
+        <td class="num">10.1k</td>
+        <td class="num">203</td>
+        <td class="num">7</td>
+        <td class="num">11</td>
+        <td class="num">8.1h</td>
+        <td class="num">$0.00</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p class="prose"><strong>Broken classes (all reps combined):</strong> <code>cosim_failed</code>×11, <code>formal_failed</code>×7</p>
+
+  <div class="prose">
+  <h3>rep1 — winning hypotheses</h3>
+<dl class="defs">
+<dt>R1 · Move DIV/REM Off The ALU Critical Path</dt><dd>fitness <span class="mono">343.51</span> (<span class="mono">+21.5%</span>) · LUT4 <span class="mono">5.6k</span> · Fmax <span class="mono">154 MHz</span></dd>
+<dt>R2 · One-Deep Stalled-Store Retirement Slot</dt><dd>fitness <span class="mono">385.04</span> (<span class="mono">+12.1%</span>) · LUT4 <span class="mono">5.6k</span> · Fmax <span class="mono">172 MHz</span></dd>
+<dt>R6 · Non-Aliasing Load Bypass Around Store Slot</dt><dd>fitness <span class="mono">439.32</span> (<span class="mono">+14.1%</span>) · LUT4 <span class="mono">5.6k</span> · Fmax <span class="mono">196 MHz</span></dd>
+<dt>R10 · Reset-Light Write-First Register File</dt><dd>fitness <span class="mono">496.11</span> (<span class="mono">+12.9%</span>) · LUT4 <span class="mono">3.2k</span> · Fmax <span class="mono">221 MHz</span></dd>
+</dl>
+<h3>rep2 — winning hypotheses</h3>
+<dl class="defs">
+<dt>R2 · Registered I-Fetch Replay Predictor</dt><dd>fitness <span class="mono">316.05</span> (<span class="mono">+11.8%</span>) · LUT4 <span class="mono">10.1k</span> · Fmax <span class="mono">134 MHz</span></dd>
+<dt>R3 · MEM-to-EX load bypass</dt><dd>fitness <span class="mono">332.31</span> (<span class="mono">+5.1%</span>) · LUT4 <span class="mono">9.9k</span> · Fmax <span class="mono">134 MHz</span></dd>
+<dt>R4 · Shared signedness-selectable multiplier</dt><dd>fitness <span class="mono">334.91</span> (<span class="mono">+0.8%</span>) · LUT4 <span class="mono">10.4k</span> · Fmax <span class="mono">135 MHz</span></dd>
+<dt>R5 · One-entry posted store buffer</dt><dd>fitness <span class="mono">377.60</span> (<span class="mono">+12.8%</span>) · LUT4 <span class="mono">10.1k</span> · Fmax <span class="mono">151 MHz</span></dd>
+<dt>R6 · EX fast-path add/address bypass</dt><dd>fitness <span class="mono">391.32</span> (<span class="mono">+3.6%</span>) · LUT4 <span class="mono">10.0k</span> · Fmax <span class="mono">157 MHz</span></dd>
+<dt>R8 · Resolve direct JAL in ID</dt><dd>fitness <span class="mono">513.84</span> (<span class="mono">+31.3%</span>) · LUT4 <span class="mono">10.1k</span> · Fmax <span class="mono">203 MHz</span></dd>
+</dl>
+  </div>
+</section>
+
+
 <section class="section" id="gpt-5_5_high">
   <div class="eyebrow">gpt-5_5_high</div>
   <h2>gpt 5 5 high</h2>
