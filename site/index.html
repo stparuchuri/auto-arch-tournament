@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>HWE Bench — RISC-V CPU design benchmark for LLMs</title>
-<meta name="description" content="HWE Bench is an unbounded benchmark for LLM hardware engineering. Models design RISC-V CPUs that are scored by how fast they actually run on a real FPGA — only after passing formal correctness proofs.">
+<title>HWE Bench · RISC-V CPU design benchmark for LLMs</title>
+<meta name="description" content="HWE Bench is an unbounded benchmark for LLM hardware engineering. Models design RISC-V CPUs that are scored by how fast they actually run on a real FPGA, only after passing formal correctness proofs.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/print.css">
@@ -21,7 +21,7 @@
     <li><a href="data.html">Data</a></li>
   </ul>
   <div class="meta">
-    <a href="https://github.com/FeSens/auto-arch-tournament" class="repo" aria-label="HWE Bench source on GitHub — click to view repo and star">github <span class="star">★</span> <span class="star-count">118</span></a>
+    <a href="https://github.com/FeSens/auto-arch-tournament" class="repo" aria-label="HWE Bench source on GitHub, click to view repo and star">github <span class="star">★</span> <span class="star-count">118</span></a>
     <span class="version">v1 · 2026-05</span>
   </div>
 </nav>
@@ -32,9 +32,10 @@
   <p class="hero-lede">
     An unbounded benchmark for LLM hardware engineering.
     Large language models design RISC-V CPUs from scratch.
-    Every design must first pass a full battery of formal correctness proofs —
-    buggy CPUs are thrown out. The ones that survive are then scored by how fast
-    they actually run on a physical FPGA. A faster, smaller chip always scores higher.
+    Every design must first pass a full battery of formal correctness proofs,
+    so buggy CPUs are thrown out. The ones that survive are then scored by how
+    fast they would actually run on a physical FPGA. A faster, smaller chip
+    always scores higher.
   </p>
   <div class="hero-thesis">
     <span class="label">Thesis</span>
@@ -55,47 +56,45 @@
   <text class="tick" x="66" y="225.7" text-anchor="end">400</text>
   <line class="grid" x1="76" y1="95.0" x2="654" y2="95.0"/>
   <text class="tick" x="66" y="99.0" text-anchor="end">500</text>
-  <line class="grid" x1="144.9" y1="30" x2="144.9" y2="424"/>
-  <text class="tick" x="144.9" y="442" text-anchor="middle">4.0k</text>
-  <line class="grid" x1="295.6" y1="30" x2="295.6" y2="424"/>
-  <text class="tick" x="295.6" y="442" text-anchor="middle">6.0k</text>
-  <line class="grid" x1="446.4" y1="30" x2="446.4" y2="424"/>
-  <text class="tick" x="446.4" y="442" text-anchor="middle">8.0k</text>
-  <line class="grid" x1="597.2" y1="30" x2="597.2" y2="424"/>
-  <text class="tick" x="597.2" y="442" text-anchor="middle">10.0k</text>
+  <line class="grid" x1="243.4" y1="30" x2="243.4" y2="424"/>
+  <text class="tick" x="243.4" y="442" text-anchor="middle">5.0k</text>
+  <line class="grid" x1="421.8" y1="30" x2="421.8" y2="424"/>
+  <text class="tick" x="421.8" y="442" text-anchor="middle">7.5k</text>
+  <line class="grid" x1="600.2" y1="30" x2="600.2" y2="424"/>
+  <text class="tick" x="600.2" y="442" text-anchor="middle">10.0k</text>
   <line class="axis-line" x1="76" y1="424" x2="654" y2="424"/>
   <line class="axis-line" x1="76" y1="30" x2="76" y2="424"/>
   <line class="baseline" x1="76" y1="370.2" x2="654" y2="370.2"/>
-  <line class="baseline" x1="564.2" y1="30" x2="564.2" y2="424"/>
-  <circle cx="564.2" cy="370.2" r="3.5" fill="var(--bg)" stroke="var(--ink-muted)" stroke-width="1.4"/>
-  <text class="tick" x="574.2" y="363.2" fill="var(--ink-muted)" text-anchor="start">baseline V0 · 283 · 9.6k LUT</text>
+  <line class="baseline" x1="569.0" y1="30" x2="569.0" y2="424"/>
+  <circle cx="569.0" cy="370.2" r="3.5" fill="var(--bg)" stroke="var(--ink-muted)" stroke-width="1.4"/>
+  <text class="tick" x="579.0" y="363.2" fill="var(--ink-muted)" text-anchor="start">baseline V0 · 283 · 9.6k LUT</text>
   <text class="axis-label" x="76" y="18" text-anchor="start">Fitness (CoreMark iter/s)</text>
   <text class="axis-label" x="654" y="466" text-anchor="end">Area · LUT4 count  (← smaller is better)</text>
-  <circle class="point" cx="254.4" cy="63.3" r="6" fill="var(--c1)"/>
-  <circle class="point" cx="605.3" cy="77.5" r="6" fill="var(--c2)"/>
-  <circle class="point" cx="582.6" cy="143.3" r="6" fill="var(--c3)"/>
-  <circle class="point" cx="431.5" cy="181.7" r="6" fill="var(--c4)"/>
-  <circle class="point" cx="591.7" cy="226.6" r="6" fill="var(--c5)"/>
-  <circle class="point" cx="615.4" cy="279.1" r="6" fill="var(--c6)"/>
-  <circle class="point" cx="141.6" cy="259.8" r="6" fill="var(--c-human)"/>
-  <text class="label" x="266.4" y="63.3" fill="var(--c1)">gpt-5_5_xhigh</text>
-  <text class="tick" x="266.4" y="75.3" fill="var(--c1)" fill-opacity="0.7">525 · 5.5k LUT</text>
-  <text class="label" x="617.3" y="87.3" fill="var(--c2)">gpt-5_4_xhigh</text>
-  <text class="tick" x="617.3" y="99.3" fill="var(--c2)" fill-opacity="0.7">514 · 10.1k LUT</text>
-  <text class="label" x="594.6" y="143.3" fill="var(--c3)">gpt-5_5_high</text>
-  <text class="tick" x="594.6" y="155.3" fill="var(--c3)" fill-opacity="0.7">462 · 9.8k LUT</text>
-  <text class="label" x="443.5" y="181.7" fill="var(--c4)">gpt-5_5_medium</text>
-  <text class="tick" x="443.5" y="193.7" fill="var(--c4)" fill-opacity="0.7">432 · 7.8k LUT</text>
-  <text class="label" x="603.7" y="226.6" fill="var(--c5)">kimi-k2_6</text>
-  <text class="tick" x="603.7" y="238.6" fill="var(--c5)" fill-opacity="0.7">396 · 9.9k LUT</text>
-  <text class="label" x="627.4" y="283.8" fill="var(--c6)">gemini-3_1-pro</text>
-  <text class="tick" x="627.4" y="295.8" fill="var(--c6)" fill-opacity="0.7">355 · 10.2k LUT</text>
-  <text class="label" x="153.6" y="259.8" fill="var(--c-human)">VexRiscv</text>
-  <text class="tick" x="153.6" y="271.8" fill="var(--c-human)" fill-opacity="0.7">human ref · 370 · 4.0k LUT</text>
+  <circle class="point" cx="275.7" cy="63.3" r="6" fill="var(--c1)"/>
+  <circle class="point" cx="607.9" cy="77.5" r="6" fill="var(--c2)"/>
+  <circle class="point" cx="586.4" cy="143.3" r="6" fill="var(--c3)"/>
+  <circle class="point" cx="443.4" cy="181.7" r="6" fill="var(--c4)"/>
+  <circle class="point" cx="595.0" cy="226.6" r="6" fill="var(--c5)"/>
+  <circle class="point" cx="617.5" cy="279.1" r="6" fill="var(--c6)"/>
+  <circle class="point" cx="129.4" cy="259.8" r="6" fill="var(--c-human)"/>
+  <text class="label" x="287.7" y="63.3" fill="var(--c1)">gpt-5_5_xhigh</text>
+  <text class="tick" x="287.7" y="75.3" fill="var(--c1)" fill-opacity="0.7">525 · 5.5k LUT</text>
+  <text class="label" x="619.9" y="87.3" fill="var(--c2)">gpt-5_4_xhigh</text>
+  <text class="tick" x="619.9" y="99.3" fill="var(--c2)" fill-opacity="0.7">514 · 10.1k LUT</text>
+  <text class="label" x="598.4" y="143.3" fill="var(--c3)">gpt-5_5_high</text>
+  <text class="tick" x="598.4" y="155.3" fill="var(--c3)" fill-opacity="0.7">462 · 9.8k LUT</text>
+  <text class="label" x="455.4" y="181.7" fill="var(--c4)">gpt-5_5_medium</text>
+  <text class="tick" x="455.4" y="193.7" fill="var(--c4)" fill-opacity="0.7">432 · 7.8k LUT</text>
+  <text class="label" x="607.0" y="226.6" fill="var(--c5)">kimi-k2_6</text>
+  <text class="tick" x="607.0" y="238.6" fill="var(--c5)" fill-opacity="0.7">396 · 9.9k LUT</text>
+  <text class="label" x="629.5" y="283.8" fill="var(--c6)">gemini-3_1-pro</text>
+  <text class="tick" x="629.5" y="295.8" fill="var(--c6)" fill-opacity="0.7">355 · 10.2k LUT</text>
+  <text class="label" x="141.4" y="259.8" fill="var(--c-human)">VexRiscv</text>
+  <text class="tick" x="141.4" y="271.8" fill="var(--c-human)" fill-opacity="0.7">human ref · 370 · 3.4k LUT</text>
 </svg>
     <figcaption>
       Vertical axis: CoreMark fitness (how fast the CPU runs the benchmark).
-      Horizontal axis: chip area (LUT4 count — basically how many gates the design uses on the FPGA).
+      Horizontal axis: chip area (LUT4 count, basically how many gates the design uses on the FPGA).
       One point per model's best run. VexRiscv (3,957 LUT4 · fitness 370) is the human-engineered
       reference. Up and to the left is the goal: faster chip, smaller chip.
     </figcaption>
@@ -174,12 +173,12 @@
     <tr class="human-baseline">
       <td class="num">6</td>
       <td><span class="model-name">VexRiscv  (human ref)</span></td>
-      <td class="num">—</td>
+      <td class="num">n/a</td>
       <td class="num">370.00</td>
       <td class="num">+30.8%</td>
-      <td class="num">—</td>
-      <td class="num">4.0k</td>
-      <td class="num">129</td>
+      <td class="num">n/a</td>
+      <td class="num">3.4k</td>
+      <td class="num">144</td>
     </tr>
     <tr>
       <td class="num">7</td>
@@ -194,10 +193,10 @@
     <tr class="baseline-row">
       <td class="num">8</td>
       <td><span class="model-name">baseline V0  (fixture)</span></td>
-      <td class="num">—</td>
+      <td class="num">n/a</td>
       <td class="num">282.82</td>
-      <td class="num">—</td>
-      <td class="num">—</td>
+      <td class="num">n/a</td>
+      <td class="num">n/a</td>
       <td class="num">9.6k</td>
       <td class="num">127</td>
     </tr>
@@ -205,7 +204,7 @@
   </table>
   </div>
   <p class="prose">
-    The VexRiscv row is the human-engineered reference — a well-known open-source RV32IM CPU
+    The VexRiscv row is the human-engineered reference, a well-known open-source RV32IM CPU
     synthesized on the same FPGA used for the benchmark. <strong>5</strong>
     of the LLM-generated designs beat it. Peak fitness includes reps that finalized with a
     <code>failed</code> status if their data was captured before the failure; the mean column
@@ -225,7 +224,7 @@
   </p>
   <p>
     HWE Bench has no ceiling. Fitness is the CPU's actual speed running CoreMark on a real
-    FPGA — operating frequency times instructions-per-cycle (Fmax × IPC for the technically
+    FPGA, operating frequency times instructions-per-cycle (Fmax × IPC for the technically
     inclined). There's no theoretical maximum: a smarter microarchitecture always scores
     higher. As long as models keep finding new tricks (deeper pipelines, smarter branch
     predictors, restructured ALUs), the leaderboard keeps moving.
@@ -241,7 +240,7 @@
 
 <section class="section">
   <div class="eyebrow">Trajectory</div>
-  <h2>Fitness over rounds — best rep per model</h2>
+  <h2>Fitness over rounds, best rep per model</h2>
   <figure class="chart">
     <svg viewBox="0 0 880 460" role="img" aria-label="Best fitness over rounds, per model">
   <line class="grid" x1="70" y1="358.9" x2="680" y2="358.9"/>

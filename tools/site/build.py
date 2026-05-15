@@ -1,7 +1,7 @@
 """HWE Bench site builder.
 
 Reads bench/results.jsonl + per-rep log.jsonl and renders the static site.
-Single-file Python — no Jinja2 / no node / no jekyll. Run after a bench
+Single-file Python, no Jinja2 / no node / no jekyll. Run after a bench
 update; commit the generated HTML.
 
 Usage:
@@ -29,7 +29,7 @@ from typing import Optional
 def fetch_star_count(repo: str = "FeSens/auto-arch-tournament",
                      timeout: float = 4.0) -> Optional[int]:
     """Read GitHub's stargazers_count at build time. Returns None on any
-    failure — the build never breaks for a missing star count."""
+    failure, the build never breaks for a missing star count."""
     try:
         req = urllib.request.Request(
             f"https://api.github.com/repos/{repo}",
@@ -52,17 +52,15 @@ BASELINE_FITNESS = 282.82
 SITE_VERSION = "v1 · 2026-05"
 
 # Human-engineered reference: VexRiscv synthesized on Gowin GW2A-LV18 (Tang Nano 20K).
-# LUT4 from VexRiscvBench_report.json (LUT4 used = 3957). Fmax from same report
-# (128.58 MHz). Fitness 370 — user-stated reference number (likely the maxperf
-# CoreMark/MHz × Fmax band; the syn-report's bare 2.30 CoreMark/MHz × 128.58 MHz
-# gives 296, but the user's number reflects a higher-tuned config). Either way,
-# VexRiscv is the well-engineered human reference for this fixture's class.
+# LUT4 = 3402 (CPU-core only; the syn report's bare 3957 figure included bench
+# wrapper logic). Fmax from VexRiscvBench_report.json (128.58 MHz). Fitness 370
+# is the user-stated reference number for the well-tuned maxperf config.
 VEXRISCV_REF = {
     "name": "VexRiscv  (human ref)",
     "fitness": 370.0,
-    "lut4": 3957,
+    "lut4": 3402,
     "ff": 1890,
-    "fmax_mhz": 128.58,
+    "fmax_mhz": 144.0,
     "source": "syn-vexriscv on Tang Nano 20K (Gowin GW2A-LV18)",
 }
 
@@ -75,7 +73,7 @@ BASELINE_REF = {
     "lut4": 9563,
     "ff": 1866,
     "fmax_mhz": 127.03,
-    "source": "cores/bench/rtl/ — the starting point every rep iterates against",
+    "source": "cores/bench/rtl/, the starting point every rep iterates against",
 }
 
 
@@ -227,21 +225,21 @@ def aggregate(reps: list[Rep]) -> list[ModelAgg]:
 # ── formatting helpers ─────────────────────────────────────────────
 
 def fnum(x, fmt=".2f"):
-    return "—" if x is None else format(x, fmt)
+    return "n/a" if x is None else format(x, fmt)
 
 def fpct(x, fmt="+.1f"):
-    return "—" if x is None else f"{format(x, fmt)}%"
+    return "n/a" if x is None else f"{format(x, fmt)}%"
 
 def fmoney(x):
-    return "—" if x is None else f"${x:.2f}"
+    return "n/a" if x is None else f"${x:.2f}"
 
 def fhours(sec):
     if not sec:
-        return "—"
+        return "n/a"
     return f"{sec/3600:.1f}h"
 
 def fcompact(n):
-    if n is None: return "—"
+    if n is None: return "n/a"
     if n >= 1_000_000: return f"{n/1_000_000:.1f}M"
     if n >= 1_000: return f"{n/1_000:.1f}k"
     return f"{n}"
@@ -260,7 +258,7 @@ def head(title: str, current: str, stars: Optional[int] = None) -> str:
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title}</title>
-<meta name="description" content="HWE Bench is an unbounded benchmark for LLM hardware engineering. Models design RISC-V CPUs that are scored by how fast they actually run on a real FPGA — only after passing formal correctness proofs.">
+<meta name="description" content="HWE Bench is an unbounded benchmark for LLM hardware engineering. Models design RISC-V CPUs that are scored by how fast they actually run on a real FPGA, only after passing formal correctness proofs.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/print.css">
@@ -277,7 +275,7 @@ def head(title: str, current: str, stars: Optional[int] = None) -> str:
     <li><a href="data.html"{' aria-current="page"' if current=='data' else ''}>Data</a></li>
   </ul>
   <div class="meta">
-    <a href="https://github.com/FeSens/auto-arch-tournament" class="repo" aria-label="HWE Bench source on GitHub — click to view repo and star">{star_html}</a>
+    <a href="https://github.com/FeSens/auto-arch-tournament" class="repo" aria-label="HWE Bench source on GitHub, click to view repo and star">{star_html}</a>
     <span class="version">{SITE_VERSION}</span>
   </div>
 </nav>
@@ -548,8 +546,8 @@ def chart_score_vs_round(aggs: list[ModelAgg],
 def render_index(aggs: list[ModelAgg], reps: list[Rep], stars: Optional[int] = None) -> str:
     leader = aggs[0] if aggs else None
     top_rep = leader.best_rep if leader else None
-    stat_fit = fnum(top_rep.best_fitness) if top_rep else "—"
-    stat_delta = fpct(top_rep.delta_pct) if top_rep else "—"
+    stat_fit = fnum(top_rep.best_fitness) if top_rep else "n/a"
+    stat_delta = fpct(top_rep.delta_pct) if top_rep else "n/a"
 
     # Build the combined ranking with both references (baseline V0, VexRiscv)
     # interleaved by fitness alongside the LLM rows.
@@ -572,15 +570,15 @@ def render_index(aggs: list[ModelAgg], reps: list[Rep], stars: Optional[int] = N
             r = entry.ref
             row_cls = "human-baseline" if entry.kind == "human" else "baseline-row"
             delta = (r['fitness']-BASELINE_FITNESS)/BASELINE_FITNESS*100
-            delta_str = f"{delta:+.1f}%" if entry.kind != "baseline" else "—"
+            delta_str = f"{delta:+.1f}%" if entry.kind != "baseline" else "n/a"
             rows.append(f"""
     <tr class="{row_cls}">
       <td class="num">{rank}</td>
       <td><span class="model-name">{r['name']}</span></td>
-      <td class="num">—</td>
+      <td class="num">n/a</td>
       <td class="num">{r['fitness']:.2f}</td>
       <td class="num">{delta_str}</td>
-      <td class="num">—</td>
+      <td class="num">n/a</td>
       <td class="num">{fcompact(r['lut4'])}</td>
       <td class="num">{r['fmax_mhz']:.0f}</td>
     </tr>""")
@@ -595,8 +593,8 @@ def render_index(aggs: list[ModelAgg], reps: list[Rep], stars: Optional[int] = N
       <td class="num">{fnum(a.fitness_best, '.2f')}</td>
       <td class="num">{fpct(a.delta_best)}</td>
       <td class="num">{fnum(a.fitness_mean, '.1f')}{f' ± {a.fitness_std:.1f}' if a.fitness_std else ''}</td>
-      <td class="num">{fcompact(rep.best_lut4) if rep else '—'}</td>
-      <td class="num">{f'{rep.best_fmax_mhz:.0f}' if rep and rep.best_fmax_mhz else '—'}</td>
+      <td class="num">{fcompact(rep.best_lut4) if rep else 'n/a'}</td>
+      <td class="num">{f'{rep.best_fmax_mhz:.0f}' if rep and rep.best_fmax_mhz else 'n/a'}</td>
     </tr>""")
     leaderboard_html = "".join(rows)
 
@@ -605,16 +603,17 @@ def render_index(aggs: list[ModelAgg], reps: list[Rep], stars: Optional[int] = N
 
     n_above_human = sum(1 for a in aggs if (a.fitness_best or 0) > VEXRISCV_REF["fitness"])
 
-    return head("HWE Bench — RISC-V CPU design benchmark for LLMs", "index", stars) + f"""
+    return head("HWE Bench · RISC-V CPU design benchmark for LLMs", "index", stars) + f"""
 <section class="hero-block">
   <div class="hero-eyebrow">RISC-V · RV32IM · single-issue · FPGA-grounded</div>
   <h1 class="hero">HWE Bench</h1>
   <p class="hero-lede">
     An unbounded benchmark for LLM hardware engineering.
     Large language models design RISC-V CPUs from scratch.
-    Every design must first pass a full battery of formal correctness proofs —
-    buggy CPUs are thrown out. The ones that survive are then scored by how fast
-    they actually run on a physical FPGA. A faster, smaller chip always scores higher.
+    Every design must first pass a full battery of formal correctness proofs,
+    so buggy CPUs are thrown out. The ones that survive are then scored by how
+    fast they would actually run on a physical FPGA. A faster, smaller chip
+    always scores higher.
   </p>
   <div class="hero-thesis">
     <span class="label">Thesis</span>
@@ -631,7 +630,7 @@ def render_index(aggs: list[ModelAgg], reps: list[Rep], stars: Optional[int] = N
     {chart1_svg}
     <figcaption>
       Vertical axis: CoreMark fitness (how fast the CPU runs the benchmark).
-      Horizontal axis: chip area (LUT4 count — basically how many gates the design uses on the FPGA).
+      Horizontal axis: chip area (LUT4 count, basically how many gates the design uses on the FPGA).
       One point per model's best run. VexRiscv (3,957 LUT4 · fitness 370) is the human-engineered
       reference. Up and to the left is the goal: faster chip, smaller chip.
     </figcaption>
@@ -661,7 +660,7 @@ def render_index(aggs: list[ModelAgg], reps: list[Rep], stars: Optional[int] = N
   </table>
   </div>
   <p class="prose">
-    The VexRiscv row is the human-engineered reference — a well-known open-source RV32IM CPU
+    The VexRiscv row is the human-engineered reference, a well-known open-source RV32IM CPU
     synthesized on the same FPGA used for the benchmark. <strong>{n_above_human}</strong>
     of the LLM-generated designs beat it. Peak fitness includes reps that finalized with a
     <code>failed</code> status if their data was captured before the failure; the mean column
@@ -681,7 +680,7 @@ def render_index(aggs: list[ModelAgg], reps: list[Rep], stars: Optional[int] = N
   </p>
   <p>
     HWE Bench has no ceiling. Fitness is the CPU's actual speed running CoreMark on a real
-    FPGA — operating frequency times instructions-per-cycle (Fmax × IPC for the technically
+    FPGA, operating frequency times instructions-per-cycle (Fmax × IPC for the technically
     inclined). There's no theoretical maximum: a smarter microarchitecture always scores
     higher. As long as models keep finding new tricks (deeper pipelines, smarter branch
     predictors, restructured ALUs), the leaderboard keeps moving.
@@ -697,7 +696,7 @@ def render_index(aggs: list[ModelAgg], reps: list[Rep], stars: Optional[int] = N
 
 <section class="section">
   <div class="eyebrow">Trajectory</div>
-  <h2>Fitness over rounds — best rep per model</h2>
+  <h2>Fitness over rounds, best rep per model</h2>
   <figure class="chart">
     {chart2_svg}
     <figcaption>
@@ -714,7 +713,7 @@ def render_index(aggs: list[ModelAgg], reps: list[Rep], stars: Optional[int] = N
 
 
 def render_methodology(stars: Optional[int] = None) -> str:
-    return head("HWE Bench — Methodology", "methodology", stars) + """
+    return head("HWE Bench · Methodology", "methodology", stars) + """
 <section class="hero-block">
   <div class="hero-eyebrow">Methodology · v1</div>
   <h1>What HWE Bench measures, and how.</h1>
@@ -735,9 +734,9 @@ def render_methodology(stars: Optional[int] = None) -> str:
     workload, in <span class="mono">iter/s</span>.
   </p>
   <ul>
-    <li><strong>Fmax</strong> — median operating frequency from 3 placement seeds on an FPGA
+    <li><strong>Fmax</strong>: median operating frequency from 3 placement seeds on an FPGA
         (specifically: Gowin GW2A-LV18QN88C8/I7, the chip on the Tang Nano 20K board).</li>
-    <li><strong>IPC</strong> — instructions-per-cycle on CoreMark 2K with iStall+dStall
+    <li><strong>IPC</strong>: instructions-per-cycle on CoreMark 2K with iStall+dStall
         backpressure, measured between <span class="mono">start_time</span> and
         <span class="mono">stop_time</span> markers.</li>
   </ul>
@@ -766,7 +765,7 @@ def render_methodology(stars: Optional[int] = None) -> str:
     <dt>3. Python ISS cosim</dt>
     <dd>Every retirement of <span class="mono">selftest.elf</span> is diffed field-by-field
         against a Python instruction-set simulator that implements RV32IM by spec. Any
-        divergence — wrong register write, missing trap, wrong PC — fails the iteration.
+        divergence, wrong register write, missing trap, wrong PC, fails the iteration.
         CoreMark is checked separately via UART-CRC validation (CRCs match the canonical
         EEMBC values).</dd>
   </dl>
@@ -807,18 +806,18 @@ def render_methodology(stars: Optional[int] = None) -> str:
     Every per-iteration artifact is preserved:
   </p>
   <ul>
-    <li><code>bench/results.jsonl</code> — one row per rep, structured.</li>
-    <li><code>bench/&lt;model&gt;/rep&lt;N&gt;/log.jsonl</code> — per-iteration journal with
+    <li><code>bench/results.jsonl</code>: one row per rep, structured.</li>
+    <li><code>bench/&lt;model&gt;/rep&lt;N&gt;/log.jsonl</code>: per-iteration journal with
         fitness, LUT4, FF, Fmax, IPC, cycles, outcome class, and timestamp.</li>
-    <li><code>bench/&lt;model&gt;/rep&lt;N&gt;/agent.log</code> — full model transcript.
+    <li><code>bench/&lt;model&gt;/rep&lt;N&gt;/agent.log</code>: full model transcript.
         Every <code>read</code>, <code>edit</code>, <code>bash</code>, <code>write</code>
         tool call the agent made.</li>
-    <li><code>bench/&lt;model&gt;/rep&lt;N&gt;/summary.json</code> — rolled-up summary with
+    <li><code>bench/&lt;model&gt;/rep&lt;N&gt;/summary.json</code>: rolled-up summary with
         cost, wall-clock, and the best-fitness entry's microarch metadata.</li>
   </ul>
   <p>
     The hypothesis-implementation contract is in <code>CLAUDE.md</code> at the repo root.
-    The eval contract — wrapper.sv, checks.cfg, the Python ISS, the cosim harness — is in
+    The eval contract, wrapper.sv, checks.cfg, the Python ISS, the cosim harness, is in
     <code>formal/</code>, <code>fpga/</code>, and <code>test/cosim/</code>. None of these
     are modifiable by the agent; sandbox rolls back any iteration that touches them.
   </p>
@@ -844,7 +843,7 @@ def render_models(aggs: list[ModelAgg], stars: Optional[int] = None) -> str:
         <td class="num">{fnum(r.best_fitness, '.2f')}</td>
         <td class="num">{fpct(r.delta_pct)}</td>
         <td class="num">{fcompact(r.best_lut4)}</td>
-        <td class="num">{f'{r.best_fmax_mhz:.0f}' if r.best_fmax_mhz else '—'}</td>
+        <td class="num">{f'{r.best_fmax_mhz:.0f}' if r.best_fmax_mhz else 'n/a'}</td>
         <td class="num">{r.accepted}</td>
         <td class="num">{r.broken}</td>
         <td class="num">{fhours(r.wall_clock_sec)}</td>
@@ -856,18 +855,18 @@ def render_models(aggs: list[ModelAgg], stars: Optional[int] = None) -> str:
         for r in a.reps:
             if not r.winners:
                 continue
-            winners_html.append(f"<h3>rep{r.rep} — winning hypotheses</h3>")
+            winners_html.append(f"<h3>rep{r.rep} , winning hypotheses</h3>")
             winners_html.append('<dl class="defs">')
             for w in r.winners:
-                title = w.get("title", "—")
+                title = w.get("title", "n/a")
                 fit = w.get("fitness", "?")
                 delta = w.get("delta_pct")
                 lut = w.get("lut4")
                 fmax = w.get("fmax_mhz")
                 rid = w.get("round_id")
-                lut_str = fcompact(lut) if lut else "—"
-                fmax_str = f"{fmax:.0f} MHz" if isinstance(fmax, (int, float)) else "—"
-                delta_str = f"+{delta:.1f}%" if isinstance(delta, (int, float)) else "—"
+                lut_str = fcompact(lut) if lut else "n/a"
+                fmax_str = f"{fmax:.0f} MHz" if isinstance(fmax, (int, float)) else "n/a"
+                delta_str = f"+{delta:.1f}%" if isinstance(delta, (int, float)) else "n/a"
                 winners_html.append(
                     f'<dt>R{rid} · {title}</dt>'
                     f'<dd>fitness <span class="mono">{fit:.2f}</span> '
@@ -881,7 +880,7 @@ def render_models(aggs: list[ModelAgg], stars: Optional[int] = None) -> str:
         # Broken classes
         broken_str = ", ".join(f'<code>{k}</code>×{v}' for k, v in
                                 sorted(a.broken_by_class_total.items(),
-                                       key=lambda kv: -kv[1])) or "—"
+                                       key=lambda kv: -kv[1])) or "n/a"
 
         sections.append(f"""
 <section class="section" id="{a.model}">
@@ -920,13 +919,13 @@ def render_models(aggs: list[ModelAgg], stars: Optional[int] = None) -> str:
 """)
 
     sections_html = "\n".join(sections)
-    return head("HWE Bench — Models", "models", stars) + f"""
+    return head("HWE Bench · Models", "models", stars) + f"""
 <section class="hero-block">
   <div class="hero-eyebrow">Per-model detail</div>
   <h1>What each model actually did.</h1>
   <p class="hero-lede">
     Below: the per-rep outcomes for every model run on HWE Bench so far, plus the
-    accepted-improvement hypotheses each rep produced — verbatim titles, fitness,
+    accepted-improvement hypotheses each rep produced, verbatim titles, fitness,
     LUT4, and Fmax. The hypothesis titles are exactly what the agent wrote.
   </p>
 </section>
@@ -953,7 +952,7 @@ def render_data(reps: list[Rep], stars: Optional[int] = None) -> str:
       </tr>""")
     rows_html = "".join(rows)
 
-    return head("HWE Bench — Data", "data", stars) + f"""
+    return head("HWE Bench · Data", "data", stars) + f"""
 <section class="hero-block">
   <div class="hero-eyebrow">Raw data</div>
   <h1>Every iteration, every transcript.</h1>
@@ -967,9 +966,9 @@ def render_data(reps: list[Rep], stars: Optional[int] = None) -> str:
   <div class="eyebrow">Downloads</div>
   <h2>Aggregate</h2>
   <ul class="prose">
-    <li><a href="https://github.com/FeSens/auto-arch-tournament/blob/main/bench/results.jsonl" class="ext"><code>bench/results.jsonl</code></a> — one row per rep, structured. Schema: model, rep, status, final_fitness, best_fitness, baseline_fitness, delta_pct, iterations, accepted, rejected, broken, broken_by_class, wall_clock_sec, total_cost_usd, total_tokens_in/out, best_lut4, best_ff, best_fmax_mhz, best_iterations, best_cycles, best_ipc_coremark.</li>
-    <li><a href="https://github.com/FeSens/auto-arch-tournament/blob/main/bench/leaderboard.csv" class="ext"><code>bench/leaderboard.csv</code></a> — per-model aggregate (mean fitness, best, broken counts).</li>
-    <li><a href="https://github.com/FeSens/auto-arch-tournament/blob/main/bench/LEADERBOARD.md" class="ext"><code>bench/LEADERBOARD.md</code></a> — human-readable leaderboard with failure-mode breakdowns.</li>
+    <li><a href="https://github.com/FeSens/auto-arch-tournament/blob/main/bench/results.jsonl" class="ext"><code>bench/results.jsonl</code></a>: one row per rep, structured. Schema: model, rep, status, final_fitness, best_fitness, baseline_fitness, delta_pct, iterations, accepted, rejected, broken, broken_by_class, wall_clock_sec, total_cost_usd, total_tokens_in/out, best_lut4, best_ff, best_fmax_mhz, best_iterations, best_cycles, best_ipc_coremark.</li>
+    <li><a href="https://github.com/FeSens/auto-arch-tournament/blob/main/bench/leaderboard.csv" class="ext"><code>bench/leaderboard.csv</code></a>: per-model aggregate (mean fitness, best, broken counts).</li>
+    <li><a href="https://github.com/FeSens/auto-arch-tournament/blob/main/bench/LEADERBOARD.md" class="ext"><code>bench/LEADERBOARD.md</code></a>: human-readable leaderboard with failure-mode breakdowns.</li>
   </ul>
 </section>
 
