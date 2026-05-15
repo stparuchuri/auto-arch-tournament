@@ -252,7 +252,10 @@ def head(title: str, current: str) -> str:
     <li><a href="models.html"{' aria-current="page"' if current=='models' else ''}>Models</a></li>
     <li><a href="data.html"{' aria-current="page"' if current=='data' else ''}>Data</a></li>
   </ul>
-  <span class="version">{SITE_VERSION}</span>
+  <div class="meta">
+    <a href="https://github.com/FeSens/auto-arch-tournament" class="repo" aria-label="HWE Bench source on GitHub">github</a>
+    <span class="version">{SITE_VERSION}</span>
+  </div>
 </nav>
 """
 
