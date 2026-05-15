@@ -612,8 +612,7 @@ def render_index(aggs: list[ModelAgg], reps: list[Rep], stars: Optional[int] = N
     Large language models design RISC-V CPUs from scratch.
     Every design must first pass a full battery of formal correctness proofs,
     so buggy CPUs are thrown out. The ones that survive are then scored by how
-    fast they would actually run on a physical FPGA. A faster, smaller chip
-    always scores higher.
+    fast they would actually run on a physical FPGA.
   </p>
   <div class="hero-thesis">
     <span class="label">Thesis</span>
@@ -642,7 +641,7 @@ def render_index(aggs: list[ModelAgg], reps: list[Rep], stars: Optional[int] = N
   <h2>Peak fitness per model</h2>
   <div class="wide">
   <table class="bench">
-    <caption>Sorted by best single-rep peak fitness · {sum(a.n_total for a in aggs)} reps total · VexRiscv human reference in red · baseline V0 in italic</caption>
+    <caption>Best of N=3 reps per model · {sum(a.n_total for a in aggs)} reps total · VexRiscv human reference in red · baseline V0 in italic</caption>
     <thead>
       <tr>
         <th class="num">#</th>
@@ -662,10 +661,8 @@ def render_index(aggs: list[ModelAgg], reps: list[Rep], stars: Optional[int] = N
   <p class="prose">
     The VexRiscv row is the human-engineered reference, a well-known open-source RV32IM CPU
     synthesized on the same FPGA used for the benchmark. <strong>{n_above_human}</strong>
-    of the LLM-generated designs beat it. Peak fitness includes reps that finalized with a
-    <code>failed</code> status if their data was captured before the failure; the mean column
-    excludes failed reps. See the <a href="methodology.html">methodology page</a> for the full
-    procedure.
+    of the LLM-generated designs beat it. See the <a href="methodology.html">methodology page</a>
+    for the full procedure.
   </p>
 </section>
 
@@ -688,8 +685,8 @@ def render_index(aggs: list[ModelAgg], reps: list[Rep], stars: Optional[int] = N
   <p>
     Empirically: the current best is <strong>{stat_fit}</strong>
     iter/s, <strong>{stat_delta}</strong> over the V0 baseline core, and clear of the
-    VexRiscv human reference. Each successive batch of reps has produced at least one design
-    that beats the prior record. The curve has not plateaued.
+    VexRiscv human reference. There is no theoretical ceiling, and within current budgets
+    the curve has not saturated.
   </p>
   </div>
 </section>
