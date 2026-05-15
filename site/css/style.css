@@ -145,6 +145,19 @@ nav.top .repo:hover, nav.top .repo:focus-visible {
   text-decoration: underline;
   text-underline-offset: 2px;
 }
+nav.top .repo .star {
+  color: var(--ink-muted);
+  margin: 0 0.15em 0 0.2em;
+  font-size: 0.95em;
+}
+nav.top .repo:hover .star,
+nav.top .repo:focus-visible .star { color: var(--accent); }
+nav.top .repo .star-count {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-muted);
+}
+nav.top .repo:hover .star-count,
+nav.top .repo:focus-visible .star-count { color: var(--ink); }
 
 footer.bot {
   margin-top: var(--s-24);

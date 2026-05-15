@@ -19,9 +19,29 @@ from __future__ import annotations
 import argparse
 import json
 import statistics
+import urllib.error
+import urllib.request
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
+
+
+def fetch_star_count(repo: str = "FeSens/auto-arch-tournament",
+                     timeout: float = 4.0) -> Optional[int]:
+    """Read GitHub's stargazers_count at build time. Returns None on any
+    failure — the build never breaks for a missing star count."""
+    try:
+        req = urllib.request.Request(
+            f"https://api.github.com/repos/{repo}",
+            headers={"Accept": "application/vnd.github+json",
+                     "User-Agent": "hwe-bench-site-build/1.0"},
+        )
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            d = json.loads(r.read().decode("utf-8"))
+        return int(d.get("stargazers_count", 0))
+    except (urllib.error.URLError, OSError, json.JSONDecodeError, ValueError):
+        return None
+
 
 HERE = Path(__file__).parent
 REPO = HERE.parent.parent
@@ -229,7 +249,11 @@ def fcompact(n):
 
 # ── shared HTML fragments ──────────────────────────────────────────
 
-def head(title: str, current: str) -> str:
+def head(title: str, current: str, stars: Optional[int] = None) -> str:
+    if stars is None:
+        star_html = "github"
+    else:
+        star_html = f'github <span class="star">★</span> <span class="star-count">{stars}</span>'
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -253,7 +277,7 @@ def head(title: str, current: str) -> str:
     <li><a href="data.html"{' aria-current="page"' if current=='data' else ''}>Data</a></li>
   </ul>
   <div class="meta">
-    <a href="https://github.com/FeSens/auto-arch-tournament" class="repo" aria-label="HWE Bench source on GitHub">github</a>
+    <a href="https://github.com/FeSens/auto-arch-tournament" class="repo" aria-label="HWE Bench source on GitHub — click to view repo and star">{star_html}</a>
     <span class="version">{SITE_VERSION}</span>
   </div>
 </nav>
@@ -521,7 +545,7 @@ def chart_score_vs_round(aggs: list[ModelAgg],
 
 # ── page renderers ─────────────────────────────────────────────────
 
-def render_index(aggs: list[ModelAgg], reps: list[Rep]) -> str:
+def render_index(aggs: list[ModelAgg], reps: list[Rep], stars: Optional[int] = None) -> str:
     leader = aggs[0] if aggs else None
     top_rep = leader.best_rep if leader else None
     stat_fit = fnum(top_rep.best_fitness) if top_rep else "—"
@@ -581,7 +605,7 @@ def render_index(aggs: list[ModelAgg], reps: list[Rep]) -> str:
 
     n_above_human = sum(1 for a in aggs if (a.fitness_best or 0) > VEXRISCV_REF["fitness"])
 
-    return head("HWE Bench — RISC-V CPU design benchmark for LLMs", "index") + f"""
+    return head("HWE Bench — RISC-V CPU design benchmark for LLMs", "index", stars) + f"""
 <section class="hero-block">
   <div class="hero-eyebrow">RISC-V · RV32IM · single-issue · FPGA-grounded</div>
   <h1 class="hero">HWE Bench</h1>
@@ -687,8 +711,8 @@ def render_index(aggs: list[ModelAgg], reps: list[Rep]) -> str:
 """
 
 
-def render_methodology() -> str:
-    return head("HWE Bench — Methodology", "methodology") + """
+def render_methodology(stars: Optional[int] = None) -> str:
+    return head("HWE Bench — Methodology", "methodology", stars) + """
 <section class="hero-block">
   <div class="hero-eyebrow">Methodology · v1</div>
   <h1>What HWE Bench measures, and how.</h1>
@@ -801,7 +825,7 @@ def render_methodology() -> str:
 """ + FOOTER
 
 
-def render_models(aggs: list[ModelAgg]) -> str:
+def render_models(aggs: list[ModelAgg], stars: Optional[int] = None) -> str:
     sections = []
     for a in aggs:
         # Per-rep table
@@ -895,7 +919,7 @@ def render_models(aggs: list[ModelAgg]) -> str:
 """)
 
     sections_html = "\n".join(sections)
-    return head("HWE Bench — Models", "models") + f"""
+    return head("HWE Bench — Models", "models", stars) + f"""
 <section class="hero-block">
   <div class="hero-eyebrow">Per-model detail</div>
   <h1>What each model actually did.</h1>
@@ -909,7 +933,7 @@ def render_models(aggs: list[ModelAgg]) -> str:
 """ + FOOTER
 
 
-def render_data(reps: list[Rep]) -> str:
+def render_data(reps: list[Rep], stars: Optional[int] = None) -> str:
     rows = []
     for r in sorted(reps, key=lambda x: (x.model, x.rep)):
         log_link = f"https://github.com/FeSens/auto-arch-tournament/blob/main/bench/{r.model}/rep{r.rep}/log.jsonl"
@@ -928,7 +952,7 @@ def render_data(reps: list[Rep]) -> str:
       </tr>""")
     rows_html = "".join(rows)
 
-    return head("HWE Bench — Data", "data") + f"""
+    return head("HWE Bench — Data", "data", stars) + f"""
 <section class="hero-block">
   <div class="hero-eyebrow">Raw data</div>
   <h1>Every iteration, every transcript.</h1>
@@ -989,18 +1013,19 @@ def main() -> int:
         print(f"no reps in {args.results}")
         return 1
     aggs = aggregate(reps)
+    stars = fetch_star_count()
 
     args.out.mkdir(parents=True, exist_ok=True)
-    (args.out / "index.html").write_text(render_index(aggs, reps))
-    (args.out / "methodology.html").write_text(render_methodology())
-    (args.out / "models.html").write_text(render_models(aggs))
-    (args.out / "data.html").write_text(render_data(reps))
+    (args.out / "index.html").write_text(render_index(aggs, reps, stars))
+    (args.out / "methodology.html").write_text(render_methodology(stars))
+    (args.out / "models.html").write_text(render_models(aggs, stars))
+    (args.out / "data.html").write_text(render_data(reps, stars))
 
     print(f"wrote {args.out}/index.html")
     print(f"wrote {args.out}/methodology.html")
     print(f"wrote {args.out}/models.html")
     print(f"wrote {args.out}/data.html")
-    print(f"  ({len(reps)} reps · {len(aggs)} models)")
+    print(f"  ({len(reps)} reps · {len(aggs)} models · github stars: {stars if stars is not None else 'n/a'})")
     return 0
 
 
