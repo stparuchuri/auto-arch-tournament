@@ -32,8 +32,8 @@ preferred-citation:
   type: software
   title: "HWE Bench: An Unbounded Benchmark for LLM Hardware Development on RISC-V"
   authors:
-    - family-names: Bonetto
-      given-names: Felipe Sens
+    - family-names: Sens Bonetto
+      given-names: Felipe
   year: 2026
   url: "https://hwebench.com"
   repository-code: "https://github.com/FeSens/auto-arch-tournament"
