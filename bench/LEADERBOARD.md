@@ -11,7 +11,8 @@ Best LUT4 / Fmax / IPC are the FPGA-side detail of the **best rep's best entry**
 | `gpt-5_5_xhigh` | 3/3 | 468.3 ± 52.8 | 525.0 | 5453 | 220.2 | 2.38 | 5.7 | 37.7 | 2.0 | 28.3 | 12% | $0.00 | 478 |
 | `gpt-5_5_high` | 3/3 | 430.2 ± 23.0 | 461.9 | 9807 | 187.3 | 2.47 | 6.3 | 36.7 | 3.0 | 31.3 | 14% | $0.00 | 578 |
 | `gpt-5_5_medium` | 3/3 | 423.5 ± 11.2 | 431.6 | 7803 | 200.6 | 2.15 | 5.3 | 32.3 | 7.7 | 36.0 | 12% | $0.00 | 513 |
-| `kimi-k2_6` | 1/1 | 282.8 ± 0.0 | 282.8 | 9563 | 127.0 | 2.23 | 1.0 | 0.0 | 3.0 | 1.0 | 25% | $0.42 | 759 |
+| `kimi-k2_6` | 2/3 | 339.5 ± 8.3 | 347.8 | 10254 | 146.2 | 2.38 | 3.3 | 16.7 | 21.0 | 11.5 | 7% | $28.44 | 690 |
+| `gemini-3_1-pro` | 3/3 | 339.4 ± 12.6 | 354.7 | 10242 | 149.7 | 2.37 | 3.0 | 12.7 | 30.3 | 21.0 | 7% | $83.53 | 492 |
 
 
 
@@ -45,8 +46,21 @@ Counts each model's broken iterations grouped by the orchestrator's broken-class
 
 | Class | Count |
 |---|---|
-| `formal_failed` | 2 |
-| `sandbox_violation` | 1 |
+| `hypothesis_gen_failed` | 45 |
+| `formal_failed` | 8 |
+| `cosim_failed` | 6 |
+| `implementation_compile_failed` | 2 |
+| `schema_error` | 2 |
+
+### `gemini-3_1-pro`
+
+| Class | Count |
+|---|---|
+| `hypothesis_gen_failed` | 68 |
+| `sandbox_violation` | 9 |
+| `formal_failed` | 6 |
+| `cosim_failed` | 5 |
+| `implementation_compile_failed` | 3 |
 
 ## Per-rep details
 
@@ -54,6 +68,9 @@ Every `(model, rep)` row from `bench/results.jsonl`, before per-model aggregatio
 
 | Model | Rep | Status | Iters | acc | rej | brk | Baseline → Final | Δ% | Best | LUT4 | Fmax MHz | IPC | Wall (m) |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `gemini-3_1-pro` | 1 | done | 46 | 2 | 13 | 31 | 282.8 → 354.7 | 25% | 354.7 | 10242 | 149.7 | 2.37 | 335.4 |
+| `gemini-3_1-pro` | 2 | done | 46 | 3 | 14 | 29 | 282.8 → 339.6 | 20% | 339.6 | 11068 | 142.4 | 2.39 | 438.8 |
+| `gemini-3_1-pro` | 3 | done | 46 | 4 | 11 | 31 | 282.8 → 323.9 | 15% | 323.9 | 11836 | 135.8 | 2.39 | 357.2 |
 | `gpt-5_5_high` | 1 | done | 46 | 7 | 36 | 3 | 282.8 → 461.9 | 63% | 461.9 | 9807 | 187.3 | 2.47 | 279.8 |
 | `gpt-5_5_high` | 2 | done | 46 | 8 | 34 | 4 | 282.8 → 420.6 | 49% | 420.6 | 11953 | 178.1 | 2.36 | 713.2 |
 | `gpt-5_5_high` | 3 | done | 46 | 4 | 40 | 2 | 282.8 → 408.0 | 44% | 408.0 | 5637 | 175.8 | 2.32 | 336.4 |
@@ -63,11 +80,28 @@ Every `(model, rep)` row from `bench/results.jsonl`, before per-model aggregatio
 | `gpt-5_5_xhigh` | 1 | done | 46 | 5 | 39 | 2 | 282.8 → 397.8 | 41% | 397.8 | 6052 | 182.4 | 2.18 | 421.1 |
 | `gpt-5_5_xhigh` | 2 | done | 46 | 5 | 38 | 3 | 282.8 → 525.0 | 86% | 525.0 | 5453 | 220.2 | 2.38 | 384.2 |
 | `gpt-5_5_xhigh` | 3 | done | 46 | 7 | 36 | 1 | 282.8 → 482.0 | 70% | 482.0 | 3164 | 216.5 | 2.23 | 292.9 |
-| `kimi-k2_6` | 1 | done | 4 | 1 | 0 | 3 | 282.8 → 282.8 | 0% | 282.8 | 9563 | 127.0 | 2.23 | 50.6 |
+| `kimi-k2_6` | 1 | done | 46 | 3 | 20 | 23 | 282.8 → 347.8 | 23% | 347.8 | 10254 | 146.2 | 2.38 | 542.5 |
+| `kimi-k2_6` | 2 | done | 46 | 3 | 17 | 26 | 282.8 → 331.2 | 17% | 331.2 | 10038 | 140.6 | 2.36 | 515.6 |
+| `kimi-k2_6` | 3 | failed | 31 | 4 | 13 | 14 | 282.8 → 396.1 | 40% | 396.1 | 9927 | 165.5 | 2.39 | 531.2 |
 
 ## Winning hypotheses
 
 Each model's accepted-improvement entries (the hypotheses that actually moved the fitness needle), in order. Pulled from the preserved `bench/<model>/rep<N>/log.jsonl`.
+
+### `gemini-3_1-pro` rep 1
+
+- **1-Cycle 64-entry BTB in IF Stage with Fast Redirect** — fitness 354.7 (+25.4%) _predictor_ R5 — LUT4 10242, 149.7 MHz
+
+### `gemini-3_1-pro` rep 2
+
+- **16-entry BTB/BHT predictor in IF stage** — fitness 323.9 (+14.5%) _predictor_ R4 — LUT4 10334, 137.2 MHz
+- **128-entry BTB + 8-entry RAS** — fitness 339.6 (+4.8%) _predictor_ R5 — LUT4 11068, 142.4 MHz
+
+### `gemini-3_1-pro` rep 3
+
+- **IF-stage Static BTFN and JAL Predictor** — fitness 282.9 (+0.0%) _structural_ R5 — LUT4 9995, 120.5 MHz
+- **BHT and RAS for frontend branch prediction** — fitness 321.7 (+13.7%) _structural_ R9 — LUT4 10964, 134.8 MHz
+- **GShare Predictor with 256-entry BHT and 8-bit GHR** — fitness 323.9 (+0.7%) _predictor_ R10 — LUT4 11836, 135.8 MHz
 
 ### `gpt-5_5_high` rep 1
 
@@ -138,5 +172,21 @@ Each model's accepted-improvement entries (the hypotheses that actually moved th
 - **Register writeback payload in MEM/WB** — fitness 407.0 (+6.8%) _structural_ R6 — LUT4 5653, 182.8 MHz
 - **Remove regfile reset fanout** — fitness 413.2 (+1.5%) _micro_opt_ R9 — LUT4 3181, 185.6 MHz
 - **Stage-local control bundles** — fitness 482.0 (+16.6%) _structural_ R10 — LUT4 3164, 216.5 MHz
+
+### `kimi-k2_6` rep 1
+
+- **Add static branch predictor (backward-taken, JAL-always-taken)** — fitness 324.1 (+14.6%) _structural_ R1 — LUT4 10189, 138.1 MHz
+- **Add 32-entry 2-bit BHT for forward branch direction prediction** — fitness 347.8 (+7.3%) _predictor_ R4 — LUT4 10254, 146.2 MHz
+
+### `kimi-k2_6` rep 2
+
+- **IF-stage static predictor: backward branches and JAL always taken** — fitness 316.9 (+12.1%) _predictor_ R1 — LUT4 10559, 135.0 MHz
+- **4-entry Return Address Stack for JALR returns** — fitness 331.2 (+4.5%) _predictor_ R3 — LUT4 10038, 140.6 MHz
+
+### `kimi-k2_6` rep 3
+
+- **Guard ALU multipliers off critical path for non-M ops** — fitness 315.2 (+11.5%) _micro_opt_ R1 — LUT4 10217, 141.6 MHz
+- **8-entry direct-mapped instruction cache in IF to absorb imem stalls** — fitness 334.4 (+6.1%) _structural_ R5 — LUT4 9980, 139.7 MHz
+- **Split ALU into fast and M-extension paths with final 2:1 mux** — fitness 396.1 (+18.5%) _micro_opt_ R8 — LUT4 9927, 165.5 MHz
 
 Generated by `python -m tools.bench.report`. Source data: `bench/results.jsonl` + per-rep `bench/<model>/rep<N>/log.jsonl`.

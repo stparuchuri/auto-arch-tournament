@@ -1,0 +1,33 @@
+{
+  "model": "kimi-k2_6",
+  "rep": 3,
+  "started_at": "2026-05-14T10:07:35+00:00",
+  "ended_at": null,
+  "wall_clock_sec": null,
+  "iterations": 31,
+  "accepted": 4,
+  "rejected": 13,
+  "broken": 14,
+  "final_fitness": 396.13,
+  "baseline_fitness": 282.82,
+  "best_fitness": 396.13,
+  "best_round": 23,
+  "delta_pct": 40.06435188459091,
+  "total_tokens_in": 18762027,
+  "total_tokens_out": 924338,
+  "total_cost_usd": 8.36520541,
+  "orchestrator_exit": 1,
+  "status": "failed",
+  "notes": " make exit=1",
+  "broken_by_class": {
+    "formal_failed": 7,
+    "hypothesis_gen_failed": 6,
+    "implementation_compile_failed": 1
+  },
+  "best_lut4": 9927,
+  "best_ff": 1874,
+  "best_fmax_mhz": 165.51,
+  "best_iterations": 10,
+  "best_cycles": 4178194,
+  "best_ipc_coremark": 2e-06
+}
