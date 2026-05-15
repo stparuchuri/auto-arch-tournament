@@ -629,7 +629,7 @@ def render_index(aggs: list[ModelAgg], reps: list[Rep], stars: Optional[int] = N
   <figure class="chart">
     {chart1_svg}
     <figcaption>
-      Fitness (CoreMark iter/s) on Y · LUT4 cost on X · one point per model's best rep.
+      Fitness (CoreMark iter/s) on Y · LUT4 count on X · one point per model's best rep.
       VexRiscv (3,957 LUT4 / fitness 370) is the human-engineered reference on the same FPGA.
       Up-and-left is the desirable direction: more fitness for less area.
     </figcaption>
