@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>HWE Bench — Models</title>
-<meta name="description" content="HWE Bench is an unbounded benchmark for LLM-generated RISC-V CPU designs, measured by Fmax × IPC on a real FPGA under formal-verification correctness gates.">
+<meta name="description" content="HWE Bench is an unbounded benchmark for LLM hardware engineering. Models design RISC-V CPUs that are scored by how fast they actually run on a real FPGA — only after passing formal correctness proofs.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/print.css">
@@ -53,7 +53,7 @@
       <tr>
         <th>Rep</th><th>Status</th>
         <th class="num">Best</th><th class="num">Δ%</th>
-        <th class="num">LUT4</th><th class="num">Fmax</th>
+        <th class="num">Area (LUT4)</th><th class="num">Fmax (MHz)</th>
         <th class="num">acc</th><th class="num">brk</th>
         <th class="num">Wall</th>
       </tr>
@@ -101,26 +101,26 @@
   <div class="prose">
   <h3>rep1 — winning hypotheses</h3>
 <dl class="defs">
-<dt>R1 · Decouple slow RV32M ops from EX</dt><dd>fitness <span class="mono">368.83</span> (<span class="mono">+30.4%</span>) · LUT4 <span class="mono">6.0k</span> · Fmax <span class="mono">166 MHz</span></dd>
-<dt>R3 · Retiming slow M finalization</dt><dd>fitness <span class="mono">380.70</span> (<span class="mono">+3.2%</span>) · LUT4 <span class="mono">6.0k</span> · Fmax <span class="mono">171 MHz</span></dd>
-<dt>R4 · Register forwarding selects</dt><dd>fitness <span class="mono">386.71</span> (<span class="mono">+1.6%</span>) · LUT4 <span class="mono">6.0k</span> · Fmax <span class="mono">174 MHz</span></dd>
-<dt>R8 · Registered low-half MUL path</dt><dd>fitness <span class="mono">397.83</span> (<span class="mono">+2.9%</span>) · LUT4 <span class="mono">6.1k</span> · Fmax <span class="mono">182 MHz</span></dd>
+<dt>R1 · Decouple slow RV32M ops from EX</dt><dd>fitness <span class="mono">368.83</span> (<span class="mono">+30.4%</span>) · area <span class="mono">6.0k</span> LUT4 · Fmax <span class="mono">166 MHz</span></dd>
+<dt>R3 · Retiming slow M finalization</dt><dd>fitness <span class="mono">380.70</span> (<span class="mono">+3.2%</span>) · area <span class="mono">6.0k</span> LUT4 · Fmax <span class="mono">171 MHz</span></dd>
+<dt>R4 · Register forwarding selects</dt><dd>fitness <span class="mono">386.71</span> (<span class="mono">+1.6%</span>) · area <span class="mono">6.0k</span> LUT4 · Fmax <span class="mono">174 MHz</span></dd>
+<dt>R8 · Registered low-half MUL path</dt><dd>fitness <span class="mono">397.83</span> (<span class="mono">+2.9%</span>) · area <span class="mono">6.1k</span> LUT4 · Fmax <span class="mono">182 MHz</span></dd>
 </dl>
 <h3>rep2 — winning hypotheses</h3>
 <dl class="defs">
-<dt>R1 · Iterative divider off ALU critical path</dt><dd>fitness <span class="mono">400.55</span> (<span class="mono">+41.6%</span>) · LUT4 <span class="mono">5.5k</span> · Fmax <span class="mono">180 MHz</span></dd>
-<dt>R6 · Prune dead pipeline control bits</dt><dd>fitness <span class="mono">427.56</span> (<span class="mono">+6.7%</span>) · LUT4 <span class="mono">5.4k</span> · Fmax <span class="mono">192 MHz</span></dd>
-<dt>R7 · Valid-only pipeline payload resets</dt><dd>fitness <span class="mono">432.21</span> (<span class="mono">+1.1%</span>) · LUT4 <span class="mono">5.4k</span> · Fmax <span class="mono">194 MHz</span></dd>
-<dt>R10 · Tiny ifetch replay predictor</dt><dd>fitness <span class="mono">525.04</span> (<span class="mono">+21.5%</span>) · LUT4 <span class="mono">5.5k</span> · Fmax <span class="mono">220 MHz</span></dd>
+<dt>R1 · Iterative divider off ALU critical path</dt><dd>fitness <span class="mono">400.55</span> (<span class="mono">+41.6%</span>) · area <span class="mono">5.5k</span> LUT4 · Fmax <span class="mono">180 MHz</span></dd>
+<dt>R6 · Prune dead pipeline control bits</dt><dd>fitness <span class="mono">427.56</span> (<span class="mono">+6.7%</span>) · area <span class="mono">5.4k</span> LUT4 · Fmax <span class="mono">192 MHz</span></dd>
+<dt>R7 · Valid-only pipeline payload resets</dt><dd>fitness <span class="mono">432.21</span> (<span class="mono">+1.1%</span>) · area <span class="mono">5.4k</span> LUT4 · Fmax <span class="mono">194 MHz</span></dd>
+<dt>R10 · Tiny ifetch replay predictor</dt><dd>fitness <span class="mono">525.04</span> (<span class="mono">+21.5%</span>) · area <span class="mono">5.5k</span> LUT4 · Fmax <span class="mono">220 MHz</span></dd>
 </dl>
 <h3>rep3 — winning hypotheses</h3>
 <dl class="defs">
-<dt>R1 · Move DIV/REM to multicycle EX unit</dt><dd>fitness <span class="mono">350.21</span> (<span class="mono">+23.8%</span>) · LUT4 <span class="mono">5.6k</span> · Fmax <span class="mono">157 MHz</span></dd>
-<dt>R2 · Share MUL hardware in ALU</dt><dd>fitness <span class="mono">353.49</span> (<span class="mono">+0.9%</span>) · LUT4 <span class="mono">5.6k</span> · Fmax <span class="mono">159 MHz</span></dd>
-<dt>R4 · Hazard-only source-use interlock</dt><dd>fitness <span class="mono">381.04</span> (<span class="mono">+7.8%</span>) · LUT4 <span class="mono">5.6k</span> · Fmax <span class="mono">171 MHz</span></dd>
-<dt>R6 · Register writeback payload in MEM/WB</dt><dd>fitness <span class="mono">406.96</span> (<span class="mono">+6.8%</span>) · LUT4 <span class="mono">5.7k</span> · Fmax <span class="mono">183 MHz</span></dd>
-<dt>R9 · Remove regfile reset fanout</dt><dd>fitness <span class="mono">413.23</span> (<span class="mono">+1.5%</span>) · LUT4 <span class="mono">3.2k</span> · Fmax <span class="mono">186 MHz</span></dd>
-<dt>R10 · Stage-local control bundles</dt><dd>fitness <span class="mono">482.03</span> (<span class="mono">+16.6%</span>) · LUT4 <span class="mono">3.2k</span> · Fmax <span class="mono">216 MHz</span></dd>
+<dt>R1 · Move DIV/REM to multicycle EX unit</dt><dd>fitness <span class="mono">350.21</span> (<span class="mono">+23.8%</span>) · area <span class="mono">5.6k</span> LUT4 · Fmax <span class="mono">157 MHz</span></dd>
+<dt>R2 · Share MUL hardware in ALU</dt><dd>fitness <span class="mono">353.49</span> (<span class="mono">+0.9%</span>) · area <span class="mono">5.6k</span> LUT4 · Fmax <span class="mono">159 MHz</span></dd>
+<dt>R4 · Hazard-only source-use interlock</dt><dd>fitness <span class="mono">381.04</span> (<span class="mono">+7.8%</span>) · area <span class="mono">5.6k</span> LUT4 · Fmax <span class="mono">171 MHz</span></dd>
+<dt>R6 · Register writeback payload in MEM/WB</dt><dd>fitness <span class="mono">406.96</span> (<span class="mono">+6.8%</span>) · area <span class="mono">5.7k</span> LUT4 · Fmax <span class="mono">183 MHz</span></dd>
+<dt>R9 · Remove regfile reset fanout</dt><dd>fitness <span class="mono">413.23</span> (<span class="mono">+1.5%</span>) · area <span class="mono">3.2k</span> LUT4 · Fmax <span class="mono">186 MHz</span></dd>
+<dt>R10 · Stage-local control bundles</dt><dd>fitness <span class="mono">482.03</span> (<span class="mono">+16.6%</span>) · area <span class="mono">3.2k</span> LUT4 · Fmax <span class="mono">216 MHz</span></dd>
 </dl>
   </div>
 </section>
@@ -143,7 +143,7 @@
       <tr>
         <th>Rep</th><th>Status</th>
         <th class="num">Best</th><th class="num">Δ%</th>
-        <th class="num">LUT4</th><th class="num">Fmax</th>
+        <th class="num">Area (LUT4)</th><th class="num">Fmax (MHz)</th>
         <th class="num">acc</th><th class="num">brk</th>
         <th class="num">Wall</th>
       </tr>
@@ -180,19 +180,19 @@
   <div class="prose">
   <h3>rep1 — winning hypotheses</h3>
 <dl class="defs">
-<dt>R1 · Move DIV/REM Off The ALU Critical Path</dt><dd>fitness <span class="mono">343.51</span> (<span class="mono">+21.5%</span>) · LUT4 <span class="mono">5.6k</span> · Fmax <span class="mono">154 MHz</span></dd>
-<dt>R2 · One-Deep Stalled-Store Retirement Slot</dt><dd>fitness <span class="mono">385.04</span> (<span class="mono">+12.1%</span>) · LUT4 <span class="mono">5.6k</span> · Fmax <span class="mono">172 MHz</span></dd>
-<dt>R6 · Non-Aliasing Load Bypass Around Store Slot</dt><dd>fitness <span class="mono">439.32</span> (<span class="mono">+14.1%</span>) · LUT4 <span class="mono">5.6k</span> · Fmax <span class="mono">196 MHz</span></dd>
-<dt>R10 · Reset-Light Write-First Register File</dt><dd>fitness <span class="mono">496.11</span> (<span class="mono">+12.9%</span>) · LUT4 <span class="mono">3.2k</span> · Fmax <span class="mono">221 MHz</span></dd>
+<dt>R1 · Move DIV/REM Off The ALU Critical Path</dt><dd>fitness <span class="mono">343.51</span> (<span class="mono">+21.5%</span>) · area <span class="mono">5.6k</span> LUT4 · Fmax <span class="mono">154 MHz</span></dd>
+<dt>R2 · One-Deep Stalled-Store Retirement Slot</dt><dd>fitness <span class="mono">385.04</span> (<span class="mono">+12.1%</span>) · area <span class="mono">5.6k</span> LUT4 · Fmax <span class="mono">172 MHz</span></dd>
+<dt>R6 · Non-Aliasing Load Bypass Around Store Slot</dt><dd>fitness <span class="mono">439.32</span> (<span class="mono">+14.1%</span>) · area <span class="mono">5.6k</span> LUT4 · Fmax <span class="mono">196 MHz</span></dd>
+<dt>R10 · Reset-Light Write-First Register File</dt><dd>fitness <span class="mono">496.11</span> (<span class="mono">+12.9%</span>) · area <span class="mono">3.2k</span> LUT4 · Fmax <span class="mono">221 MHz</span></dd>
 </dl>
 <h3>rep2 — winning hypotheses</h3>
 <dl class="defs">
-<dt>R2 · Registered I-Fetch Replay Predictor</dt><dd>fitness <span class="mono">316.05</span> (<span class="mono">+11.8%</span>) · LUT4 <span class="mono">10.1k</span> · Fmax <span class="mono">134 MHz</span></dd>
-<dt>R3 · MEM-to-EX load bypass</dt><dd>fitness <span class="mono">332.31</span> (<span class="mono">+5.1%</span>) · LUT4 <span class="mono">9.9k</span> · Fmax <span class="mono">134 MHz</span></dd>
-<dt>R4 · Shared signedness-selectable multiplier</dt><dd>fitness <span class="mono">334.91</span> (<span class="mono">+0.8%</span>) · LUT4 <span class="mono">10.4k</span> · Fmax <span class="mono">135 MHz</span></dd>
-<dt>R5 · One-entry posted store buffer</dt><dd>fitness <span class="mono">377.60</span> (<span class="mono">+12.8%</span>) · LUT4 <span class="mono">10.1k</span> · Fmax <span class="mono">151 MHz</span></dd>
-<dt>R6 · EX fast-path add/address bypass</dt><dd>fitness <span class="mono">391.32</span> (<span class="mono">+3.6%</span>) · LUT4 <span class="mono">10.0k</span> · Fmax <span class="mono">157 MHz</span></dd>
-<dt>R8 · Resolve direct JAL in ID</dt><dd>fitness <span class="mono">513.84</span> (<span class="mono">+31.3%</span>) · LUT4 <span class="mono">10.1k</span> · Fmax <span class="mono">203 MHz</span></dd>
+<dt>R2 · Registered I-Fetch Replay Predictor</dt><dd>fitness <span class="mono">316.05</span> (<span class="mono">+11.8%</span>) · area <span class="mono">10.1k</span> LUT4 · Fmax <span class="mono">134 MHz</span></dd>
+<dt>R3 · MEM-to-EX load bypass</dt><dd>fitness <span class="mono">332.31</span> (<span class="mono">+5.1%</span>) · area <span class="mono">9.9k</span> LUT4 · Fmax <span class="mono">134 MHz</span></dd>
+<dt>R4 · Shared signedness-selectable multiplier</dt><dd>fitness <span class="mono">334.91</span> (<span class="mono">+0.8%</span>) · area <span class="mono">10.4k</span> LUT4 · Fmax <span class="mono">135 MHz</span></dd>
+<dt>R5 · One-entry posted store buffer</dt><dd>fitness <span class="mono">377.60</span> (<span class="mono">+12.8%</span>) · area <span class="mono">10.1k</span> LUT4 · Fmax <span class="mono">151 MHz</span></dd>
+<dt>R6 · EX fast-path add/address bypass</dt><dd>fitness <span class="mono">391.32</span> (<span class="mono">+3.6%</span>) · area <span class="mono">10.0k</span> LUT4 · Fmax <span class="mono">157 MHz</span></dd>
+<dt>R8 · Resolve direct JAL in ID</dt><dd>fitness <span class="mono">513.84</span> (<span class="mono">+31.3%</span>) · area <span class="mono">10.1k</span> LUT4 · Fmax <span class="mono">203 MHz</span></dd>
 </dl>
   </div>
 </section>
@@ -215,7 +215,7 @@
       <tr>
         <th>Rep</th><th>Status</th>
         <th class="num">Best</th><th class="num">Δ%</th>
-        <th class="num">LUT4</th><th class="num">Fmax</th>
+        <th class="num">Area (LUT4)</th><th class="num">Fmax (MHz)</th>
         <th class="num">acc</th><th class="num">brk</th>
         <th class="num">Wall</th>
       </tr>
@@ -263,28 +263,28 @@
   <div class="prose">
   <h3>rep1 — winning hypotheses</h3>
 <dl class="defs">
-<dt>R1 · Static backward branch predictor</dt><dd>fitness <span class="mono">338.66</span> (<span class="mono">+19.7%</span>) · LUT4 <span class="mono">10.0k</span> · Fmax <span class="mono">144 MHz</span></dd>
-<dt>R3 · Add MEM-to-EX load forwarding</dt><dd>fitness <span class="mono">355.27</span> (<span class="mono">+4.9%</span>) · LUT4 <span class="mono">10.2k</span> · Fmax <span class="mono">144 MHz</span></dd>
-<dt>R8 · Isolate M-extension ALU mux</dt><dd>fitness <span class="mono">366.02</span> (<span class="mono">+3.0%</span>) · LUT4 <span class="mono">10.1k</span> · Fmax <span class="mono">148 MHz</span></dd>
-<dt>R9 · Gate static branch target formation</dt><dd>fitness <span class="mono">420.37</span> (<span class="mono">+14.8%</span>) · LUT4 <span class="mono">9.9k</span> · Fmax <span class="mono">170 MHz</span></dd>
-<dt>R12 · Factor forwarding matches</dt><dd>fitness <span class="mono">437.68</span> (<span class="mono">+4.1%</span>) · LUT4 <span class="mono">10.1k</span> · Fmax <span class="mono">177 MHz</span></dd>
-<dt>R14 · Register memory request metadata</dt><dd>fitness <span class="mono">461.87</span> (<span class="mono">+5.5%</span>) · LUT4 <span class="mono">9.8k</span> · Fmax <span class="mono">187 MHz</span></dd>
+<dt>R1 · Static backward branch predictor</dt><dd>fitness <span class="mono">338.66</span> (<span class="mono">+19.7%</span>) · area <span class="mono">10.0k</span> LUT4 · Fmax <span class="mono">144 MHz</span></dd>
+<dt>R3 · Add MEM-to-EX load forwarding</dt><dd>fitness <span class="mono">355.27</span> (<span class="mono">+4.9%</span>) · area <span class="mono">10.2k</span> LUT4 · Fmax <span class="mono">144 MHz</span></dd>
+<dt>R8 · Isolate M-extension ALU mux</dt><dd>fitness <span class="mono">366.02</span> (<span class="mono">+3.0%</span>) · area <span class="mono">10.1k</span> LUT4 · Fmax <span class="mono">148 MHz</span></dd>
+<dt>R9 · Gate static branch target formation</dt><dd>fitness <span class="mono">420.37</span> (<span class="mono">+14.8%</span>) · area <span class="mono">9.9k</span> LUT4 · Fmax <span class="mono">170 MHz</span></dd>
+<dt>R12 · Factor forwarding matches</dt><dd>fitness <span class="mono">437.68</span> (<span class="mono">+4.1%</span>) · area <span class="mono">10.1k</span> LUT4 · Fmax <span class="mono">177 MHz</span></dd>
+<dt>R14 · Register memory request metadata</dt><dd>fitness <span class="mono">461.87</span> (<span class="mono">+5.5%</span>) · area <span class="mono">9.8k</span> LUT4 · Fmax <span class="mono">187 MHz</span></dd>
 </dl>
 <h3>rep2 — winning hypotheses</h3>
 <dl class="defs">
-<dt>R1 · Add small BTB branch predictor</dt><dd>fitness <span class="mono">285.54</span> (<span class="mono">+1.0%</span>) · LUT4 <span class="mono">12.1k</span> · Fmax <span class="mono">121 MHz</span></dd>
-<dt>R2 · Gate false load-use stalls</dt><dd>fitness <span class="mono">290.93</span> (<span class="mono">+1.9%</span>) · LUT4 <span class="mono">12.4k</span> · Fmax <span class="mono">123 MHz</span></dd>
-<dt>R3 · Optimize load byte-lane formatter</dt><dd>fitness <span class="mono">305.22</span> (<span class="mono">+4.9%</span>) · LUT4 <span class="mono">12.4k</span> · Fmax <span class="mono">129 MHz</span></dd>
-<dt>R4 · Consolidate multiply datapath</dt><dd>fitness <span class="mono">313.60</span> (<span class="mono">+2.8%</span>) · LUT4 <span class="mono">12.6k</span> · Fmax <span class="mono">133 MHz</span></dd>
-<dt>R6 · Trim BTB tag compare</dt><dd>fitness <span class="mono">326.00</span> (<span class="mono">+4.0%</span>) · LUT4 <span class="mono">12.0k</span> · Fmax <span class="mono">138 MHz</span></dd>
-<dt>R7 · Prune dead pipeline payload</dt><dd>fitness <span class="mono">341.75</span> (<span class="mono">+4.8%</span>) · LUT4 <span class="mono">12.2k</span> · Fmax <span class="mono">145 MHz</span></dd>
-<dt>R11 · Bypass ALU for LSU addresses</dt><dd>fitness <span class="mono">420.61</span> (<span class="mono">+23.1%</span>) · LUT4 <span class="mono">12.0k</span> · Fmax <span class="mono">178 MHz</span></dd>
+<dt>R1 · Add small BTB branch predictor</dt><dd>fitness <span class="mono">285.54</span> (<span class="mono">+1.0%</span>) · area <span class="mono">12.1k</span> LUT4 · Fmax <span class="mono">121 MHz</span></dd>
+<dt>R2 · Gate false load-use stalls</dt><dd>fitness <span class="mono">290.93</span> (<span class="mono">+1.9%</span>) · area <span class="mono">12.4k</span> LUT4 · Fmax <span class="mono">123 MHz</span></dd>
+<dt>R3 · Optimize load byte-lane formatter</dt><dd>fitness <span class="mono">305.22</span> (<span class="mono">+4.9%</span>) · area <span class="mono">12.4k</span> LUT4 · Fmax <span class="mono">129 MHz</span></dd>
+<dt>R4 · Consolidate multiply datapath</dt><dd>fitness <span class="mono">313.60</span> (<span class="mono">+2.8%</span>) · area <span class="mono">12.6k</span> LUT4 · Fmax <span class="mono">133 MHz</span></dd>
+<dt>R6 · Trim BTB tag compare</dt><dd>fitness <span class="mono">326.00</span> (<span class="mono">+4.0%</span>) · area <span class="mono">12.0k</span> LUT4 · Fmax <span class="mono">138 MHz</span></dd>
+<dt>R7 · Prune dead pipeline payload</dt><dd>fitness <span class="mono">341.75</span> (<span class="mono">+4.8%</span>) · area <span class="mono">12.2k</span> LUT4 · Fmax <span class="mono">145 MHz</span></dd>
+<dt>R11 · Bypass ALU for LSU addresses</dt><dd>fitness <span class="mono">420.61</span> (<span class="mono">+23.1%</span>) · area <span class="mono">12.0k</span> LUT4 · Fmax <span class="mono">178 MHz</span></dd>
 </dl>
 <h3>rep3 — winning hypotheses</h3>
 <dl class="defs">
-<dt>R1 · Move DIV/REM off the ALU critical path</dt><dd>fitness <span class="mono">352.98</span> (<span class="mono">+24.8%</span>) · LUT4 <span class="mono">5.5k</span> · Fmax <span class="mono">159 MHz</span></dd>
-<dt>R4 · Case-based MEM byte-lane muxes</dt><dd>fitness <span class="mono">380.43</span> (<span class="mono">+7.8%</span>) · LUT4 <span class="mono">5.5k</span> · Fmax <span class="mono">171 MHz</span></dd>
-<dt>R6 · Lookahead hot-branch predictor</dt><dd>fitness <span class="mono">408.01</span> (<span class="mono">+7.2%</span>) · LUT4 <span class="mono">5.6k</span> · Fmax <span class="mono">176 MHz</span></dd>
+<dt>R1 · Move DIV/REM off the ALU critical path</dt><dd>fitness <span class="mono">352.98</span> (<span class="mono">+24.8%</span>) · area <span class="mono">5.5k</span> LUT4 · Fmax <span class="mono">159 MHz</span></dd>
+<dt>R4 · Case-based MEM byte-lane muxes</dt><dd>fitness <span class="mono">380.43</span> (<span class="mono">+7.8%</span>) · area <span class="mono">5.5k</span> LUT4 · Fmax <span class="mono">171 MHz</span></dd>
+<dt>R6 · Lookahead hot-branch predictor</dt><dd>fitness <span class="mono">408.01</span> (<span class="mono">+7.2%</span>) · area <span class="mono">5.6k</span> LUT4 · Fmax <span class="mono">176 MHz</span></dd>
 </dl>
   </div>
 </section>
@@ -307,7 +307,7 @@
       <tr>
         <th>Rep</th><th>Status</th>
         <th class="num">Best</th><th class="num">Δ%</th>
-        <th class="num">LUT4</th><th class="num">Fmax</th>
+        <th class="num">Area (LUT4)</th><th class="num">Fmax (MHz)</th>
         <th class="num">acc</th><th class="num">brk</th>
         <th class="num">Wall</th>
       </tr>
@@ -355,25 +355,25 @@
   <div class="prose">
   <h3>rep1 — winning hypotheses</h3>
 <dl class="defs">
-<dt>R1 · Remove regfile reset fanout</dt><dd>fitness <span class="mono">316.22</span> (<span class="mono">+11.8%</span>) · LUT4 <span class="mono">8.0k</span> · Fmax <span class="mono">142 MHz</span></dd>
-<dt>R2 · Move M extension to multicycle unit</dt><dd>fitness <span class="mono">356.85</span> (<span class="mono">+12.8%</span>) · LUT4 <span class="mono">7.5k</span> · Fmax <span class="mono">167 MHz</span></dd>
-<dt>R3 · Prune dead pipeline metadata</dt><dd>fitness <span class="mono">397.64</span> (<span class="mono">+11.4%</span>) · LUT4 <span class="mono">7.7k</span> · Fmax <span class="mono">186 MHz</span></dd>
-<dt>R5 · Add posted store buffer</dt><dd>fitness <span class="mono">405.49</span> (<span class="mono">+2.0%</span>) · LUT4 <span class="mono">7.4k</span> · Fmax <span class="mono">188 MHz</span></dd>
-<dt>R9 · Register final writeback data</dt><dd>fitness <span class="mono">422.61</span> (<span class="mono">+4.2%</span>) · LUT4 <span class="mono">7.0k</span> · Fmax <span class="mono">196 MHz</span></dd>
-<dt>R12 · Add narrow forwarding sideband</dt><dd>fitness <span class="mono">431.58</span> (<span class="mono">+2.1%</span>) · LUT4 <span class="mono">7.8k</span> · Fmax <span class="mono">201 MHz</span></dd>
+<dt>R1 · Remove regfile reset fanout</dt><dd>fitness <span class="mono">316.22</span> (<span class="mono">+11.8%</span>) · area <span class="mono">8.0k</span> LUT4 · Fmax <span class="mono">142 MHz</span></dd>
+<dt>R2 · Move M extension to multicycle unit</dt><dd>fitness <span class="mono">356.85</span> (<span class="mono">+12.8%</span>) · area <span class="mono">7.5k</span> LUT4 · Fmax <span class="mono">167 MHz</span></dd>
+<dt>R3 · Prune dead pipeline metadata</dt><dd>fitness <span class="mono">397.64</span> (<span class="mono">+11.4%</span>) · area <span class="mono">7.7k</span> LUT4 · Fmax <span class="mono">186 MHz</span></dd>
+<dt>R5 · Add posted store buffer</dt><dd>fitness <span class="mono">405.49</span> (<span class="mono">+2.0%</span>) · area <span class="mono">7.4k</span> LUT4 · Fmax <span class="mono">188 MHz</span></dd>
+<dt>R9 · Register final writeback data</dt><dd>fitness <span class="mono">422.61</span> (<span class="mono">+4.2%</span>) · area <span class="mono">7.0k</span> LUT4 · Fmax <span class="mono">196 MHz</span></dd>
+<dt>R12 · Add narrow forwarding sideband</dt><dd>fitness <span class="mono">431.58</span> (<span class="mono">+2.1%</span>) · area <span class="mono">7.8k</span> LUT4 · Fmax <span class="mono">201 MHz</span></dd>
 </dl>
 <h3>rep2 — winning hypotheses</h3>
 <dl class="defs">
-<dt>R1 · Multicycle RV32M arithmetic unit</dt><dd>fitness <span class="mono">375.73</span> (<span class="mono">+32.9%</span>) · LUT4 <span class="mono">9.7k</span> · Fmax <span class="mono">172 MHz</span></dd>
-<dt>R5 · Drop regfile reset fanout</dt><dd>fitness <span class="mono">382.99</span> (<span class="mono">+1.9%</span>) · LUT4 <span class="mono">7.6k</span> · Fmax <span class="mono">176 MHz</span></dd>
-<dt>R8 · Share M-unit multiplier hardware</dt><dd>fitness <span class="mono">393.66</span> (<span class="mono">+2.8%</span>) · LUT4 <span class="mono">7.5k</span> · Fmax <span class="mono">181 MHz</span></dd>
-<dt>R9 · Split RVFI shadow metadata from datapath</dt><dd>fitness <span class="mono">407.55</span> (<span class="mono">+3.5%</span>) · LUT4 <span class="mono">7.4k</span> · Fmax <span class="mono">187 MHz</span></dd>
+<dt>R1 · Multicycle RV32M arithmetic unit</dt><dd>fitness <span class="mono">375.73</span> (<span class="mono">+32.9%</span>) · area <span class="mono">9.7k</span> LUT4 · Fmax <span class="mono">172 MHz</span></dd>
+<dt>R5 · Drop regfile reset fanout</dt><dd>fitness <span class="mono">382.99</span> (<span class="mono">+1.9%</span>) · area <span class="mono">7.6k</span> LUT4 · Fmax <span class="mono">176 MHz</span></dd>
+<dt>R8 · Share M-unit multiplier hardware</dt><dd>fitness <span class="mono">393.66</span> (<span class="mono">+2.8%</span>) · area <span class="mono">7.5k</span> LUT4 · Fmax <span class="mono">181 MHz</span></dd>
+<dt>R9 · Split RVFI shadow metadata from datapath</dt><dd>fitness <span class="mono">407.55</span> (<span class="mono">+3.5%</span>) · area <span class="mono">7.4k</span> LUT4 · Fmax <span class="mono">187 MHz</span></dd>
 </dl>
 <h3>rep3 — winning hypotheses</h3>
 <dl class="defs">
-<dt>R1 · Gate and share M-extension ALU hardware</dt><dd>fitness <span class="mono">398.35</span> (<span class="mono">+40.9%</span>) · LUT4 <span class="mono">9.8k</span> · Fmax <span class="mono">179 MHz</span></dd>
-<dt>R5 · Precompute PC targets in decode</dt><dd>fitness <span class="mono">412.07</span> (<span class="mono">+3.4%</span>) · LUT4 <span class="mono">10.2k</span> · Fmax <span class="mono">185 MHz</span></dd>
-<dt>R15 · Retire PC-next in MEM</dt><dd>fitness <span class="mono">431.24</span> (<span class="mono">+4.7%</span>) · LUT4 <span class="mono">10.0k</span> · Fmax <span class="mono">194 MHz</span></dd>
+<dt>R1 · Gate and share M-extension ALU hardware</dt><dd>fitness <span class="mono">398.35</span> (<span class="mono">+40.9%</span>) · area <span class="mono">9.8k</span> LUT4 · Fmax <span class="mono">179 MHz</span></dd>
+<dt>R5 · Precompute PC targets in decode</dt><dd>fitness <span class="mono">412.07</span> (<span class="mono">+3.4%</span>) · area <span class="mono">10.2k</span> LUT4 · Fmax <span class="mono">185 MHz</span></dd>
+<dt>R15 · Retire PC-next in MEM</dt><dd>fitness <span class="mono">431.24</span> (<span class="mono">+4.7%</span>) · area <span class="mono">10.0k</span> LUT4 · Fmax <span class="mono">194 MHz</span></dd>
 </dl>
   </div>
 </section>
@@ -396,7 +396,7 @@
       <tr>
         <th>Rep</th><th>Status</th>
         <th class="num">Best</th><th class="num">Δ%</th>
-        <th class="num">LUT4</th><th class="num">Fmax</th>
+        <th class="num">Area (LUT4)</th><th class="num">Fmax (MHz)</th>
         <th class="num">acc</th><th class="num">brk</th>
         <th class="num">Wall</th>
       </tr>
@@ -444,19 +444,19 @@
   <div class="prose">
   <h3>rep1 — winning hypotheses</h3>
 <dl class="defs">
-<dt>R1 · Add static branch predictor (backward-taken, JAL-always-taken)</dt><dd>fitness <span class="mono">324.08</span> (<span class="mono">+14.6%</span>) · LUT4 <span class="mono">10.2k</span> · Fmax <span class="mono">138 MHz</span></dd>
-<dt>R4 · Add 32-entry 2-bit BHT for forward branch direction prediction</dt><dd>fitness <span class="mono">347.76</span> (<span class="mono">+7.3%</span>) · LUT4 <span class="mono">10.3k</span> · Fmax <span class="mono">146 MHz</span></dd>
+<dt>R1 · Add static branch predictor (backward-taken, JAL-always-taken)</dt><dd>fitness <span class="mono">324.08</span> (<span class="mono">+14.6%</span>) · area <span class="mono">10.2k</span> LUT4 · Fmax <span class="mono">138 MHz</span></dd>
+<dt>R4 · Add 32-entry 2-bit BHT for forward branch direction prediction</dt><dd>fitness <span class="mono">347.76</span> (<span class="mono">+7.3%</span>) · area <span class="mono">10.3k</span> LUT4 · Fmax <span class="mono">146 MHz</span></dd>
 </dl>
 <h3>rep2 — winning hypotheses</h3>
 <dl class="defs">
-<dt>R1 · IF-stage static predictor: backward branches and JAL always taken</dt><dd>fitness <span class="mono">316.95</span> (<span class="mono">+12.1%</span>) · LUT4 <span class="mono">10.6k</span> · Fmax <span class="mono">135 MHz</span></dd>
-<dt>R3 · 4-entry Return Address Stack for JALR returns</dt><dd>fitness <span class="mono">331.22</span> (<span class="mono">+4.5%</span>) · LUT4 <span class="mono">10.0k</span> · Fmax <span class="mono">141 MHz</span></dd>
+<dt>R1 · IF-stage static predictor: backward branches and JAL always taken</dt><dd>fitness <span class="mono">316.95</span> (<span class="mono">+12.1%</span>) · area <span class="mono">10.6k</span> LUT4 · Fmax <span class="mono">135 MHz</span></dd>
+<dt>R3 · 4-entry Return Address Stack for JALR returns</dt><dd>fitness <span class="mono">331.22</span> (<span class="mono">+4.5%</span>) · area <span class="mono">10.0k</span> LUT4 · Fmax <span class="mono">141 MHz</span></dd>
 </dl>
 <h3>rep3 — winning hypotheses</h3>
 <dl class="defs">
-<dt>R1 · Guard ALU multipliers off critical path for non-M ops</dt><dd>fitness <span class="mono">315.22</span> (<span class="mono">+11.5%</span>) · LUT4 <span class="mono">10.2k</span> · Fmax <span class="mono">142 MHz</span></dd>
-<dt>R5 · 8-entry direct-mapped instruction cache in IF to absorb imem stalls</dt><dd>fitness <span class="mono">334.35</span> (<span class="mono">+6.1%</span>) · LUT4 <span class="mono">10.0k</span> · Fmax <span class="mono">140 MHz</span></dd>
-<dt>R8 · Split ALU into fast and M-extension paths with final 2:1 mux</dt><dd>fitness <span class="mono">396.13</span> (<span class="mono">+18.5%</span>) · LUT4 <span class="mono">9.9k</span> · Fmax <span class="mono">166 MHz</span></dd>
+<dt>R1 · Guard ALU multipliers off critical path for non-M ops</dt><dd>fitness <span class="mono">315.22</span> (<span class="mono">+11.5%</span>) · area <span class="mono">10.2k</span> LUT4 · Fmax <span class="mono">142 MHz</span></dd>
+<dt>R5 · 8-entry direct-mapped instruction cache in IF to absorb imem stalls</dt><dd>fitness <span class="mono">334.35</span> (<span class="mono">+6.1%</span>) · area <span class="mono">10.0k</span> LUT4 · Fmax <span class="mono">140 MHz</span></dd>
+<dt>R8 · Split ALU into fast and M-extension paths with final 2:1 mux</dt><dd>fitness <span class="mono">396.13</span> (<span class="mono">+18.5%</span>) · area <span class="mono">9.9k</span> LUT4 · Fmax <span class="mono">166 MHz</span></dd>
 </dl>
   </div>
 </section>
@@ -479,7 +479,7 @@
       <tr>
         <th>Rep</th><th>Status</th>
         <th class="num">Best</th><th class="num">Δ%</th>
-        <th class="num">LUT4</th><th class="num">Fmax</th>
+        <th class="num">Area (LUT4)</th><th class="num">Fmax (MHz)</th>
         <th class="num">acc</th><th class="num">brk</th>
         <th class="num">Wall</th>
       </tr>
@@ -527,18 +527,18 @@
   <div class="prose">
   <h3>rep1 — winning hypotheses</h3>
 <dl class="defs">
-<dt>R5 · 1-Cycle 64-entry BTB in IF Stage with Fast Redirect</dt><dd>fitness <span class="mono">354.73</span> (<span class="mono">+25.4%</span>) · LUT4 <span class="mono">10.2k</span> · Fmax <span class="mono">150 MHz</span></dd>
+<dt>R5 · 1-Cycle 64-entry BTB in IF Stage with Fast Redirect</dt><dd>fitness <span class="mono">354.73</span> (<span class="mono">+25.4%</span>) · area <span class="mono">10.2k</span> LUT4 · Fmax <span class="mono">150 MHz</span></dd>
 </dl>
 <h3>rep2 — winning hypotheses</h3>
 <dl class="defs">
-<dt>R4 · 16-entry BTB/BHT predictor in IF stage</dt><dd>fitness <span class="mono">323.95</span> (<span class="mono">+14.5%</span>) · LUT4 <span class="mono">10.3k</span> · Fmax <span class="mono">137 MHz</span></dd>
-<dt>R5 · 128-entry BTB + 8-entry RAS</dt><dd>fitness <span class="mono">339.62</span> (<span class="mono">+4.8%</span>) · LUT4 <span class="mono">11.1k</span> · Fmax <span class="mono">142 MHz</span></dd>
+<dt>R4 · 16-entry BTB/BHT predictor in IF stage</dt><dd>fitness <span class="mono">323.95</span> (<span class="mono">+14.5%</span>) · area <span class="mono">10.3k</span> LUT4 · Fmax <span class="mono">137 MHz</span></dd>
+<dt>R5 · 128-entry BTB + 8-entry RAS</dt><dd>fitness <span class="mono">339.62</span> (<span class="mono">+4.8%</span>) · area <span class="mono">11.1k</span> LUT4 · Fmax <span class="mono">142 MHz</span></dd>
 </dl>
 <h3>rep3 — winning hypotheses</h3>
 <dl class="defs">
-<dt>R5 · IF-stage Static BTFN and JAL Predictor</dt><dd>fitness <span class="mono">282.91</span> (<span class="mono">+0.0%</span>) · LUT4 <span class="mono">10.0k</span> · Fmax <span class="mono">121 MHz</span></dd>
-<dt>R9 · BHT and RAS for frontend branch prediction</dt><dd>fitness <span class="mono">321.67</span> (<span class="mono">+13.7%</span>) · LUT4 <span class="mono">11.0k</span> · Fmax <span class="mono">135 MHz</span></dd>
-<dt>R10 · GShare Predictor with 256-entry BHT and 8-bit GHR</dt><dd>fitness <span class="mono">323.92</span> (<span class="mono">+0.7%</span>) · LUT4 <span class="mono">11.8k</span> · Fmax <span class="mono">136 MHz</span></dd>
+<dt>R5 · IF-stage Static BTFN and JAL Predictor</dt><dd>fitness <span class="mono">282.91</span> (<span class="mono">+0.0%</span>) · area <span class="mono">10.0k</span> LUT4 · Fmax <span class="mono">121 MHz</span></dd>
+<dt>R9 · BHT and RAS for frontend branch prediction</dt><dd>fitness <span class="mono">321.67</span> (<span class="mono">+13.7%</span>) · area <span class="mono">11.0k</span> LUT4 · Fmax <span class="mono">135 MHz</span></dd>
+<dt>R10 · GShare Predictor with 256-entry BHT and 8-bit GHR</dt><dd>fitness <span class="mono">323.92</span> (<span class="mono">+0.7%</span>) · area <span class="mono">11.8k</span> LUT4 · Fmax <span class="mono">136 MHz</span></dd>
 </dl>
   </div>
 </section>

@@ -260,7 +260,7 @@ def head(title: str, current: str, stars: Optional[int] = None) -> str:
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title}</title>
-<meta name="description" content="HWE Bench is an unbounded benchmark for LLM-generated RISC-V CPU designs, measured by Fmax × IPC on a real FPGA under formal-verification correctness gates.">
+<meta name="description" content="HWE Bench is an unbounded benchmark for LLM hardware engineering. Models design RISC-V CPUs that are scored by how fast they actually run on a real FPGA — only after passing formal correctness proofs.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/print.css">
@@ -412,7 +412,7 @@ def chart_score_vs_lut4(aggs: list[ModelAgg], baseline_lut: int = 9563,
 
     # axis labels
     parts.append(f'  <text class="axis-label" x="{ml}" y="{mt-12}" text-anchor="start">Fitness (CoreMark iter/s)</text>')
-    parts.append(f'  <text class="axis-label" x="{ml+plot_w}" y="{H-14}" text-anchor="end">LUT4  (← lower is better)</text>')
+    parts.append(f'  <text class="axis-label" x="{ml+plot_w}" y="{H-14}" text-anchor="end">Area · LUT4 count  (← smaller is better)</text>')
 
     # Pre-compute point pixel positions and resolve label collisions.
     for it in items:
@@ -610,10 +610,11 @@ def render_index(aggs: list[ModelAgg], reps: list[Rep], stars: Optional[int] = N
   <div class="hero-eyebrow">RISC-V · RV32IM · single-issue · FPGA-grounded</div>
   <h1 class="hero">HWE Bench</h1>
   <p class="hero-lede">
-    An unbounded benchmark for LLM hardware development.
-    Models compete to design RISC-V CPU microarchitectures, measured by CoreMark
-    fitness (Fmax × IPC) on a real Tang Nano 20K FPGA, gated by riscv-formal
-    correctness and Python-ISS cosim.
+    An unbounded benchmark for LLM hardware engineering.
+    Large language models design RISC-V CPUs from scratch.
+    Every design must first pass a full battery of formal correctness proofs —
+    buggy CPUs are thrown out. The ones that survive are then scored by how fast
+    they actually run on a physical FPGA. A faster, smaller chip always scores higher.
   </p>
   <div class="hero-thesis">
     <span class="label">Thesis</span>
@@ -624,14 +625,15 @@ def render_index(aggs: list[ModelAgg], reps: list[Rep], stars: Optional[int] = N
 </section>
 
 <section class="section">
-  <div class="eyebrow">Fitness vs core size</div>
-  <h2>Score × LUT count</h2>
+  <div class="eyebrow">Speed vs size</div>
+  <h2>Score × Area</h2>
   <figure class="chart">
     {chart1_svg}
     <figcaption>
-      Fitness (CoreMark iter/s) on Y · LUT4 count on X · one point per model's best rep.
-      VexRiscv (3,957 LUT4 / fitness 370) is the human-engineered reference on the same FPGA.
-      Up-and-left is the desirable direction: more fitness for less area.
+      Vertical axis: CoreMark fitness (how fast the CPU runs the benchmark).
+      Horizontal axis: chip area (LUT4 count — basically how many gates the design uses on the FPGA).
+      One point per model's best run. VexRiscv (3,957 LUT4 · fitness 370) is the human-engineered
+      reference. Up and to the left is the goal: faster chip, smaller chip.
     </figcaption>
   </figure>
 </section>
@@ -650,8 +652,8 @@ def render_index(aggs: list[ModelAgg], reps: list[Rep], stars: Optional[int] = N
         <th class="num">Best</th>
         <th class="num">Δ%</th>
         <th class="num">Mean ± std</th>
-        <th class="num">Best LUT4</th>
-        <th class="num">Best Fmax</th>
+        <th class="num">Area (LUT4)</th>
+        <th class="num">Fmax (MHz)</th>
       </tr>
     </thead>
     <tbody>{leaderboard_html}
@@ -659,12 +661,12 @@ def render_index(aggs: list[ModelAgg], reps: list[Rep], stars: Optional[int] = N
   </table>
   </div>
   <p class="prose">
-    The VexRiscv row is the human-engineered reference — a well-known open-source RV32IM core,
-    synthesized on the same Tang Nano 20K Gowin part used for the benchmark, with its bench
-    reading scaled to CoreMark/MHz. <strong>{n_above_human}</strong> of the LLM-generated
-    designs exceed it. Peak fitness includes reps that finalized with a <code>failed</code>
-    status if their data was captured before the failure; the mean column excludes failed reps.
-    Methodology details on <a href="methodology.html">the methodology page</a>.
+    The VexRiscv row is the human-engineered reference — a well-known open-source RV32IM CPU
+    synthesized on the same FPGA used for the benchmark. <strong>{n_above_human}</strong>
+    of the LLM-generated designs beat it. Peak fitness includes reps that finalized with a
+    <code>failed</code> status if their data was captured before the failure; the mean column
+    excludes failed reps. See the <a href="methodology.html">methodology page</a> for the full
+    procedure.
   </p>
 </section>
 
@@ -678,11 +680,11 @@ def render_index(aggs: list[ModelAgg], reps: list[Rep], stars: Optional[int] = N
     model gets the same score, and the benchmark stops being useful for tracking capability.
   </p>
   <p>
-    HWE Bench has no ceiling. The fitness score is <span class="mono">Fmax × IPC</span> —
-    operating frequency times instructions-per-cycle — measured on a real FPGA. There is
-    no theoretical maximum; better microarchitecture always scores higher. As long as models
-    can find new tricks (deeper pipelines, smarter predictors, restructured ALUs), the
-    leaderboard keeps moving.
+    HWE Bench has no ceiling. Fitness is the CPU's actual speed running CoreMark on a real
+    FPGA — operating frequency times instructions-per-cycle (Fmax × IPC for the technically
+    inclined). There's no theoretical maximum: a smarter microarchitecture always scores
+    higher. As long as models keep finding new tricks (deeper pipelines, smarter branch
+    predictors, restructured ALUs), the leaderboard keeps moving.
   </p>
   <p>
     Empirically: the current best is <strong>{stat_fit}</strong>
@@ -717,9 +719,10 @@ def render_methodology(stars: Optional[int] = None) -> str:
   <div class="hero-eyebrow">Methodology · v1</div>
   <h1>What HWE Bench measures, and how.</h1>
   <p class="hero-lede">
-    Each iteration is one hypothesis → one RTL implementation → 45+ formal checks
-    → cosim against a Python ISS → 3-seed FPGA placement → CoreMark on Verilator.
-    A single failed gate marks the iteration as <em>broken</em>. No surface-metric gaming.
+    A model proposes a CPU change, implements it as RTL, and the design then
+    runs through three correctness gates and a real FPGA. If any gate fails,
+    the iteration is marked <em>broken</em> and contributes nothing to the score.
+    No surface-metric gaming.
   </p>
 </section>
 
@@ -732,8 +735,8 @@ def render_methodology(stars: Optional[int] = None) -> str:
     workload, in <span class="mono">iter/s</span>.
   </p>
   <ul>
-    <li><strong>Fmax</strong> — median operating frequency from 3 nextpnr seeds, placed on a
-        Tang Nano 20K (Gowin GW2A-LV18QN88C8/I7).</li>
+    <li><strong>Fmax</strong> — median operating frequency from 3 placement seeds on an FPGA
+        (specifically: Gowin GW2A-LV18QN88C8/I7, the chip on the Tang Nano 20K board).</li>
     <li><strong>IPC</strong> — instructions-per-cycle on CoreMark 2K with iStall+dStall
         backpressure, measured between <span class="mono">start_time</span> and
         <span class="mono">stop_time</span> markers.</li>
@@ -869,7 +872,7 @@ def render_models(aggs: list[ModelAgg], stars: Optional[int] = None) -> str:
                     f'<dt>R{rid} · {title}</dt>'
                     f'<dd>fitness <span class="mono">{fit:.2f}</span> '
                     f'(<span class="mono">{delta_str}</span>) · '
-                    f'LUT4 <span class="mono">{lut_str}</span> · '
+                    f'area <span class="mono">{lut_str}</span> LUT4 · '
                     f'Fmax <span class="mono">{fmax_str}</span></dd>'
                 )
             winners_html.append("</dl>")
@@ -898,7 +901,7 @@ def render_models(aggs: list[ModelAgg], stars: Optional[int] = None) -> str:
       <tr>
         <th>Rep</th><th>Status</th>
         <th class="num">Best</th><th class="num">Δ%</th>
-        <th class="num">LUT4</th><th class="num">Fmax</th>
+        <th class="num">Area (LUT4)</th><th class="num">Fmax (MHz)</th>
         <th class="num">acc</th><th class="num">brk</th>
         <th class="num">Wall</th>
       </tr>
