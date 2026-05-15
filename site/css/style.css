@@ -243,6 +243,14 @@ table.bench tbody tr:hover td { background: var(--accent-soft); }
 
 table.bench .model-name { font-family: var(--font-mono); color: var(--ink); }
 
+/* human-baseline row (VexRiscv) — coloured red to flag it as the
+ * engineered reference. Sets next to model rows so the reader can
+ * read it as one entry of the same kind. */
+table.bench tr.human-baseline td,
+table.bench tr.human-baseline td .model-name { color: var(--c-human); }
+table.bench tr.human-baseline { background: rgba(184, 44, 41, 0.04); }
+table.bench tr.human-baseline td:first-child { box-shadow: inset 2px 0 var(--c-human); }
+
 /* outcome tinting (left-edge accent) */
 table.bench tr.outcome-improvement td:first-child { box-shadow: inset 2px 0 var(--success); }
 table.bench tr.outcome-broken td:first-child       { box-shadow: inset 2px 0 var(--warning); }
@@ -308,6 +316,38 @@ dl.defs dd {
   color: var(--ink-soft);
   margin-top: var(--s-2);
 }
+
+/* ── charts ────────────────────────────────────────────────────── */
+
+figure.chart {
+  margin: var(--s-6) 0 var(--s-12);
+  max-width: var(--w-wide);
+}
+figure.chart svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+figure.chart figcaption {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: var(--s-3);
+}
+.chart text {
+  font-family: var(--font-body);
+  font-size: 11px;
+  fill: var(--ink-soft);
+}
+.chart .axis-line { stroke: var(--rule); stroke-width: 1; }
+.chart .grid       { stroke: var(--rule); stroke-width: 0.5; stroke-dasharray: 2 3; }
+.chart .baseline   { stroke: var(--ink-muted); stroke-width: 1; stroke-dasharray: 4 3; }
+.chart .axis-label { font-size: 12px; fill: var(--ink); }
+.chart .tick       { font-family: var(--font-mono); font-size: 10px; fill: var(--ink-muted); }
+.chart .point      { stroke: var(--bg); stroke-width: 2; }
+.chart .label      { font-family: var(--font-mono); font-size: 11px; font-weight: 500; }
 
 /* ── responsive ────────────────────────────────────────────────── */
 

@@ -15,6 +15,19 @@
   --success:     #2A6F4E;
   --warning:     #8A5A2B;
 
+  /* chart palette — muted, restrained, all desaturated-enough to feel
+   * like ink with personality. Used only in SVG charts; never as UI
+   * accent. Brand keeps its one-accent rule everywhere else. */
+  --c1: #1F4380;  /* deep blue (accent) */
+  --c2: #2A6F4E;  /* muted moss */
+  --c3: #8A5A2B;  /* muted ochre */
+  --c4: #6D3F6B;  /* muted plum */
+  --c5: #4A5560;  /* slate */
+  --c6: #7A6B4A;  /* khaki */
+
+  /* human baseline reference — VexRiscv on Tang Nano 20K */
+  --c-human: #B82C29;
+
   /* font families */
   --font-display: 'Source Serif 4', 'Source Serif Pro', Georgia, serif;
   --font-body:    Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
