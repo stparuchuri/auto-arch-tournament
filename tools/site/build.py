@@ -396,11 +396,6 @@ def chart_score_vs_lut4(aggs: list[ModelAgg], baseline_lut: int = 9563,
     for it in items:
         lbl_x = it["px"] + 12
         lbl_y = it["label_y"]
-        if it["pushed"]:
-            # thin elbow connector from dot to label baseline
-            parts.append(f'  <line stroke="{it["color"]}" stroke-width="0.8" stroke-opacity="0.6" '
-                         f'x1="{it["px"]+6:.1f}" y1="{it["py"]:.1f}" '
-                         f'x2="{lbl_x-3:.1f}" y2="{lbl_y-4:.1f}"/>')
         sub = it.get("sub", f"{it['fit']:.0f} · {it['lut']/1000:.1f}k LUT")
         if it["kind"] != "model":
             sub = f"{sub} · {it['fit']:.0f} · {it['lut']/1000:.1f}k LUT"
@@ -510,10 +505,6 @@ def chart_score_vs_round(aggs: list[ModelAgg],
     for it in label_items:
         lbl_x = it["px"] + 12
         lbl_y = it["label_y"]
-        if it["pushed"]:
-            parts.append(f'  <line stroke="{it["color"]}" stroke-width="0.8" stroke-opacity="0.6" '
-                         f'x1="{it["px"]+5:.1f}" y1="{it["py"]:.1f}" '
-                         f'x2="{lbl_x-3:.1f}" y2="{lbl_y-4:.1f}"/>')
         parts.append(f'  <text class="label" x="{lbl_x:.1f}" y="{lbl_y:.1f}" fill="{it["color"]}">{it["model"]}</text>')
         parts.append(f'  <text class="tick" x="{lbl_x:.1f}" y="{lbl_y+12:.1f}" fill="{it["color"]}" fill-opacity="0.7">{it["final"]:.0f} at R{it["round"]}</text>')
 
