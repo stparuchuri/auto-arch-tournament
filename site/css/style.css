@@ -251,6 +251,13 @@ table.bench tr.human-baseline td .model-name { color: var(--c-human); }
 table.bench tr.human-baseline { background: rgba(184, 44, 41, 0.04); }
 table.bench tr.human-baseline td:first-child { box-shadow: inset 2px 0 var(--c-human); }
 
+/* baseline V0 — fitness anchor, muted so it reads as a reference, not
+ * a competitor. Ink-muted text on a slightly-warmer surface. */
+table.bench tr.baseline-row td,
+table.bench tr.baseline-row td .model-name { color: var(--ink-muted); font-style: italic; }
+table.bench tr.baseline-row { background: rgba(0, 0, 0, 0.025); }
+table.bench tr.baseline-row td:first-child { box-shadow: inset 2px 0 var(--ink-muted); }
+
 /* outcome tinting (left-edge accent) */
 table.bench tr.outcome-improvement td:first-child { box-shadow: inset 2px 0 var(--success); }
 table.bench tr.outcome-broken td:first-child       { box-shadow: inset 2px 0 var(--warning); }

@@ -46,6 +46,18 @@ VEXRISCV_REF = {
     "source": "syn-vexriscv on Tang Nano 20K (Gowin GW2A-LV18)",
 }
 
+# Baseline V0 — the starting core every rep begins from. Anchor for delta-pct
+# numbers across the bench. Values from the baseline retest row (round_id=0)
+# present in every rep's log.jsonl.
+BASELINE_REF = {
+    "name": "baseline V0  (fixture)",
+    "fitness": BASELINE_FITNESS,
+    "lut4": 9563,
+    "ff": 1866,
+    "fmax_mhz": 127.03,
+    "source": "cores/bench/rtl/ — the starting point every rep iterates against",
+}
+
 
 @dataclass
 class Rep:
@@ -483,31 +495,35 @@ def render_index(aggs: list[ModelAgg], reps: list[Rep]) -> str:
     stat_fit = fnum(top_rep.best_fitness) if top_rep else "—"
     stat_delta = fpct(top_rep.delta_pct) if top_rep else "—"
 
-    # Build the combined ranking with VexRiscv interleaved by fitness.
-    class HumanEntry:
-        is_human = True
-        def __init__(self, ref): self.ref = ref
+    # Build the combined ranking with both references (baseline V0, VexRiscv)
+    # interleaved by fitness alongside the LLM rows.
+    class RefEntry:
+        def __init__(self, ref, kind): self.ref = ref; self.kind = kind  # 'human' | 'baseline'
     ranked: list = []
     for a in aggs:
         ranked.append(a)
-    ranked.append(HumanEntry(VEXRISCV_REF))
+    ranked.append(RefEntry(VEXRISCV_REF, "human"))
+    ranked.append(RefEntry(BASELINE_REF, "baseline"))
     def _fit(e):
-        return e.ref["fitness"] if isinstance(e, HumanEntry) else (e.fitness_best or 0)
+        return e.ref["fitness"] if isinstance(e, RefEntry) else (e.fitness_best or 0)
     ranked.sort(key=_fit, reverse=True)
 
     rows = []
     rank = 0
     for entry in ranked:
         rank += 1
-        if isinstance(entry, HumanEntry):
+        if isinstance(entry, RefEntry):
             r = entry.ref
+            row_cls = "human-baseline" if entry.kind == "human" else "baseline-row"
+            delta = (r['fitness']-BASELINE_FITNESS)/BASELINE_FITNESS*100
+            delta_str = f"{delta:+.1f}%" if entry.kind != "baseline" else "—"
             rows.append(f"""
-    <tr class="human-baseline">
+    <tr class="{row_cls}">
       <td class="num">{rank}</td>
       <td><span class="model-name">{r['name']}</span></td>
       <td class="num">—</td>
       <td class="num">{r['fitness']:.2f}</td>
-      <td class="num">{(r['fitness']-BASELINE_FITNESS)/BASELINE_FITNESS*100:+.1f}%</td>
+      <td class="num">{delta_str}</td>
       <td class="num">—</td>
       <td class="num">{fcompact(r['lut4'])}</td>
       <td class="num">{r['fmax_mhz']:.0f}</td>
@@ -569,7 +585,7 @@ def render_index(aggs: list[ModelAgg], reps: list[Rep]) -> str:
   <h2>Peak fitness per model</h2>
   <div class="wide">
   <table class="bench">
-    <caption>Sorted by best single-rep peak fitness · {sum(a.n_total for a in aggs)} reps total · VexRiscv reference in red</caption>
+    <caption>Sorted by best single-rep peak fitness · {sum(a.n_total for a in aggs)} reps total · VexRiscv human reference in red · baseline V0 in italic</caption>
     <thead>
       <tr>
         <th class="num">#</th>
