@@ -253,3 +253,23 @@ docs/                   # design notes, blog post
 | Cross-compiler | xPack riscv-none-elf-gcc 15.x (symlinked to riscv32-unknown-elf)|
 | Orchestrator   | Python 3.11+, jsonschema, pyyaml, matplotlib                    |
 | Coding agent   | Codex CLI (default) or Claude Code (`AGENT=claude`)             |
+
+## Citation
+
+If you use HWE Bench in research, please cite the repository (an arXiv
+preprint is in preparation). GitHub renders a "Cite this repository"
+button from `CITATION.cff` on the repo's main page.
+
+BibTeX:
+
+```bibtex
+@software{bonetto_hwebench_2026,
+  author       = {Bonetto, Felipe Sens},
+  title        = {{HWE Bench: An Unbounded Benchmark for LLM Hardware Development on RISC-V}},
+  year         = {2026},
+  url          = {https://hwebench.com},
+  howpublished = {\url{https://github.com/FeSens/auto-arch-tournament}}
+}
+```
+
+Public site: <https://hwebench.com>.
