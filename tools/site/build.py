@@ -305,83 +305,107 @@ def _nice_ticks(vmin, vmax, count=5):
     return ticks
 
 
+def _place_labels(items, line_h=22):
+    """Anchor each label at its point's y-position; push down only when
+    necessary to avoid overlap. Greedy top-down.
+
+    items: list of dicts, each must have a 'y' key (the point's y in
+    viewBox coords). Mutates each dict by setting 'label_y' and 'pushed'
+    (true if label-y != point-y → connector needed).
+    """
+    s = sorted(items, key=lambda it: it["y"])
+    last = -1e9
+    for it in s:
+        target = it["y"]
+        chosen = max(target, last + line_h)
+        it["label_y"] = chosen
+        it["pushed"]  = abs(chosen - target) > 1.5
+        last = chosen
+    return items
+
+
 def chart_score_vs_lut4(aggs: list[ModelAgg], baseline_lut: int = 9563,
                          baseline_fit: float = BASELINE_FITNESS) -> str:
-    """Scatter — fitness (Y) × LUT4 (X). One labeled point per model. Plus baseline."""
-    points = []  # (lut, fit, label, color)
+    """Scatter — fitness (Y) × LUT4 (X). One labeled point per model + VexRiscv human reference + baseline cross-hair."""
+    items = []
     for i, a in enumerate(aggs):
         if not a.best_rep or not a.best_rep.best_lut4 or not a.fitness_best:
             continue
-        points.append((a.best_rep.best_lut4, a.fitness_best, a.model, CHART_PALETTE[i % len(CHART_PALETTE)]))
+        items.append({"lut": a.best_rep.best_lut4, "fit": a.fitness_best,
+                      "label": a.model, "color": CHART_PALETTE[i % len(CHART_PALETTE)],
+                      "kind": "model"})
+    # VexRiscv human reference — first-class on this chart
+    items.append({"lut": VEXRISCV_REF["lut4"], "fit": VEXRISCV_REF["fitness"],
+                  "label": "VexRiscv", "sub": "human ref",
+                  "color": "var(--c-human)", "kind": "human"})
 
-    if not points:
+    if not items:
         return ""
 
-    luts  = [p[0] for p in points] + [baseline_lut]
-    fits  = [p[1] for p in points] + [baseline_fit]
-    xmin, xmax = min(luts) * 0.85, max(luts) * 1.1
-    ymin, ymax = min(fits) * 0.92, max(fits) * 1.04
+    luts = [p["lut"] for p in items] + [baseline_lut]
+    fits = [p["fit"] for p in items] + [baseline_fit]
+    xmin, xmax = min(luts) * 0.78, max(luts) * 1.05
+    ymin, ymax = min(fits) * 0.85, max(fits) * 1.05
 
-    # Chart geometry — viewBox coordinates
-    W, H = 880, 460
-    ml, mr, mt, mb = 70, 200, 36, 60
+    W, H = 880, 480
+    ml, mr, mt, mb = 76, 226, 30, 56
     plot_w, plot_h = W - ml - mr, H - mt - mb
 
     def x(v): return ml + _scale(v, xmin, xmax, 0, plot_w)
-    def y(v): return mt + _scale(v, ymax, ymin, 0, plot_h)  # inverted
+    def y(v): return mt + _scale(v, ymax, ymin, 0, plot_h)
 
     xticks = _nice_ticks(xmin, xmax, 5)
     yticks = _nice_ticks(ymin, ymax, 5)
 
     parts = [f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="Fitness versus LUT4 by model">']
 
-    # gridlines + y ticks
     for t in yticks:
         py = y(t)
         parts.append(f'  <line class="grid" x1="{ml}" y1="{py:.1f}" x2="{ml+plot_w}" y2="{py:.1f}"/>')
-        parts.append(f'  <text class="tick" x="{ml-8}" y="{py+4:.1f}" text-anchor="end">{t:.0f}</text>')
-    # x ticks
+        parts.append(f'  <text class="tick" x="{ml-10}" y="{py+4:.1f}" text-anchor="end">{t:.0f}</text>')
     for t in xticks:
         px = x(t)
         parts.append(f'  <line class="grid" x1="{px:.1f}" y1="{mt}" x2="{px:.1f}" y2="{mt+plot_h}"/>')
         label = f"{t/1000:.1f}k" if t >= 1000 else f"{t:.0f}"
         parts.append(f'  <text class="tick" x="{px:.1f}" y="{mt+plot_h+18}" text-anchor="middle">{label}</text>')
 
-    # axis lines
     parts.append(f'  <line class="axis-line" x1="{ml}" y1="{mt+plot_h}" x2="{ml+plot_w}" y2="{mt+plot_h}"/>')
     parts.append(f'  <line class="axis-line" x1="{ml}" y1="{mt}" x2="{ml}" y2="{mt+plot_h}"/>')
 
-    # baseline cross-hair
+    # baseline V0 — kept as a quiet crosshair so the reader sees the anchor
     bx, by = x(baseline_lut), y(baseline_fit)
     parts.append(f'  <line class="baseline" x1="{ml}" y1="{by:.1f}" x2="{ml+plot_w}" y2="{by:.1f}"/>')
     parts.append(f'  <line class="baseline" x1="{bx:.1f}" y1="{mt}" x2="{bx:.1f}" y2="{mt+plot_h}"/>')
-    parts.append(f'  <circle cx="{bx:.1f}" cy="{by:.1f}" r="4" fill="none" stroke="var(--ink-muted)" stroke-width="1.5"/>')
-    parts.append(f'  <text class="label" x="{bx-8:.1f}" y="{by-10:.1f}" text-anchor="end" fill="var(--ink-muted)">baseline</text>')
-
-    # VexRiscv (human reference)
-    if (VEXRISCV_REF["lut4"] is not None and VEXRISCV_REF["fitness"] is not None
-        and xmin <= VEXRISCV_REF["lut4"] <= xmax
-        and ymin <= VEXRISCV_REF["fitness"] <= ymax):
-        hx, hy = x(VEXRISCV_REF["lut4"]), y(VEXRISCV_REF["fitness"])
-        parts.append(f'  <circle cx="{hx:.1f}" cy="{hy:.1f}" r="7" fill="var(--c-human)" class="point"/>')
-        parts.append(f'  <text class="label" x="{hx+10:.1f}" y="{hy+4:.1f}" fill="var(--c-human)">VexRiscv</text>')
-        parts.append(f'  <text class="tick" x="{hx+10:.1f}" y="{hy+18:.1f}" fill="var(--c-human)">human reference · {VEXRISCV_REF["fitness"]:.0f} · {VEXRISCV_REF["lut4"]/1000:.1f}k LUT</text>')
+    parts.append(f'  <circle cx="{bx:.1f}" cy="{by:.1f}" r="3.5" fill="var(--bg)" stroke="var(--ink-muted)" stroke-width="1.4"/>')
+    parts.append(f'  <text class="tick" x="{bx+10:.1f}" y="{by-7:.1f}" fill="var(--ink-muted)" text-anchor="start">baseline V0 · {baseline_fit:.0f} · {baseline_lut/1000:.1f}k LUT</text>')
 
     # axis labels
     parts.append(f'  <text class="axis-label" x="{ml}" y="{mt-12}" text-anchor="start">Fitness (CoreMark iter/s)</text>')
     parts.append(f'  <text class="axis-label" x="{ml+plot_w}" y="{H-14}" text-anchor="end">LUT4  (← lower is better)</text>')
 
-    # points + labels (right-side, vertically stacked to avoid overlap)
-    sorted_points = sorted(points, key=lambda p: -p[1])  # top to bottom
-    for idx, (lut, fit, model, color) in enumerate(sorted_points):
-        px, py = x(lut), y(fit)
-        parts.append(f'  <circle class="point" cx="{px:.1f}" cy="{py:.1f}" r="6" fill="{color}"/>')
-        # label position: stacked on the right side of the chart, with a connector line
-        lbl_x = ml + plot_w + 16
-        lbl_y = mt + 14 + idx * 22
-        parts.append(f'  <line stroke="{color}" stroke-width="0.8" x1="{px+6:.1f}" y1="{py:.1f}" x2="{lbl_x-4:.1f}" y2="{lbl_y-4:.1f}"/>')
-        parts.append(f'  <text class="label" x="{lbl_x:.1f}" y="{lbl_y:.1f}" fill="{color}">{model}</text>')
-        parts.append(f'  <text class="tick" x="{lbl_x:.1f}" y="{lbl_y+11:.1f}">{fit:.0f} · {lut/1000:.1f}k LUT</text>')
+    # Pre-compute point pixel positions and resolve label collisions.
+    for it in items:
+        it["px"] = x(it["lut"]); it["py"] = y(it["fit"])
+        # default label anchor — to the right of the dot, at the dot's y
+        it["y"] = it["py"]
+    _place_labels(items, line_h=24)
+
+    # Draw points first, labels on top (so dots don't overdraw text)
+    for it in items:
+        parts.append(f'  <circle class="point" cx="{it["px"]:.1f}" cy="{it["py"]:.1f}" r="6" fill="{it["color"]}"/>')
+    for it in items:
+        lbl_x = it["px"] + 12
+        lbl_y = it["label_y"]
+        if it["pushed"]:
+            # thin elbow connector from dot to label baseline
+            parts.append(f'  <line stroke="{it["color"]}" stroke-width="0.8" stroke-opacity="0.6" '
+                         f'x1="{it["px"]+6:.1f}" y1="{it["py"]:.1f}" '
+                         f'x2="{lbl_x-3:.1f}" y2="{lbl_y-4:.1f}"/>')
+        sub = it.get("sub", f"{it['fit']:.0f} · {it['lut']/1000:.1f}k LUT")
+        if it["kind"] != "model":
+            sub = f"{sub} · {it['fit']:.0f} · {it['lut']/1000:.1f}k LUT"
+        parts.append(f'  <text class="label" x="{lbl_x:.1f}" y="{lbl_y:.1f}" fill="{it["color"]}">{it["label"]}</text>')
+        parts.append(f'  <text class="tick" x="{lbl_x:.1f}" y="{lbl_y+12:.1f}" fill="{it["color"]}" fill-opacity="0.7">{sub}</text>')
 
     parts.append('</svg>')
     return "\n".join(parts)
@@ -460,10 +484,8 @@ def chart_score_vs_round(aggs: list[ModelAgg],
     parts.append(f'  <text class="axis-label" x="{ml}" y="{mt-12}" text-anchor="start">Best fitness so far</text>')
     parts.append(f'  <text class="axis-label" x="{ml+plot_w}" y="{H-14}" text-anchor="end">Round (1 hypothesis × 3 slots each)</text>')
 
-    # series — render in order of final fitness so the top model is on top
-    series.sort(key=lambda s: -s[2][-1][1])
-    for idx, (model, color, pts) in enumerate(series):
-        # Build polyline points (stepped line)
+    # Draw all step-lines first
+    for (model, color, pts) in series:
         path = []
         for i, (r, f) in enumerate(pts):
             px, py = x(r), y(f)
@@ -471,17 +493,29 @@ def chart_score_vs_round(aggs: list[ModelAgg],
                 path.append(f"M {px:.1f} {py:.1f}")
             else:
                 prev_y = y(pts[i-1][1])
-                # step: horizontal at previous y, then vertical at current x
                 path.append(f"L {px:.1f} {prev_y:.1f} L {px:.1f} {py:.1f}")
         parts.append(f'  <path d="{" ".join(path)}" stroke="{color}" stroke-width="1.8" fill="none"/>')
-        # endpoint dot + label
+
+    # Endpoint dots + collision-resolved labels
+    label_items = []
+    for (model, color, pts) in series:
         rx, ry = x(pts[-1][0]), y(pts[-1][1])
-        parts.append(f'  <circle cx="{rx:.1f}" cy="{ry:.1f}" r="4" fill="{color}" class="point"/>')
-        lbl_x = ml + plot_w + 16
-        lbl_y = mt + 14 + idx * 22
-        parts.append(f'  <line stroke="{color}" stroke-width="0.8" x1="{rx+5:.1f}" y1="{ry:.1f}" x2="{lbl_x-4:.1f}" y2="{lbl_y-4:.1f}"/>')
-        parts.append(f'  <text class="label" x="{lbl_x:.1f}" y="{lbl_y:.1f}" fill="{color}">{model}</text>')
-        parts.append(f'  <text class="tick" x="{lbl_x:.1f}" y="{lbl_y+11:.1f}">{pts[-1][1]:.0f} at R{pts[-1][0]}</text>')
+        label_items.append({"model": model, "color": color,
+                            "px": rx, "py": ry, "y": ry,
+                            "final": pts[-1][1], "round": pts[-1][0]})
+    _place_labels(label_items, line_h=24)
+
+    for it in label_items:
+        parts.append(f'  <circle cx="{it["px"]:.1f}" cy="{it["py"]:.1f}" r="5" fill="{it["color"]}" class="point"/>')
+    for it in label_items:
+        lbl_x = it["px"] + 12
+        lbl_y = it["label_y"]
+        if it["pushed"]:
+            parts.append(f'  <line stroke="{it["color"]}" stroke-width="0.8" stroke-opacity="0.6" '
+                         f'x1="{it["px"]+5:.1f}" y1="{it["py"]:.1f}" '
+                         f'x2="{lbl_x-3:.1f}" y2="{lbl_y-4:.1f}"/>')
+        parts.append(f'  <text class="label" x="{lbl_x:.1f}" y="{lbl_y:.1f}" fill="{it["color"]}">{it["model"]}</text>')
+        parts.append(f'  <text class="tick" x="{lbl_x:.1f}" y="{lbl_y+12:.1f}" fill="{it["color"]}" fill-opacity="0.7">{it["final"]:.0f} at R{it["round"]}</text>')
 
     parts.append('</svg>')
     return "\n".join(parts)
