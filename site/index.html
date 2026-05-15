@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HWE Bench — RISC-V CPU design benchmark for LLMs</title>
+<meta name="description" content="HWE Bench is an unbounded benchmark for LLM-generated RISC-V CPU designs, measured by Fmax × IPC on a real FPGA under formal-verification correctness gates.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/print.css">
+</head>
+<body>
+<div class="page">
+
+<nav class="top">
+  <a href="index.html" class="wordmark">HWE <span class="alt">Bench</span></a>
+  <ul>
+    <li><a href="index.html" aria-current="page">Leaderboard</a></li>
+    <li><a href="methodology.html">Methodology</a></li>
+    <li><a href="models.html">Models</a></li>
+    <li><a href="data.html">Data</a></li>
+  </ul>
+  <span class="version">v1 · 2026-05</span>
+</nav>
+
+<section class="hero-block">
+  <div class="hero-eyebrow">RISC-V · RV32IM · single-issue · FPGA-grounded</div>
+  <h1 class="hero">HWE Bench</h1>
+  <p class="hero-lede">
+    An unbounded benchmark for LLM hardware development.
+    Models compete to design RISC-V CPU microarchitectures, measured by CoreMark
+    fitness (Fmax × IPC) on a real Tang Nano 20K FPGA, gated by riscv-formal
+    correctness and Python-ISS cosim.
+  </p>
+  <div class="hero-thesis">
+    <span class="label">Thesis</span>
+    SWE-bench tops out at 100%. HWE Bench doesn't have a top.<br>
+    The fitness number reflects an actual microarchitecture, and microarchitecture
+    has room to grow as long as models keep finding it.
+  </div>
+</section>
+
+<section class="section">
+  <div class="eyebrow">Current frontier</div>
+  <h2>The top design so far</h2>
+  <div class="stats">
+    <div class="stat"><div class="label">Best fitness</div><div class="value">525.04</div><div class="sub">+85.6% over baseline</div></div>
+    <div class="stat"><div class="label">Best Fmax</div><div class="value">220 MHz</div><div class="sub">baseline 127 MHz</div></div>
+    <div class="stat"><div class="label">Best LUT4</div><div class="value">5.5k</div><div class="sub">baseline 9.6k</div></div>
+    <div class="stat"><div class="label">By model</div><div class="value mono">gpt-5⋅5⋅xhigh</div><div class="sub">Tiny ifetch replay predictor</div></div>
+  </div>
+  <p class="prose">
+    The current peak of <strong>525.04</strong> iter/s came from one of fifteen completed reps
+    across five model configurations. The curve has not plateaued. Each new model release adds
+    new strategies — branch predictors, ALU bypasses, M-extension hoists, return-address stacks
+    — and the best design changes hands.
+  </p>
+</section>
+
+<section class="section">
+  <div class="eyebrow">Leaderboard</div>
+  <h2>Models by peak fitness</h2>
+  <div class="wide">
+  <table class="bench">
+    <caption>Sorted by best single-rep peak fitness · 15 reps total</caption>
+    <thead>
+      <tr>
+        <th class="num">#</th>
+        <th>Model</th>
+        <th class="num">Reps</th>
+        <th class="num">Best</th>
+        <th class="num">Δ%</th>
+        <th class="num">Mean ± std</th>
+        <th class="num">Best LUT4</th>
+        <th class="num">Best Fmax</th>
+        <th class="num">$ cost</th>
+      </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td class="num">1</td>
+      <td><span class="model-name">gpt-5_5_xhigh</span></td>
+      <td class="num">3/3</td>
+      <td class="num">525.04</td>
+      <td class="num">+85.6%</td>
+      <td class="num">468.3 ± 52.8</td>
+      <td class="num">5.5k</td>
+      <td class="num">220</td>
+      <td class="num">$0.00</td>
+    </tr>
+    <tr>
+      <td class="num">2</td>
+      <td><span class="model-name">gpt-5_5_high</span></td>
+      <td class="num">3/3</td>
+      <td class="num">461.87</td>
+      <td class="num">+63.3%</td>
+      <td class="num">430.2 ± 23.0</td>
+      <td class="num">9.8k</td>
+      <td class="num">187</td>
+      <td class="num">$0.00</td>
+    </tr>
+    <tr>
+      <td class="num">3</td>
+      <td><span class="model-name">gpt-5_5_medium</span></td>
+      <td class="num">3/3</td>
+      <td class="num">431.58</td>
+      <td class="num">+52.6%</td>
+      <td class="num">423.5 ± 11.2</td>
+      <td class="num">7.8k</td>
+      <td class="num">201</td>
+      <td class="num">$0.00</td>
+    </tr>
+    <tr>
+      <td class="num">4</td>
+      <td><span class="model-name">kimi-k2_6</span></td>
+      <td class="num">2/3</td>
+      <td class="num">396.13</td>
+      <td class="num">+40.1%</td>
+      <td class="num">339.5 ± 8.3</td>
+      <td class="num">9.9k</td>
+      <td class="num">166</td>
+      <td class="num">$28.44</td>
+    </tr>
+    <tr>
+      <td class="num">5</td>
+      <td><span class="model-name">gemini-3_1-pro</span></td>
+      <td class="num">3/3</td>
+      <td class="num">354.73</td>
+      <td class="num">+25.4%</td>
+      <td class="num">339.4 ± 12.6</td>
+      <td class="num">10.2k</td>
+      <td class="num">150</td>
+      <td class="num">$83.53</td>
+    </tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="prose">
+    Peak fitness includes reps that finalized with a <code>failed</code> status if their data was
+    captured before the failure — fitness 396.13 from <code>kimi-k2_6</code> rep3 is included
+    despite the rep crashing on its way out. The mean column excludes failed reps.
+    Methodology details on <a href="methodology.html">the methodology page</a>.
+  </p>
+</section>
+
+<section class="section">
+  <div class="eyebrow">Why unbounded</div>
+  <h2>SWE-bench saturates. HWE Bench doesn't.</h2>
+  <div class="prose">
+  <p>
+    Most LLM benchmarks have a fixed ceiling. SWE-bench tops out at 100% issue-resolution.
+    Multiple-choice evals approach 99%. Once a model lands at the ceiling, every subsequent
+    model gets the same score, and the benchmark stops being useful for tracking capability.
+  </p>
+  <p>
+    HWE Bench has no ceiling. The fitness score is <span class="mono">Fmax × IPC</span> —
+    operating frequency times instructions-per-cycle — measured on a real FPGA. There is
+    no theoretical maximum; better microarchitecture always scores higher. As long as models
+    can find new tricks (deeper pipelines, smarter predictors, restructured ALUs), the
+    leaderboard keeps moving.
+  </p>
+  <p>
+    Empirically: the current best is <strong>525.04</strong>
+    iter/s, <strong>+85.6%</strong> over the V0 baseline core. Each successive batch of
+    reps has produced at least one design that beats the prior record. The curve has not
+    plateaued.
+  </p>
+  </div>
+</section>
+
+
+<footer class="bot">
+  <div>HWE Bench · methodology v1 · <a href="https://github.com/FeSens/auto-arch-tournament" class="ext">source on GitHub</a></div>
+  <div class="manifesto">a benchmark that respects how far a frontier model still has to go.</div>
+</footer>
+
+</div>
+</body>
+</html>
+

@@ -1,0 +1,58 @@
+/* HWE Bench — print stylesheet
+ * Goal: any page prints cleanly to a PDF a reviewer could read offline.
+ */
+
+@media print {
+  :root {
+    --bg: #ffffff;
+    --bg-sunk: #f4f1ec;
+    --ink: #000000;
+  }
+  html { font-size: 11pt; }
+  body { font-size: 11pt; line-height: 1.5; }
+
+  nav.top, footer.bot .manifesto { display: none; }
+
+  /* Print header in lieu of nav */
+  body::before {
+    content: "HWE Bench · RISC-V CPU design benchmark";
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 12pt;
+    border-bottom: 1px solid #000;
+    margin-bottom: 18pt;
+    padding-bottom: 6pt;
+  }
+
+  /* No hovers, no underlines on links in print */
+  a, a:hover { color: #000 !important; text-decoration: none; }
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    color: #555;
+  }
+
+  /* Tables print as legible black-on-white */
+  table.bench thead { background: #eee; }
+  table.bench tbody tr:nth-child(even) td { background: #f8f8f8; }
+  table.bench tbody tr:hover td { background: transparent; }
+  table.bench tr.outcome-improvement td:first-child,
+  table.bench tr.outcome-broken td:first-child { box-shadow: none; }
+
+  /* Avoid breaking inside table rows or section headings */
+  table, tr, h1, h2, h3 { page-break-inside: avoid; }
+  h2, h3 { page-break-after: avoid; }
+
+  /* Smaller hero in print */
+  .hero-block { padding: 0 0 12pt; }
+  h1.hero { font-size: 22pt; }
+  .hero-lede { font-size: 13pt; }
+  .hero-thesis { font-size: 10pt; border-left-color: #000; }
+
+  /* Section dividers */
+  section.section { page-break-before: auto; padding-top: 18pt; }
+
+  /* Page margins */
+  @page { margin: 18mm 16mm; }
+}
